@@ -1,0 +1,241 @@
+:host {
+  display: block;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #20271e;
+}
+
+.contacto,
+.contacto * {
+  box-sizing: border-box;
+}
+
+.contacto {
+  min-height: 70vh;
+  padding: 90px 40px;
+  background: #f6f7f2;
+}
+
+.contacto-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Título e introducción */
+.contacto-header {
+  max-width: 800px;
+  margin-bottom: 48px;
+}
+
+.contacto-subtitle {
+  margin: 0 0 22px;
+  color: #4b6137;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  line-height: 1.6;
+  text-transform: uppercase;
+}
+
+.contacto-header h1 {
+  margin: 0 0 24px;
+  color: #20271e;
+  font-size: clamp(36px, 5vw, 64px);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -2px;
+}
+
+.contacto-header > p:last-child {
+  max-width: 650px;
+  margin: 0;
+  color: #545c50;
+  font-size: 17px;
+  line-height: 1.8;
+}
+
+/* Tarjetas */
+.contacto-content {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px;
+}
+
+.contacto-card {
+  min-width: 0;
+  padding: 38px;
+  background: #ffffff;
+  border: 1px solid #dde3d5;
+  border-radius: 18px;
+  box-shadow: 0 8px 28px rgba(32, 39, 30, 0.04);
+}
+
+.contacto-card > svg {
+  display: block;
+  width: 56px;
+  height: 56px;
+  margin-bottom: 24px;
+  padding: 12px;
+  color: #4b6137;
+  background: #edf2e5;
+  border-radius: 14px;
+}
+
+.contacto-card h2 {
+  margin: 0 0 16px;
+  color: #20271e;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.6px;
+}
+
+.contacto-card p {
+  margin: 0 0 22px;
+  color: #545c50;
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+.contacto-card p:last-child {
+  margin-bottom: 0;
+}
+
+/* Teléfono y botón */
+.contacto-phone {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin: 26px 0;
+  color: #4b6137;
+  font-size: clamp(26px, 3vw, 36px);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -1px;
+  text-decoration: none;
+}
+
+.contacto-phone:hover {
+  text-decoration: underline;
+  text-underline-offset: 6px;
+}
+
+.contacto-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  min-height: 54px;
+  padding: 16px 24px;
+  color: #ffffff;
+  background: #4b6137;
+  border: 1px solid #4b6137;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+  text-decoration: none;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.contacto-button::after {
+  content: "↗";
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.contacto-button:hover {
+  background: #394b29;
+  border-color: #394b29;
+}
+
+.contacto-phone:focus-visible,
+.contacto-button:focus-visible {
+  outline: 3px solid #75964f;
+  outline-offset: 5px;
+}
+
+/* Lista de información */
+.contacto-list {
+  display: grid;
+  gap: 16px;
+  margin: 24px 0 28px;
+  padding: 0;
+  list-style: none;
+}
+
+.contacto-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  color: #545c50;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.contacto-list li::before {
+  content: "✓";
+  flex-shrink: 0;
+  color: #4b6137;
+  font-weight: 700;
+}
+
+/* Tablet y móvil */
+@media (max-width: 768px) {
+  .contacto {
+    padding: 60px 24px;
+  }
+
+  .contacto-header {
+    margin-bottom: 32px;
+  }
+
+  .contacto-header h1 {
+    letter-spacing: -1.2px;
+  }
+
+  .contacto-content {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+
+  .contacto-card {
+    padding: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .contacto {
+    padding: 44px 20px;
+  }
+
+  .contacto-subtitle {
+    font-size: 11px;
+    letter-spacing: 2px;
+  }
+
+  .contacto-header > p:last-child {
+    font-size: 16px;
+  }
+
+  .contacto-card {
+    padding: 24px;
+    border-radius: 14px;
+  }
+
+  .contacto-card h2 {
+    font-size: 23px;
+  }
+
+  .contacto-button {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contacto-button {
+    transition: none;
+  }
+}
