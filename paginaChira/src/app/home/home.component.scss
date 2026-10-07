@@ -30,7 +30,8 @@ p {
   margin: 0;
 }
 
-a {
+a,
+button {
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -54,7 +55,6 @@ a {
   font-size: 14px;
   font-weight: 700;
   text-decoration: none;
-
   transition:
     background-color 0.2s ease,
     box-shadow 0.2s ease;
@@ -70,10 +70,21 @@ a {
   }
 }
 
-a:focus-visible {
+a:focus-visible,
+button:focus-visible {
   outline: 3px solid var(--green);
   outline-offset: 5px;
-  border-radius: 6px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* Portada */
@@ -162,7 +173,7 @@ h1 {
 
 .hero-visual {
   position: relative;
-  padding: 0 0 26px 20px;
+  padding-left: 20px;
 }
 
 .hero-photo {
@@ -196,7 +207,7 @@ h1 {
   position: absolute;
   z-index: 1;
   right: 28px;
-  bottom: 30px;
+  bottom: 28px;
   left: 28px;
   color: #ffffff;
 
@@ -219,13 +230,14 @@ h1 {
 .experience-badge {
   position: absolute;
   z-index: 2;
-  bottom: 0;
-  left: -12px;
-
+  top: 20px;
+  right: 20px;
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 22px 26px;
+  gap: 12px;
+  width: fit-content;
+  max-width: calc(100% - 40px);
+  padding: 16px 20px;
   border: 1px solid #e3e9db;
   border-radius: 16px;
   background: #ffffff;
@@ -251,7 +263,7 @@ h1 {
 
 .visual-label {
   position: absolute;
-  top: 50px;
+  top: 150px;
   right: -14px;
   padding: 12px 8px;
   border-radius: 6px;
@@ -299,7 +311,7 @@ h1 {
   }
 }
 
-/* Presentación de la empresa */
+/* Presentación */
 
 .welcome {
   padding: 100px 0;
@@ -373,6 +385,292 @@ h2 {
   font-weight: 600;
 }
 
+/* Categorías */
+
+.galeria {
+  padding-bottom: 90px;
+}
+
+.galeria-intro {
+  max-width: 700px;
+
+  p {
+    max-width: 560px;
+    margin-top: 20px;
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 1.8;
+  }
+}
+
+.categorias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 32px;
+  margin-bottom: 24px;
+}
+
+.categoria {
+  min-height: 44px;
+  padding: 11px 20px;
+  border: 1px solid #d3ddc9;
+  border-radius: 30px;
+  background: transparent;
+  color: var(--green-dark);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease;
+
+  &:hover {
+    background: #e7eddf;
+  }
+
+  &.activa {
+    border-color: var(--green);
+    background: var(--green);
+    color: #ffffff;
+  }
+}
+
+.galeria-aviso {
+  margin-bottom: 22px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+/* Collage: combina fotos grandes, altas y pequeñas */
+
+.collage {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-rows: 180px;
+  gap: 16px;
+}
+
+.collage-foto {
+  position: relative;
+  display: block;
+  min-width: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 16px;
+  background: #e2e9d9;
+  color: var(--green-dark);
+  font: inherit;
+  cursor: zoom-in;
+  animation: foto-entrada 280ms ease-out;
+
+  /* Primera fotografía grande */
+  &:nth-child(6n + 1) {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+
+  /* Segunda fotografía vertical */
+  &:nth-child(6n + 2) {
+    grid-row: span 2;
+  }
+
+  /* Quinta fotografía horizontal */
+  &:nth-child(6n + 5) {
+    grid-column: span 2;
+  }
+
+  /* Sexta fotografía horizontal */
+  &:nth-child(6n + 6) {
+    grid-column: span 2;
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 350ms ease;
+  }
+
+  &:hover img,
+  &:focus-visible img {
+    transform: scale(1.05);
+  }
+
+  &:focus-visible {
+    outline-offset: -5px;
+    outline-color: var(--accent);
+  }
+}
+
+.foto-pendiente {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  height: 100%;
+  padding: 20px 20px 65px;
+  background:
+    radial-gradient(
+      circle at 20% 20%,
+      rgba(180, 211, 136, 0.4),
+      transparent 65%
+    ),
+    #e7eddf;
+  font-size: 14px;
+  text-align: center;
+}
+
+.placeholder-icono {
+  font-size: 38px;
+  line-height: 1;
+}
+
+.foto-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px;
+  background: linear-gradient(
+    transparent 55%,
+    rgba(17, 28, 12, 0.7)
+  );
+  pointer-events: none;
+}
+
+.foto-etiqueta {
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.foto-ampliar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  color: #ffffff;
+  font-size: 21px;
+}
+
+.galeria-vacia {
+  grid-column: 1 / -1;
+  padding: 30px;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+.galeria-pie {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #dfe5d7;
+
+  p {
+    color: var(--muted);
+    font-size: 14px;
+  }
+}
+
+/* Fotografía ampliada */
+
+.visor {
+  width: min(1000px, calc(100% - 32px));
+  max-height: calc(100dvh - 32px);
+  padding: 0;
+  overflow: auto;
+  border: 1px solid #dfe5d7;
+  border-radius: 20px;
+  background: var(--cream);
+  color: var(--text);
+
+  &::backdrop {
+    background: rgba(12, 20, 9, 0.85);
+  }
+}
+
+.visor-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 24px;
+
+  h2 {
+    margin: 0;
+    font-size: 23px;
+    letter-spacing: -0.5px;
+  }
+}
+
+.visor-cerrar {
+  flex-shrink: 0;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1px solid #cbd6bf;
+  border-radius: 10px;
+  background: #ffffff;
+  color: var(--green-dark);
+  font: inherit;
+  cursor: pointer;
+}
+
+.visor-imagen {
+  display: block;
+  width: 100%;
+  max-height: 65dvh;
+  object-fit: contain;
+  background: #e7eddf;
+}
+
+.visor-pendiente {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  min-height: 280px;
+  padding: 30px;
+  background: #e7eddf;
+  color: var(--muted);
+  text-align: center;
+
+  span {
+    font-size: 40px;
+  }
+}
+
+.visor-detalles {
+  padding: 24px;
+
+  p {
+    margin-top: 12px;
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.8;
+  }
+}
+
 /* Llamada final */
 
 .closing {
@@ -434,6 +732,18 @@ h2 {
   white-space: nowrap;
 }
 
+@keyframes foto-entrada {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Tablet */
 
 @media (max-width: 950px) {
@@ -447,14 +757,26 @@ h2 {
     letter-spacing: -1.8px;
   }
 
-  .experience-badge {
-    left: 0;
-    padding: 18px;
-  }
-
   .closing-panel {
     padding: 32px;
     gap: 24px;
+  }
+
+  .collage {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: 200px;
+  }
+
+  .collage-foto {
+    &:nth-child(n) {
+      grid-column: span 1;
+      grid-row: span 1;
+    }
+
+    &:nth-child(5n + 1) {
+      grid-column: span 2;
+      grid-row: span 2;
+    }
   }
 }
 
@@ -501,7 +823,7 @@ h2 {
   }
 
   .hero-visual {
-    padding: 0 8px 24px;
+    padding: 0 8px;
   }
 
   .hero-photo {
@@ -511,7 +833,7 @@ h2 {
 
   .photo-caption {
     right: 20px;
-    bottom: 68px;
+    bottom: 20px;
     left: 20px;
 
     p {
@@ -525,17 +847,21 @@ h2 {
   }
 
   .experience-badge {
-    bottom: 0;
-    left: 20px;
-    gap: 12px;
-    padding: 14px 18px;
+    top: 12px;
+    right: 20px;
+    padding: 12px 14px;
+    gap: 10px;
 
     strong {
-      font-size: 34px;
+      font-size: 30px;
+
+      span {
+        font-size: 20px;
+      }
     }
 
     p {
-      font-size: 11px;
+      font-size: 10px;
     }
   }
 
@@ -570,6 +896,66 @@ h2 {
     font-size: 14px;
   }
 
+  .galeria {
+    padding-bottom: 56px;
+  }
+
+  .categorias {
+    gap: 8px;
+    margin-top: 24px;
+  }
+
+  .categoria {
+    padding: 10px 14px;
+    font-size: 12px;
+  }
+
+  .collage {
+    grid-auto-rows: 150px;
+    gap: 10px;
+  }
+
+  .collage-foto {
+    border-radius: 12px;
+
+    &:nth-child(5n + 1) {
+      grid-row: span 2;
+    }
+  }
+
+  .foto-overlay {
+    padding: 12px;
+    gap: 6px;
+  }
+
+  .foto-etiqueta {
+    font-size: 11px;
+  }
+
+  .foto-ampliar {
+    width: 28px;
+    height: 28px;
+    font-size: 18px;
+  }
+
+  .foto-pendiente {
+    padding: 12px 12px 50px;
+    gap: 8px;
+    font-size: 12px;
+  }
+
+  .placeholder-icono {
+    font-size: 28px;
+  }
+
+  .visor-cabecera {
+    padding: 16px;
+
+    h2 {
+      font-size: 19px;
+    }
+  }
+
   .closing {
     padding-bottom: 48px;
   }
@@ -596,61 +982,18 @@ h2 {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .button {
+  .button,
+  .categoria,
+  .collage-foto img {
     transition: none;
   }
-}
 
-.hero-visual {
-  padding-bottom: 0;
-}
-
-.experience-badge {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  bottom: auto;
-  left: auto;
-  width: fit-content;
-  max-width: calc(100% - 40px);
-  margin: 0;
-  padding: 16px 20px;
-  gap: 12px;
-}
-
-.photo-caption {
-  bottom: 28px;
-}
-
-/* Evita que la etiqueta vertical coincida con la tarjeta */
-.visual-label {
-  top: 150px;
-}
-
-@media (max-width: 700px) {
-  .experience-badge {
-    top: 12px;
-    right: 20px;
-    max-width: calc(100% - 40px);
-    padding: 12px 14px;
-    gap: 10px;
-
-    strong {
-      font-size: 30px;
-
-      span {
-        font-size: 20px;
-      }
-    }
-
-    p {
-      font-size: 10px;
-    }
+  .collage-foto {
+    animation: none;
   }
 
-  .photo-caption {
-    right: 20px;
-    bottom: 20px;
-    left: 20px;
+  .collage-foto:hover img,
+  .collage-foto:focus-visible img {
+    transform: none;
   }
 }

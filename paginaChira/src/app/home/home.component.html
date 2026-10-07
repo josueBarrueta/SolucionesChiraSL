@@ -25,7 +25,8 @@
           </a>
 
           <a class="discover-link" href="#bienvenido">
-            Descubre Chira <span aria-hidden="true">↓</span>
+            Descubre Chira
+            <span aria-hidden="true">↓</span>
           </a>
         </div>
 
@@ -96,11 +97,16 @@
           height="1100"
           loading="lazy"
         />
-        <span class="image-label">Un nuevo comienzo, sin complicaciones.</span>
+
+        <span class="image-label">
+          Un nuevo comienzo, sin complicaciones.
+        </span>
       </div>
 
       <div class="welcome-content">
-        <span class="eyebrow reveal">TODO EMPIEZA CON UNA CONVERSACIÓN</span>
+        <span class="eyebrow reveal">
+          TODO EMPIEZA CON UNA CONVERSACIÓN
+        </span>
 
         <h2 id="welcome-title" class="reveal">
           Tú nos cuentas la idea.<br />
@@ -128,12 +134,77 @@
     </div>
   </section>
 
+  <!-- Categorías y collage -->
+  <section class="galeria" aria-labelledby="galeria-title">
+    <div class="container">
+      <div class="galeria-intro">
+        <span class="eyebrow">NUESTRO TRABAJO, EN IMÁGENES</span>
+
+        <h2 id="galeria-title">
+          Pequeños detalles.<br />
+          <span>Resultados que se ven.</span>
+        </h2>
+      </div>
+
+      <p class="sr-only" role="status" aria-live="polite">
+        {{ trabajosFiltrados().length }} imágenes en la categoría
+        {{ filtro() }}.
+      </p>
+
+      <div class="collage" id="collage">
+        @for (trabajo of trabajosFiltrados(); track trabajo.id) {
+          <button
+            class="collage-foto"
+            type="button"
+            aria-haspopup="dialog"
+            [attr.aria-label]="'Ampliar fotografía: ' + trabajo.titulo"
+            (click)="abrirTrabajo(trabajo)"
+          >
+            @if (
+              trabajo.imagen &&
+              !imagenesFallidas().has(trabajo.id)
+            ) {
+              <img
+                [src]="trabajo.imagen"
+                [alt]="trabajo.alt"
+                width="1000"
+                height="800"
+                loading="lazy"
+                (error)="marcarImagenFallida(trabajo.id)"
+              />
+            } 
+
+            <span class="foto-overlay" aria-hidden="true">
+              <span class="foto-etiqueta">{{ trabajo.categoria }}</span>
+              <span class="foto-ampliar">↗</span>
+            </span>
+          </button>
+        } @empty {
+          <p class="galeria-vacia">
+            Próximamente añadiremos fotografías de este servicio.
+          </p>
+        }
+      </div>
+
+      <div class="galeria-pie">
+        <p>¿Tienes un proyecto en mente?</p>
+
+        <a class="discover-link" routerLink="/contacto">
+          Cuéntanos tu idea
+          <span aria-hidden="true">↗</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
   <section class="closing" aria-labelledby="closing-title">
     <div class="container">
       <div class="closing-panel reveal">
         <div>
           <span class="eyebrow">HAGAMOS QUE SEA MÁS SENCILLO</span>
+
           <h2 id="closing-title">Tu próximo paso empieza aquí.</h2>
+
           <p>
             Cuéntanos qué necesitas y solicita tu presupuesto
             sin compromiso.
@@ -148,3 +219,46 @@
     </div>
   </section>
 </div>
+
+<!-- Fotografía ampliada -->
+<dialog
+  #visor
+  class="visor"
+  aria-labelledby="visor-title"
+  (close)="trabajoActivo.set(null)"
+  (click)="cerrarDesdeFondo($event)"
+>
+  <div class="visor-cabecera">
+    <h2 id="visor-title">
+      {{ trabajoActivo()?.titulo || 'Fotografía del trabajo' }}
+    </h2>
+
+    <button
+      class="visor-cerrar"
+      type="button"
+      autofocus
+      (click)="cerrarVisor()"
+    >
+      Cerrar ×
+    </button>
+  </div>
+
+  @if (trabajoActivo(); as trabajo) {
+    @if (
+      trabajo.imagen &&
+      !imagenesFallidas().has(trabajo.id)
+    ) {
+      <img
+        class="visor-imagen"
+        [src]="trabajo.imagen"
+        [alt]="trabajo.alt"
+        (error)="marcarImagenFallida(trabajo.id)"
+      />
+    } 
+
+    <div class="visor-detalles">
+      <span class="eyebrow">{{ trabajo.categoria }}</span>
+      <p>{{ trabajo.descripcion }}</p>
+    </div>
+  }
+</dialog>

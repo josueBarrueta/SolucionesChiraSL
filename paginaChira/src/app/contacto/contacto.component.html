@@ -3,48 +3,23 @@
     <div class="contacto-header">
       <p class="contacto-subtitle">SOLUCIONES CHIRA SL</p>
 
-      <h1 id="contacto-title">Contacta con nosotros</h1>
+      <h1 id="contacto-title">Hablemos de tu proyecto.</h1>
 
       <p>
-        ¿Necesitas información sobre nuestros servicios o quieres solicitar
-        un presupuesto? Llámanos y cuéntanos qué necesitas.
+        Llámanos o completa el formulario para preparar tu consulta
+        y enviarla desde Gmail.
       </p>
     </div>
 
     <div class="contacto-content">
-      <article class="contacto-card">
-        <svg
-          width="32"
-          height="32"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.8"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-        >
-          <path
-            d="M22 16.92v3a2 2 0 0 1-2.18 2
-            19.79 19.79 0 0 1-8.63-3.07
-            19.5 19.5 0 0 1-6-6
-            19.79 19.79 0 0 1-3.07-8.67
-            A2 2 0 0 1 4.11 2h3
-            a2 2 0 0 1 2 1.72
-            c.13.96.36 1.9.69 2.79
-            a2 2 0 0 1-.45 2.11L8.09 9.89
-            a16 16 0 0 0 6 6l1.27-1.27
-            a2 2 0 0 1 2.11-.45
-            c.89.33 1.83.56 2.79.69
-            A2 2 0 0 1 22 16.92z"
-          />
-        </svg>
+      <aside class="contacto-card contacto-info">
+        <span class="telefono-icono" aria-hidden="true">↗</span>
 
-        <h2>Hablemos por teléfono</h2>
+        <h2>Una conversación para empezar.</h2>
 
         <p>
-          Contacta con nosotros para consultar tus dudas y solicitar
-          información sobre tu proyecto.
+          Cuéntanos qué necesitas, dónde se realizaría el trabajo
+          y qué fechas tienes en mente.
         </p>
 
         <a class="contacto-phone" href="tel:+34610928521">
@@ -54,27 +29,193 @@
         <a class="contacto-button" href="tel:+34610928521">
           Llamar ahora
         </a>
-      </article>
 
-      <article class="contacto-card">
+        <div class="contacto-ayuda">
+          <h3>¿Cómo funciona el formulario?</h3>
+
+          <ol>
+            <li>Completa los datos de tu consulta.</li>
+            <li>Pulsa «Continuar en Gmail».</li>
+            <li>Inicia sesión en Google si hace falta.</li>
+            <li>Revisa el correo y pulsa Enviar en Gmail.</li>
+          </ol>
+
+          <p>
+            Si después de iniciar sesión no aparece el correo preparado,
+            vuelve a esta página y pulsa el botón otra vez.
+          </p>
+        </div>
+      </aside>
+
+      <div class="contacto-card">
         <h2>Cuéntanos qué necesitas</h2>
 
         <p>
-          Para ayudarnos a entender tu proyecto, ten a mano estos detalles
-          cuando nos llames:
+          Los campos marcados con * son obligatorios.
         </p>
 
-        <ul class="contacto-list">
-          <li>El servicio que necesitas.</li>
-          <li>La ubicación donde se realizaría el trabajo.</li>
-          <li>Una breve descripción del proyecto.</li>
-          <li>Las fechas aproximadas que tienes previstas.</li>
-        </ul>
+        <form
+          [formGroup]="formulario"
+          (ngSubmit)="abrirGmail()"
+          novalidate
+        >
+          <div class="form-grid">
+            <div class="campo">
+              <label for="nombre">Nombre *</label>
+              <input
+                id="nombre"
+                type="text"
+                formControlName="nombre"
+                autocomplete="name"
+                maxlength="100"
+                required
+                [attr.aria-invalid]="tieneError('nombre')"
+                [attr.aria-describedby]="
+                  tieneError('nombre') ? 'nombre-error' : null
+                "
+              />
 
-        <p>
-          Con esta información podremos orientarte sobre los siguientes pasos.
-        </p>
-      </article>
+              @if (tieneError('nombre')) {
+                <span class="campo-error" id="nombre-error">
+                  Escribe tu nombre, con al menos 2 caracteres.
+                </span>
+              }
+            </div>
+
+            <div class="campo">
+              <label for="correo">Correo electrónico *</label>
+              <input
+                id="correo"
+                type="email"
+                formControlName="correo"
+                autocomplete="email"
+                maxlength="150"
+                required
+                [attr.aria-invalid]="tieneError('correo')"
+                [attr.aria-describedby]="
+                  tieneError('correo') ? 'correo-error' : null
+                "
+              />
+
+              @if (tieneError('correo')) {
+                <span class="campo-error" id="correo-error">
+                  Introduce un correo electrónico válido.
+                </span>
+              }
+            </div>
+
+            <div class="campo">
+              <label for="telefono">Teléfono (opcional)</label>
+              <input
+                id="telefono"
+                type="tel"
+                formControlName="telefono"
+                autocomplete="tel"
+                maxlength="30"
+              />
+            </div>
+
+            <div class="campo">
+              <label for="servicio">Servicio *</label>
+              <select
+                id="servicio"
+                formControlName="servicio"
+                required
+                [attr.aria-invalid]="tieneError('servicio')"
+                [attr.aria-describedby]="
+                  tieneError('servicio') ? 'servicio-error' : null
+                "
+              >
+                <option value="">Selecciona un servicio</option>
+                <option value="Portes">Portes</option>
+                <option value="Montaje de muebles">
+                  Montaje de muebles
+                </option>
+                <option value="Mudanzas">Mudanzas</option>
+                <option value="Vaciados">Vaciados</option>
+                <option value="Limpieza">Limpieza</option>
+                <option value="Pintura">Pintura</option>
+                <option value="Varios servicios">Varios servicios</option>
+                <option value="Otra consulta">Otra consulta</option>
+              </select>
+
+              @if (tieneError('servicio')) {
+                <span class="campo-error" id="servicio-error">
+                  Selecciona el servicio que necesitas.
+                </span>
+              }
+            </div>
+
+            <div class="campo campo-completo">
+              <label for="localidad">Localidad *</label>
+              <input
+                id="localidad"
+                type="text"
+                formControlName="localidad"
+                autocomplete="address-level2"
+                placeholder="Por ejemplo, Valencia"
+                maxlength="100"
+                required
+                [attr.aria-invalid]="tieneError('localidad')"
+                [attr.aria-describedby]="
+                  tieneError('localidad') ? 'localidad-error' : null
+                "
+              />
+
+              @if (tieneError('localidad')) {
+                <span class="campo-error" id="localidad-error">
+                  Indica la localidad del trabajo.
+                </span>
+              }
+            </div>
+
+            <div class="campo campo-completo">
+              <label for="mensaje">Tu consulta *</label>
+              <textarea
+                id="mensaje"
+                formControlName="mensaje"
+                rows="6"
+                maxlength="1500"
+                placeholder="Describe el trabajo y las fechas aproximadas."
+                required
+                [attr.aria-invalid]="tieneError('mensaje')"
+                [attr.aria-describedby]="
+                  tieneError('mensaje')
+                    ? 'mensaje-ayuda mensaje-error'
+                    : 'mensaje-ayuda'
+                "
+              ></textarea>
+
+              <small id="mensaje-ayuda">
+                Máximo 1.500 caracteres. No incluyas contraseñas ni
+                datos de pago.
+              </small>
+
+              @if (tieneError('mensaje')) {
+                <span class="campo-error" id="mensaje-error">
+                  Describe tu consulta con al menos 10 caracteres.
+                </span>
+              }
+            </div>
+          </div>
+
+          <p class="aviso-gmail">
+            Al continuar, los datos se trasladan a Gmail para preparar
+            el correo. Desde esta web no se envía ningún mensaje.
+          </p>
+
+          <button class="contacto-button enviar" type="submit">
+            Continuar en Gmail
+            <span aria-hidden="true">↗</span>
+          </button>
+
+          <div aria-live="polite" aria-atomic="true">
+            @if (estado) {
+              <p class="estado">{{ estado }}</p>
+            }
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </section>
