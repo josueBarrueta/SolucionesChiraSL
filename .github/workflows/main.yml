@@ -1,0 +1,69 @@
+name: Publicar web en GitHub Pages
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v6
+
+      - name: Preparar Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: paginaChira/package-lock.json
+
+      - name: Configurar GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Instalar dependencias
+        working-directory: paginaChira
+        run: npm ci
+
+      - name: Compilar la web
+        working-directory: paginaChira
+        run: >
+          npm run build --
+          --configuration production
+          --base-href /SolucionesChiraSL/
+          --output-path dist/site
+
+      - name: Preparar las rutas de Angular
+        working-directory: paginaChira
+        run: cp dist/site/browser/index.html dist/site/browser/404.html
+
+      - name: Subir la web compilada
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: paginaChira/dist/site/browser
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Publicar
+        id: deployment
+        uses: actions/deploy-pages@v4
