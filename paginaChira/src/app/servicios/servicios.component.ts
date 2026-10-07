@@ -7,6 +7,7 @@ import {
   inject,
   signal
 } from '@angular/core';
+import { Meta, Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 
 import { gsap } from 'gsap';
@@ -32,6 +33,8 @@ interface Service {
 export class ServiciosComponent implements OnDestroy {
   private readonly element: ElementRef<HTMLElement> = inject(ElementRef);
   private readonly zone = inject(NgZone);
+  private readonly title = inject(Title);
+  private readonly meta = inject(Meta);
 
   private readonly opened = signal<Set<string>>(new Set());
   private media?: ReturnType<typeof gsap.matchMedia>;
@@ -124,6 +127,16 @@ export class ServiciosComponent implements OnDestroy {
   ];
 
   constructor() {
+    this.title.setTitle(
+      'Servicios en Valencia | Soluciones Chira SL'
+    );
+
+    this.meta.updateTag({
+      name: 'description',
+      content:
+        'Descubre los servicios de Soluciones Chira SL: portes, montaje de muebles, mudanzas, vaciados, limpieza y pintura en Valencia y alrededores.'
+    });
+
     afterNextRender(() => {
       this.zone.runOutsideAngular(() => {
         this.startAnimations();
@@ -190,7 +203,6 @@ export class ServiciosComponent implements OnDestroy {
           }
         });
       } else {
-        // Fija la altura actual para animar el cierre desde ella.
         gsap.set(panel, {
           height: panel.getBoundingClientRect().height
         });

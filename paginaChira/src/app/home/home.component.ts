@@ -6,6 +6,7 @@ import {
   afterNextRender,
   inject
 } from '@angular/core';
+import { Meta, Title } from '@angular/platform-browser';
 
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -20,10 +21,22 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 export class HomeComponent implements OnDestroy {
   private readonly element = inject(ElementRef<HTMLElement>);
   private readonly zone = inject(NgZone);
+  private readonly title = inject(Title);
+  private readonly meta = inject(Meta);
 
   private media?: ReturnType<typeof gsap.matchMedia>;
 
   constructor() {
+    this.title.setTitle(
+      'Soluciones Chira SL | Servicios para tu hogar y negocio en Valencia'
+    );
+
+    this.meta.updateTag({
+      name: 'description',
+      content:
+        'Portes, mudanzas, montaje de muebles, vaciados, limpieza y pintura en Valencia y alrededores. Contacta con Soluciones Chira SL y consulta tu proyecto.'
+    });
+
     afterNextRender(() => {
       this.zone.runOutsideAngular(() => {
         this.startAnimations();
@@ -38,7 +51,6 @@ export class HomeComponent implements OnDestroy {
 
     this.media = gsap.matchMedia();
 
-    // Animaciones para quienes no han solicitado reducir movimiento.
     this.media.add(
       '(prefers-reduced-motion: no-preference)',
       () => {
@@ -75,7 +87,6 @@ export class HomeComponent implements OnDestroy {
             0.65
           );
 
-        // Cada elemento se anima cuando entra en pantalla.
         root.querySelectorAll('.reveal').forEach((item: Element) => {
           gsap.from(item, {
             y: 28,
@@ -93,7 +104,6 @@ export class HomeComponent implements OnDestroy {
       root
     );
 
-    // Movimiento de la fotografía solo en pantallas grandes.
     this.media.add(
       '(min-width: 951px) and (prefers-reduced-motion: no-preference)',
       () => {
