@@ -440,3 +440,16 @@ h2 {
     transform: none;
   }
 }
+
+@media (max-width: 700px) {
+  .imagen-placeholder,
+  .nosotros-imagen {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .imagen-placeholder.imagen-secundaria {
+    aspect-ratio: auto;
+  }
+}

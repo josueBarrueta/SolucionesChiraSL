@@ -49,9 +49,13 @@
                 {{ service.number }}
               </span>
 
-              <span class="service-title">{{ service.title }}</span>
+              <span class="service-title">
+                {{ service.title }}
+              </span>
 
-              <span class="category">{{ service.category }}</span>
+              <span class="category">
+                {{ service.category }}
+              </span>
 
               <span class="expand-icon" aria-hidden="true"></span>
             </button>
@@ -135,6 +139,135 @@
         <span>HABLEMOS</span>
         <strong>610 92 85 21 ↗</strong>
       </a>
+    </div>
+  </section>
+
+  <!-- Preguntas frecuentes -->
+  <section class="faq" aria-labelledby="faq-title">
+    <div class="container faq-layout">
+      <div class="faq-intro">
+        <span class="eyebrow">ANTES DE EMPEZAR</span>
+
+        <h2 id="faq-title">
+          Tus dudas,<br />
+          <span>un poco más claras.</span>
+        </h2>
+
+        <p>
+          Aquí tienes algunas respuestas para preparar tu consulta.
+          Si necesitas más información, hablemos de tu caso.
+        </p>
+
+        <a class="faq-contact-link" routerLink="/contacto">
+          Ir a Contacto
+          <span aria-hidden="true">↗</span>
+        </a>
+      </div>
+
+      <div class="faq-list">
+        <details class="faq-item">
+          <summary>
+            <span>¿Cómo puedo solicitar un presupuesto?</span>
+            <span class="faq-icon" aria-hidden="true"></span>
+          </summary>
+
+          <div class="faq-answer">
+            <p>
+              Puedes llamarnos al
+              <a href="tel:+34610928521">610 92 85 21</a>
+              o preparar tu consulta desde la
+              <a routerLink="/contacto">página de Contacto</a>.
+              Indica el servicio, la localidad y una breve descripción
+              del trabajo para que podamos valorarlo contigo.
+            </p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>
+            <span>¿Qué información necesitáis sobre el trabajo?</span>
+            <span class="faq-icon" aria-hidden="true"></span>
+          </summary>
+
+          <div class="faq-answer">
+            <p>
+              Cuéntanos qué necesitas, dónde se realizaría y qué fechas
+              tienes en mente. Según el servicio, también puede ayudar
+              conocer las dimensiones, la cantidad de objetos o cómo
+              se accede al espacio.
+            </p>
+            <p>
+              Por ejemplo, para un traslado conviene indicar las
+              localidades de recogida y entrega, las plantas y si
+              hay ascensor.
+            </p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>
+            <span>¿En qué zonas podéis realizar el servicio?</span>
+            <span class="faq-icon" aria-hidden="true"></span>
+          </summary>
+
+          <div class="faq-answer">
+            <p>
+              Nuestra sede está en Valencia. Indícanos la localidad
+              del trabajo y, si se trata de un traslado, el origen
+              y el destino. Confirmaremos contigo la cobertura
+              y las condiciones para ese servicio.
+            </p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>
+            <span>¿Puedo consultar varios servicios a la vez?</span>
+            <span class="faq-icon" aria-hidden="true"></span>
+          </summary>
+
+          <div class="faq-answer">
+            <p>
+              Sí, puedes describirnos el trabajo completo. Por ejemplo,
+              un traslado con montaje de muebles o un vaciado con
+              limpieza posterior. Valoraremos contigo qué servicios
+              pueden combinarse y cómo organizarlos.
+            </p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>
+            <span>¿Con cuánta antelación debo contactar?</span>
+            <span class="faq-icon" aria-hidden="true"></span>
+          </summary>
+
+          <div class="faq-answer">
+            <p>
+              Contacta cuando tengas una idea de las fechas.
+              La disponibilidad depende del servicio y del alcance
+              del trabajo. Si necesitas una fecha concreta,
+              indícala en tu consulta para que podamos comprobarla.
+            </p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>
+            <span>¿Cómo se confirma la fecha del trabajo?</span>
+            <span class="faq-icon" aria-hidden="true"></span>
+          </summary>
+
+          <div class="faq-answer">
+            <p>
+              Primero revisamos lo que necesitas y las condiciones
+              del servicio. Si aceptas el presupuesto, acordamos
+              contigo la fecha y los detalles. Enviar una consulta
+              no reserva automáticamente una fecha.
+            </p>
+          </div>
+        </details>
+      </div>
     </div>
   </section>
 </div>
