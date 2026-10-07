@@ -1,6 +1,10 @@
 <header class="header">
   <div class="header-container">
-    <a class="brand" href="/" aria-label="Soluciones Chira SL, inicio">
+    <a
+      class="brand"
+      routerLink="/"
+      aria-label="Soluciones Chira SL, inicio"
+    >
       <svg
         class="brand-icon"
         viewBox="0 0 48 48"
@@ -24,10 +28,36 @@
 
     <nav aria-label="Navegación principal">
       <ul>
-        <li><a href="#inicio">Inicio</a></li>
-        <li><a href="#servicios">Servicios</a></li>
-        <li><a href="#nosotros">Nosotros</a></li>
-        <li><a href="#contacto">Contacto</a></li>
+        <li>
+          <a
+            routerLink="/"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            ariaCurrentWhenActive="page"
+          >
+            Inicio
+          </a>
+        </li>
+
+        <li>
+          <a
+            routerLink="/servicios"
+            routerLinkActive="active"
+            ariaCurrentWhenActive="page"
+          >
+            Servicios
+          </a>
+        </li>
+
+        <li>
+          <span class="nav-pending" aria-disabled="true">
+            Nosotros
+          </span>
+        </li>
+
+        <li>
+          <a href="tel:+34610928521">Contacto</a>
+        </li>
       </ul>
     </nav>
 

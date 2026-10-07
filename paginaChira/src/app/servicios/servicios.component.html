@@ -1,1 +1,140 @@
-<p>servicios works!</p>
+<div class="services-page">
+  <section class="page-intro" aria-labelledby="services-title">
+    <div class="container">
+      <a class="back-link intro-enter" routerLink="/">
+        ← Volver al inicio
+      </a>
+
+      <div class="intro-layout">
+        <div>
+          <span class="eyebrow intro-enter">SOLUCIONES CHIRA SL</span>
+
+          <h1 id="services-title" class="intro-enter">
+            ¿Qué necesitas<br />
+            <span>resolver?</span>
+          </h1>
+        </div>
+
+        <div class="intro-description intro-enter">
+          <p>
+            Un traslado, un espacio que renovar o un trabajo pendiente.
+            Abre cada servicio para descubrir cómo podemos ayudarte.
+          </p>
+
+          <span class="location">Valencia y alrededores</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="catalog" aria-label="Nuestros servicios">
+    <div class="container service-list">
+      @for (service of services; track service.id; let index = $index) {
+        <article
+          class="service-card"
+          [class.dark-card]="index % 2 !== 0"
+          [class.is-open]="isOpen(service.id)"
+        >
+          <h2 class="service-heading">
+            <button
+              #trigger
+              class="service-toggle"
+              type="button"
+              [id]="'trigger-' + service.id"
+              [attr.aria-expanded]="isOpen(service.id)"
+              [attr.aria-controls]="'panel-' + service.id"
+              (click)="toggleService(service.id, panel, trigger)"
+            >
+              <span class="service-number" aria-hidden="true">
+                {{ service.number }}
+              </span>
+
+              <span class="service-title">{{ service.title }}</span>
+
+              <span class="category">{{ service.category }}</span>
+
+              <span class="expand-icon" aria-hidden="true"></span>
+            </button>
+          </h2>
+
+          <div
+            #panel
+            class="service-panel"
+            [id]="'panel-' + service.id"
+            [attr.aria-labelledby]="'trigger-' + service.id"
+            [attr.inert]="isOpen(service.id) ? null : ''"
+            hidden
+          >
+            <div class="service-body">
+              <p>{{ service.description }}</p>
+
+              <ul>
+                @for (feature of service.features; track feature) {
+                  <li>{{ feature }}</li>
+                }
+              </ul>
+
+              <a class="service-link" href="tel:+34610928521">
+                {{ service.action }}
+                <span aria-hidden="true">↗</span>
+              </a>
+            </div>
+          </div>
+        </article>
+      }
+    </div>
+  </section>
+
+  <section class="process" aria-labelledby="process-title">
+    <div class="container">
+      <div class="process-heading reveal">
+        <span class="eyebrow">ASÍ EMPEZAMOS</span>
+        <h2 id="process-title">De tu idea al siguiente paso.</h2>
+      </div>
+
+      <ol class="process-grid">
+        <li class="reveal">
+          <span class="step-number" aria-hidden="true">1</span>
+          <h3>Cuéntanos qué necesitas</h3>
+          <p>
+            Explícanos el servicio, la ubicación y cuándo
+            te gustaría realizarlo.
+          </p>
+        </li>
+
+        <li class="reveal">
+          <span class="step-number" aria-hidden="true">2</span>
+          <h3>Valoramos el trabajo</h3>
+          <p>
+            Revisamos los detalles contigo para preparar
+            un presupuesto sin compromiso.
+          </p>
+        </li>
+
+        <li class="reveal">
+          <span class="step-number" aria-hidden="true">3</span>
+          <h3>Acordamos los detalles</h3>
+          <p>
+            Si aceptas el presupuesto, coordinamos la fecha
+            y el alcance del servicio.
+          </p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="service-contact">
+    <div class="container contact-layout reveal">
+      <div>
+        <span class="eyebrow">UN SOLO EQUIPO</span>
+        <h2>¿Necesitas combinar varios servicios?</h2>
+        <p>Cuéntanos el trabajo completo y lo valoramos contigo.</p>
+      </div>
+
+      <a class="phone-button" href="tel:+34610928521">
+        <span>HABLEMOS</span>
+        <strong>610 92 85 21 ↗</strong>
+      </a>
+    </div>
+  </section>
+</div>
