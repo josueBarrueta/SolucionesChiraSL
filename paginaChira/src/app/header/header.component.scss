@@ -1,0 +1,312 @@
+:host {
+  display: block;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.header {
+  --accent: #b4d388;
+
+  background: linear-gradient(125deg, #20271e, #121810);
+  border-bottom: 3px solid #6c923f;
+  color: #f5f7f2;
+}
+
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.brand-icon {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  color: var(--accent);
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.brand-label {
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 4px;
+}
+
+.brand-name {
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -1px;
+  white-space: nowrap;
+
+  span {
+    color: var(--accent);
+    font-size: 14px;
+    letter-spacing: 0;
+  }
+}
+
+nav ul {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+nav a {
+  position: relative;
+  display: block;
+  padding: 12px;
+  color: #e0e6da;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s ease;
+
+  &::after {
+    content: "";
+    position: absolute;
+    right: 12px;
+    bottom: 5px;
+    left: 12px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.2s ease;
+  }
+
+  &:hover,
+  &:focus-visible {
+    color: var(--accent);
+
+    &::after {
+      transform: scaleX(1);
+    }
+  }
+}
+
+.contact-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  flex-shrink: 0;
+  padding: 12px 16px;
+  border-radius: 10px;
+
+  background: var(--accent);
+  color: #192312;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+
+  svg {
+    flex-shrink: 0;
+  }
+
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &:hover {
+    background: #c6e49f;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(180, 211, 136, 0.15);
+  }
+}
+
+a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+/* Tablet: logo y teléfono arriba, menú debajo */
+
+@media (max-width: 900px) {
+  .header-container {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 16px 12px;
+  }
+
+  .brand {
+    min-width: 0;
+    justify-self: start;
+  }
+
+  .contact-button {
+    justify-self: end;
+  }
+
+  nav {
+    grid-column: 1 / -1;
+    min-width: 0;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* Móvil: tamaños compactos para mantener ambos a los lados */
+
+@media (max-width: 600px) {
+  .header-container {
+    padding: 14px 12px;
+    gap: 12px 10px;
+  }
+
+  .brand {
+    gap: 6px;
+  }
+
+  .brand-icon {
+    width: 30px;
+    height: 30px;
+  }
+
+  .brand-text {
+    gap: 3px;
+  }
+
+  .brand-label {
+    font-size: 8px;
+    letter-spacing: 2px;
+  }
+
+  .brand-name {
+    font-size: 25px;
+
+    span {
+      font-size: 11px;
+    }
+  }
+
+  .contact-button {
+    gap: 6px;
+    min-height: 44px;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 12px;
+
+    svg {
+      width: 15px;
+      height: 15px;
+    }
+  }
+
+  nav {
+    padding-top: 6px;
+  }
+
+  nav ul {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+  }
+
+  nav a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 8px 2px;
+    font-size: 12px;
+
+    &::after {
+      right: 8px;
+      left: 8px;
+      bottom: 4px;
+    }
+  }
+}
+
+/* Móviles pequeños */
+
+@media (max-width: 360px) {
+  .header-container {
+    gap: 10px 8px;
+  }
+
+  .brand-icon {
+    display: none;
+  }
+
+  .brand-name {
+    font-size: 23px;
+  }
+
+  .contact-button {
+    padding: 9px 8px;
+    font-size: 11px;
+  }
+}
+
+/* Respeta la preferencia de reducir animaciones */
+
+@media (prefers-reduced-motion: reduce) {
+  nav a,
+  nav a::after,
+  .contact-button {
+    transition: none;
+  }
+
+  .contact-button:hover {
+    transform: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .header-container {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+  }
+
+  .brand {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: start;
+  }
+
+  .contact-button {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+  }
+
+  nav {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    order: initial;
+  }
+}
