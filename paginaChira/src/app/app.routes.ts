@@ -1,13 +1,44 @@
 import { Routes } from '@angular/router';
-import { HomeComponent } from './home/home.component';
-import { ServiciosComponent } from './servicios/servicios.component'
-import { ContactoComponent } from './contacto/contacto.component'
-import { NosotrosComponent } from './nosotros/nosotros.component'
 
 export const routes: Routes = [
-  { path: '', component: HomeComponent },
-  { path: 'servicios', component: ServiciosComponent },
-  { path: 'contacto', component: ContactoComponent },
-  { path: 'nosotros', component: NosotrosComponent },
-  { path: '**', redirectTo: '' }
+  {
+    path: '',
+    pathMatch: 'full',
+    loadComponent: () =>
+      import('./home/home.component').then(
+        (m) => m.HomeComponent
+      )
+  },
+  {
+    path: 'servicios',
+    loadComponent: () =>
+      import('./servicios/servicios.component').then(
+        (m) => m.ServiciosComponent
+      )
+  },
+  {
+    path: 'contacto',
+    loadComponent: () =>
+      import('./contacto/contacto.component').then(
+        (m) => m.ContactoComponent
+      )
+  },
+  {
+    path: 'formulario',
+    loadComponent: () =>
+      import('./formulario/formulario.component').then(
+        (m) => m.FormularioComponent
+      )
+  },
+  {
+    path: 'nosotros',
+    loadComponent: () =>
+      import('./nosotros/nosotros.component').then(
+        (m) => m.NosotrosComponent
+      )
+  },
+  {
+    path: '**',
+    redirectTo: ''
+  }
 ];

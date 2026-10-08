@@ -1,0 +1,349 @@
+<section class="form-page">
+  <div class="container">
+    <a class="back-link" routerLink="/contacto">
+      ← Volver a contacto
+    </a>
+
+    <div class="page-heading">
+      <span class="eyebrow">SOLUCIONES CHIRA SL</span>
+      <h1>Cuéntanos tu proyecto.</h1>
+      <p>
+        Selecciona los servicios que necesitas y explícanos el trabajo.
+        Te contactaremos para preparar un presupuesto sin compromiso.
+      </p>
+    </div>
+
+    <div class="form-layout">
+      <aside class="information">
+        <span class="info-label">HABLEMOS</span>
+        <h2>Un equipo.<br />Muchas soluciones.</h2>
+
+        <p>
+          Para tu hogar, tu negocio o tu comunidad.
+          Nos ocupamos de los detalles contigo.
+        </p>
+
+        <ul>
+          <li>Atención personalizada</li>
+          <li>Más de 20 años de experiencia</li>
+          <li>Valencia y alrededores</li>
+        </ul>
+
+        <div class="direct-contact">
+          <span>¿Prefieres llamarnos?</span>
+          <a href="tel:+34610928521">610 92 85 21 ↗</a>
+        </div>
+      </aside>
+
+      <div class="form-card">
+        @if (status() === 'success') {
+          <div class="success-message" role="status">
+            <span class="success-icon" aria-hidden="true">✓</span>
+            <h2>Solicitud enviada.</h2>
+            <p>
+              Gracias por contactar con Soluciones Chira SL.
+              Tu consulta se ha enviado correctamente.
+            </p>
+
+            <button
+              class="submit-button"
+              type="button"
+              (click)="newRequest()"
+            >
+              Enviar otra consulta
+            </button>
+          </div>
+        } @else {
+          <form
+            [formGroup]="form"
+            (ngSubmit)="submit()"
+            novalidate
+            [attr.aria-busy]="status() === 'sending'"
+          >
+            <!-- SERVICIOS -->
+            <fieldset
+              [disabled]="status() === 'sending'"
+              aria-describedby="services-help services-error"
+            >
+              <legend class="section-title">
+                <span>01</span> Servicios *
+              </legend>
+
+              <p class="section-help" id="services-help">
+                Puedes seleccionar varias opciones.
+              </p>
+
+              <div class="services-grid">
+                @for (service of services; track service) {
+                  <label
+                    class="service-option"
+                    [class.selected]="isSelected(service)"
+                  >
+                    <input
+                      type="checkbox"
+                      [checked]="isSelected(service)"
+                      (change)="toggleService(service, $event)"
+                    />
+                    <span>{{ service }}</span>
+                  </label>
+                }
+              </div>
+
+              <p class="field-error" id="services-error">
+                @if (invalid('services')) {
+                  Selecciona al menos un servicio.
+                }
+              </p>
+            </fieldset>
+
+            <!-- DATOS PERSONALES -->
+            <fieldset [disabled]="status() === 'sending'">
+              <legend class="section-title">
+                <span>02</span> Tus datos
+              </legend>
+
+              <div class="fields-grid">
+                @for (field of personalFields; track field.name) {
+                  <div
+                    class="field"
+                    [class.full-width]="field.name === 'email'"
+                  >
+                    <label [for]="field.name">{{ field.label }}</label>
+
+                    <input
+                      [id]="field.name"
+                      [type]="field.type"
+                      [formControlName]="field.name"
+                      [placeholder]="field.placeholder"
+                      [attr.autocomplete]="field.autocomplete"
+                      [attr.maxlength]="field.maxlength"
+                      required
+                      [attr.aria-invalid]="invalid(field.name)"
+                      [attr.aria-describedby]="field.name + '-error'"
+                    />
+
+                    <p class="field-error" [id]="field.name + '-error'">
+                      @if (invalid(field.name)) {
+                        {{ field.error }}
+                      }
+                    </p>
+                  </div>
+                }
+
+                <div class="field full-width">
+                  <div class="phone-grid">
+                    <div>
+                      <label for="country">País y prefijo *</label>
+
+                      <select
+                        id="country"
+                        formControlName="country"
+                        autocomplete="off"
+                      >
+                        @for (country of countries; track country.code) {
+                          <option [value]="country.code">
+                            {{ country.name }} (+{{ country.prefix }})
+                          </option>
+                        }
+                      </select>
+                    </div>
+
+                    <div>
+                      <label for="phone">Número de teléfono *</label>
+
+                      <input
+                        id="phone"
+                        type="tel"
+                        inputmode="tel"
+                        autocomplete="tel-national"
+                        formControlName="phone"
+                        placeholder="Tu número sin el prefijo"
+                        maxlength="35"
+                        required
+                        (input)="formatPhone($event)"
+                        (blur)="formatPhoneOnBlur()"
+                        [attr.aria-invalid]="invalid('phone')"
+                        aria-describedby="phone-help phone-error"
+                      />
+                    </div>
+                  </div>
+
+                  <p class="field-help" id="phone-help">
+                    Escribe el número sin repetir el prefijo.
+                    Se aplicará el formato del país seleccionado.
+                  </p>
+
+                  <p class="field-error" id="phone-error">
+                    @if (invalid('phone')) {
+                      Revisa el número y el país seleccionado.
+                    }
+                  </p>
+                </div>
+              </div>
+            </fieldset>
+
+            <!-- DIRECCIÓN -->
+            <fieldset [disabled]="status() === 'sending'">
+              <legend class="section-title">
+                <span>03</span> ¿Dónde se realizará?
+              </legend>
+
+              <div class="fields-grid">
+                <div class="field full-width">
+                  <label for="location">Localidad *</label>
+
+                  <input
+                    id="location"
+                    type="text"
+                    formControlName="location"
+                    list="localities"
+                    autocomplete="address-level2"
+                    placeholder="Empieza a escribir: Valencia, Torrent..."
+                    maxlength="120"
+                    required
+                    [attr.aria-invalid]="invalid('location')"
+                    aria-describedby="location-help location-error"
+                  />
+
+                  <datalist id="localities">
+                    @for (locality of localities; track locality) {
+                      <option [value]="locality"></option>
+                    }
+                  </datalist>
+
+                  <p class="field-help" id="location-help">
+                    Elige una sugerencia o escribe otra localidad.
+                  </p>
+
+                  <p class="field-error" id="location-error">
+                    @if (invalid('location')) {
+                      Indica la localidad del trabajo.
+                    }
+                  </p>
+                </div>
+
+                <div class="field full-width">
+                  <label for="street">Calle o avenida (opcional)</label>
+                  <input
+                    id="street"
+                    type="text"
+                    formControlName="street"
+                    autocomplete="address-line1"
+                    placeholder="Nombre de la calle"
+                    maxlength="160"
+                  />
+                </div>
+
+                <div class="field">
+                  <label for="streetNumber">Número (opcional)</label>
+                  <input
+                    id="streetNumber"
+                    type="text"
+                    formControlName="streetNumber"
+                    placeholder="Ej.: 24 o s/n"
+                    maxlength="20"
+                  />
+                </div>
+
+                <div class="field">
+                  <label for="floor">Piso (opcional)</label>
+                  <input
+                    id="floor"
+                    type="text"
+                    formControlName="floor"
+                    placeholder="Ej.: 3.º o bajo"
+                    maxlength="30"
+                  />
+                </div>
+
+                <div class="field">
+                  <label for="door">Puerta (opcional)</label>
+                  <input
+                    id="door"
+                    type="text"
+                    formControlName="door"
+                    placeholder="Ej.: B o 7"
+                    maxlength="30"
+                  />
+                </div>
+
+                <div class="field">
+                  <label for="staircase">Escalera o bloque (opcional)</label>
+                  <input
+                    id="staircase"
+                    type="text"
+                    formControlName="staircase"
+                    placeholder="Ej.: escalera 2"
+                    maxlength="40"
+                  />
+                </div>
+              </div>
+            </fieldset>
+
+            <!-- DESCRIPCIÓN -->
+            <fieldset [disabled]="status() === 'sending'">
+              <legend class="section-title">
+                <span>04</span> Los detalles
+              </legend>
+
+              <label for="message">Describe el trabajo *</label>
+
+              <textarea
+                id="message"
+                formControlName="message"
+                rows="6"
+                maxlength="3000"
+                required
+                placeholder="Qué necesitas, tamaño del espacio, objetos que hay que trasladar, fechas aproximadas, si hay ascensor..."
+                [attr.aria-invalid]="invalid('message')"
+                aria-describedby="message-error"
+              ></textarea>
+
+              <p class="field-error" id="message-error">
+                @if (invalid('message')) {
+                  Escribe una descripción de al menos 20 caracteres.
+                }
+              </p>
+
+              <div class="bot-field" aria-hidden="true">
+                <label for="website">Deja este campo vacío</label>
+                <input
+                  id="website"
+                  formControlName="website"
+                  tabindex="-1"
+                  autocomplete="off"
+                />
+              </div>
+            </fieldset>
+
+            <p class="data-note">
+              Utilizaremos estos datos para responder a tu consulta.
+              El envío se realiza mediante Web3Forms.
+              No incluyas información sensible.
+            </p>
+
+            @if (status() === 'error') {
+              <p class="send-error" role="alert">{{ errorMessage() }}</p>
+            }
+
+            <button
+              class="submit-button"
+              type="submit"
+              [disabled]="status() === 'sending'"
+            >
+              @if (status() === 'sending') {
+                <span class="spinner" aria-hidden="true"></span>
+                Enviando…
+              } @else {
+                Solicitar presupuesto
+                <span aria-hidden="true">↗</span>
+              }
+            </button>
+
+            <p class="required-note">* Campos obligatorios</p>
+          </form>
+        }
+      </div>
+    </div>
+  </div>
+</section>

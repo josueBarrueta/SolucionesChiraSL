@@ -54,6 +54,7 @@
 .contacto-content {
   display: grid;
   grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  grid-template-areas: "info formulario";
   align-items: start;
   gap: 28px;
 }
@@ -61,17 +62,23 @@
 .contacto-card {
   min-width: 0;
   padding: 36px;
-  background: #ffffff;
   border: 1px solid #dde3d5;
   border-radius: 18px;
   box-shadow: 0 8px 28px rgba(32, 39, 30, 0.04);
 }
 
+.contacto-formulario {
+  grid-area: formulario;
+  background: #ffffff;
+}
+
 .contacto-info {
+  grid-area: info;
   background: #edf1e6;
 }
 
-.telefono-icono {
+.telefono-icono,
+.formulario-icono {
   display: grid;
   place-items: center;
   width: 56px;
@@ -81,6 +88,10 @@
   background: #dfe8d2;
   color: #4b6137;
   font-size: 30px;
+}
+
+.formulario-icono {
+  background: #edf1e6;
 }
 
 .contacto-card h2 {
@@ -100,6 +111,7 @@
 .contacto-phone {
   display: block;
   width: fit-content;
+  max-width: 100%;
   margin: 26px 0;
   color: #4b6137;
   font-size: clamp(26px, 3vw, 36px);
@@ -107,11 +119,11 @@
   line-height: 1.2;
   letter-spacing: -1px;
   text-decoration: none;
-}
 
-.contacto-phone:hover {
-  text-decoration: underline;
-  text-underline-offset: 6px;
+  &:hover {
+    text-decoration: underline;
+    text-underline-offset: 6px;
+  }
 }
 
 .contacto-button {
@@ -129,149 +141,107 @@
   font-size: 14px;
   font-weight: 700;
   line-height: 1.4;
+  text-align: center;
   text-decoration: none;
-  cursor: pointer;
   transition: background-color 180ms ease;
-}
 
-.contacto-button:hover {
-  background: #394b29;
-}
+  &:hover {
+    background: #394b29;
+  }
 
-.contacto-button span {
-  font-size: 20px;
+  span {
+    font-size: 20px;
+  }
 }
 
 .contacto-button:focus-visible,
 .contacto-phone:focus-visible {
   outline: 3px solid #75964f;
   outline-offset: 5px;
+  border-radius: 6px;
+}
+
+.presupuesto {
+  width: 100%;
+}
+
+.formulario-pasos {
+  display: grid;
+  gap: 22px;
+  margin: 30px 0;
+
+  > div {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  > div > span {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: #edf1e6;
+    color: #4b6137;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  h3 {
+    margin: 0 0 6px;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+}
+
+.contacto-card .presupuesto-nota {
+  margin: 16px 0 0;
+  color: #626a5d;
+  font-size: 12px;
+  line-height: 1.7;
 }
 
 .contacto-ayuda {
   margin-top: 32px;
   padding-top: 26px;
   border-top: 1px solid #cbd6bf;
-}
 
-.contacto-ayuda h3 {
-  margin: 0 0 16px;
-  font-size: 18px;
-  line-height: 1.4;
-}
+  h3 {
+    margin: 0 0 16px;
+    font-size: 18px;
+    line-height: 1.4;
+  }
 
-.contacto-ayuda ol {
-  display: grid;
-  gap: 12px;
-  margin: 0 0 20px;
-  padding-left: 22px;
-  color: #545c50;
-  font-size: 15px;
-  line-height: 1.7;
-}
+  ul {
+    display: grid;
+    gap: 12px;
+    margin: 0 0 20px;
+    padding-left: 22px;
+    color: #545c50;
+    font-size: 15px;
+    line-height: 1.7;
+  }
 
-.contacto-ayuda p {
-  margin-bottom: 0;
-  font-size: 14px;
-}
-
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 22px 18px;
-}
-
-.campo {
-  display: flex;
-  flex-direction: column;
-  gap: 9px;
-  min-width: 0;
-}
-
-.campo-completo {
-  grid-column: 1 / -1;
-}
-
-.campo label {
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 1.5;
-}
-
-.campo input,
-.campo select,
-.campo textarea {
-  width: 100%;
-  min-width: 0;
-  min-height: 50px;
-  padding: 13px 14px;
-  border: 1px solid #cbd4c3;
-  border-radius: 10px;
-  background: #fbfcf9;
-  color: #20271e;
-  font: inherit;
-  font-size: 16px;
-  line-height: 1.5;
-}
-
-.campo textarea {
-  min-height: 160px;
-  resize: vertical;
-}
-
-.campo input::placeholder,
-.campo textarea::placeholder {
-  color: #697363;
-}
-
-.campo input:focus,
-.campo select:focus,
-.campo textarea:focus {
-  border-color: #4b6137;
-  outline: 2px solid #4b6137;
-  outline-offset: 2px;
-}
-
-.campo [aria-invalid="true"] {
-  border-color: #a33225;
-}
-
-.campo small {
-  color: #626a5d;
-  font-size: 12px;
-  line-height: 1.6;
-}
-
-.campo-error {
-  color: #a33225;
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-.contacto-card .aviso-gmail {
-  margin: 24px 0;
-  color: #626a5d;
-  font-size: 13px;
-  line-height: 1.7;
-}
-
-.enviar {
-  width: 100%;
-}
-
-.contacto-card .estado {
-  margin: 18px 0 0;
-  padding: 14px;
-  border: 1px solid #dbe3d2;
-  border-radius: 10px;
-  background: #f0f4e9;
-  color: #394b29;
-  font-size: 14px;
+  p {
+    margin-bottom: 0;
+    font-size: 14px;
+  }
 }
 
 @media (max-width: 900px) {
   .contacto-content {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "formulario"
+      "info";
   }
 }
 
@@ -290,10 +260,6 @@
 
   .contacto-card {
     padding: 24px;
-  }
-
-  .form-grid {
-    grid-template-columns: 1fr;
   }
 
   .contacto-button {
