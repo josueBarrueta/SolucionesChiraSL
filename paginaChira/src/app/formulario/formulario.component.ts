@@ -13,8 +13,6 @@ import {
 } from '@angular/forms';
 
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { RouterLink } from '@angular/router';
-
 import {
   AsYouType,
   getCountries,
@@ -29,7 +27,7 @@ type FormStatus = 'idle' | 'sending' | 'success' | 'error';
 @Component({
   selector: 'app-formulario',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule],
   templateUrl: './formulario.component.html',
   styleUrls: ['./formulario.component.scss']
 })
