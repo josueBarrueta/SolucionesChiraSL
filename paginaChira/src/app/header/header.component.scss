@@ -239,7 +239,7 @@ button:focus-visible  {
 @media (max-width: 900px)  {
   .header-container  {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0, 1fr) auto auto;
     gap: 16px 12px;
   }
 
@@ -257,19 +257,26 @@ button:focus-visible  {
   }
 
   .header-actions {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    justify-self: stretch;
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: end;
+    gap: 8px;
 
     .contact-button {
-      flex: 1;
+      width: 44px;
+      height: 44px;
+      padding: 0;
     }
+  }
+
+  .contact-label {
+    display: none;
   }
 
   nav  {
     display: none;
     grid-column: 1 / -1;
-    grid-row: 3;
+    grid-row: 2;
     padding-top: 14px;
     border-top: 1px solid rgba(255, 255, 255, 0.12);
     &.is-open  {
@@ -340,9 +347,13 @@ button:focus-visible  {
     font-size: 12px;
   }
 
-  .contact-button {
-    min-height: 44px;
-    padding: 10px 14px;
+  .menu-toggle {
+    width: 44px;
+    padding: 10px;
+
+    > span:last-child {
+      display: none;
+    }
   }
 
 }
@@ -357,8 +368,16 @@ button:focus-visible  {
     display: none;
   }
 
-  .brand-name  {
-    font-size: 24px;
+  .brand-name {
+    font-size: 22px;
+  }
+
+  .brand-label {
+    letter-spacing: 1px;
+  }
+
+  .header-actions {
+    gap: 6px;
   }
 
 }
@@ -515,4 +534,22 @@ nav .services-submenu a.active  {
   flex-shrink: 0;
   font-size: 21px;
   line-height: 1;
+}
+
+
+/* Botones del header móvil con el mismo tono */
+
+@media (max-width: 900px) {
+  .menu-toggle,
+  .header-actions .contact-button {
+    border: 1px solid rgba(180, 211, 136, 0.5);
+    background: transparent;
+    color: var(--accent);
+  }
+
+  .menu-toggle:hover,
+  .header-actions .contact-button:hover {
+    background: rgba(180, 211, 136, 0.1);
+    color: #c6e49f;
+  }
 }
