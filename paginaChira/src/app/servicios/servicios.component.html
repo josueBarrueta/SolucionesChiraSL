@@ -74,8 +74,8 @@
                 }
               </ul>
 
-              <a class="service-link" routerLink="/contacto">
-                {{ service.action }}
+              <a class="service-link" [routerLink]="['/servicios', service.id]">
+                Ver {{ service.title.toLowerCase() }}
               </a>
             </div>
           </div>

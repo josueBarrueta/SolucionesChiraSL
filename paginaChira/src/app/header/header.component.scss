@@ -1,20 +1,19 @@
-:host {
+:host  {
   display: block;
 }
 
-* {
+*  {
   box-sizing: border-box;
 }
 
-.header {
+.header  {
   --accent: #b4d388;
-
   background: linear-gradient(125deg, #20271e, #121810);
   border-bottom: 3px solid #6c923f;
   color: #f5f7f2;
 }
 
-.header-container {
+.header-container  {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -24,7 +23,7 @@
   padding: 20px 24px;
 }
 
-.brand {
+.brand  {
   display: inline-flex;
   align-items: center;
   gap: 12px;
@@ -33,47 +32,47 @@
   text-decoration: none;
 }
 
-.brand-icon {
+.brand-icon  {
   width: 44px;
   height: 44px;
   flex-shrink: 0;
   color: var(--accent);
 }
 
-.brand-text {
+.brand-text  {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.brand-label {
+.brand-label  {
   color: var(--accent);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 4px;
 }
 
-.brand-name {
+.brand-name  {
   font-size: 32px;
   font-weight: 800;
   line-height: 1;
   letter-spacing: -1px;
   white-space: nowrap;
-
-  span {
+  span  {
     color: var(--accent);
     font-size: 14px;
     letter-spacing: 0;
   }
+
 }
 
 /* Navegación de escritorio */
 
-nav {
+nav  {
   min-width: 0;
 }
 
-nav ul {
+nav ul  {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -83,7 +82,7 @@ nav ul {
   list-style: none;
 }
 
-nav a {
+nav a  {
   position: relative;
   display: block;
   padding: 12px;
@@ -93,8 +92,7 @@ nav a {
   line-height: 1.5;
   text-decoration: none;
   transition: color 0.2s ease;
-
-  &::after {
+  &::after  {
     content: "";
     position: absolute;
     right: 12px;
@@ -109,18 +107,19 @@ nav a {
   }
 
   &:hover,
-  &.active {
+  &.active  {
     color: var(--accent);
-
-    &::after {
+    &::after  {
       transform: scaleX(1);
     }
+
   }
+
 }
 
 /* Teléfono */
 
-.contact-button {
+.contact-button  {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -139,21 +138,21 @@ nav a {
     transform 0.2s ease,
     background-color 0.2s ease,
     box-shadow 0.2s ease;
-
-  svg {
+  svg  {
     flex-shrink: 0;
   }
 
-  &:hover {
+  &:hover  {
     background: #c6e49f;
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(180, 211, 136, 0.15);
   }
+
 }
 
 /* Botón del menú móvil */
 
-.menu-toggle {
+.menu-toggle  {
   display: none;
   align-items: center;
   justify-content: center;
@@ -170,17 +169,16 @@ nav a {
   cursor: pointer;
 }
 
-.menu-toggle:hover {
+.menu-toggle:hover  {
   background: rgba(180, 211, 136, 0.1);
 }
 
-.menu-icon {
+.menu-icon  {
   position: relative;
   display: block;
   width: 22px;
   height: 18px;
-
-  span {
+  span  {
     position: absolute;
     left: 0;
     width: 22px;
@@ -190,193 +188,306 @@ nav a {
     transition:
       transform 0.2s ease,
       opacity 0.2s ease;
-
-    &:nth-child(1) {
+    &:nth-child(1)  {
       top: 0;
     }
 
-    &:nth-child(2) {
+    &:nth-child(2)  {
       top: 8px;
     }
 
-    &:nth-child(3) {
+    &:nth-child(3)  {
       top: 16px;
     }
+
   }
+
 }
 
-.menu-toggle.is-open .menu-icon {
-  span:nth-child(1) {
+.menu-toggle.is-open .menu-icon  {
+  span:nth-child(1)  {
     transform: translateY(8px) rotate(45deg);
   }
 
-  span:nth-child(2) {
+  span:nth-child(2)  {
     opacity: 0;
   }
 
-  span:nth-child(3) {
+  span:nth-child(3)  {
     transform: translateY(-8px) rotate(-45deg);
   }
+
 }
 
 a:focus-visible,
-button:focus-visible {
+button:focus-visible  {
   outline: 2px solid var(--accent);
   outline-offset: 4px;
 }
 
 /* Tablet y móvil */
 
-@media (max-width: 900px) {
-  .header-container {
+@media (max-width: 900px)  {
+  .header-container  {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto auto;
     gap: 16px 12px;
   }
 
-  .brand {
+  .brand  {
     grid-column: 1;
     grid-row: 1;
     justify-self: start;
     min-width: 0;
   }
 
-  .menu-toggle {
+  .menu-toggle  {
     display: inline-flex;
     grid-column: 2;
     grid-row: 1;
   }
 
-  .contact-button {
+  .contact-button  {
     grid-column: 3;
     grid-row: 1;
     justify-self: end;
   }
 
-  nav {
+  nav  {
     display: none;
     grid-column: 1 / -1;
     grid-row: 2;
     padding-top: 14px;
     border-top: 1px solid rgba(255, 255, 255, 0.12);
-
-    &.is-open {
+    &.is-open  {
       display: block;
       animation: menu-aparecer 180ms ease-out;
     }
+
   }
 
-  nav ul {
+  nav ul  {
     display: grid;
     grid-template-columns: 1fr;
     gap: 6px;
   }
 
-  nav a {
+  nav a  {
     display: flex;
     align-items: center;
     min-height: 48px;
     padding: 12px 16px;
     border-radius: 8px;
     font-size: 16px;
-
-    &::after {
+    &::after  {
       display: none;
     }
 
     &:hover,
-    &.active {
+    &.active  {
       background: rgba(180, 211, 136, 0.1);
       color: var(--accent);
     }
+
   }
+
 }
 
-@media (max-width: 600px) {
-  .header-container {
+@media (max-width: 600px)  {
+  .header-container  {
     padding: 16px;
     gap: 14px 10px;
   }
 
-  .brand {
+  .brand  {
     gap: 8px;
   }
 
-  .brand-icon {
+  .brand-icon  {
     width: 32px;
     height: 32px;
   }
 
-  .brand-label {
+  .brand-label  {
     font-size: 8px;
     letter-spacing: 2px;
   }
 
-  .brand-name {
+  .brand-name  {
     font-size: 25px;
-
-    span {
+    span  {
       font-size: 11px;
     }
+
   }
 
-  .menu-toggle {
+  .menu-toggle  {
     gap: 8px;
     padding: 10px;
     font-size: 12px;
   }
 
-  .contact-button {
+  .contact-button  {
     width: 44px;
     height: 44px;
     padding: 0;
   }
 
-  .contact-number {
+  .contact-number  {
     display: none;
   }
+
 }
 
-@media (max-width: 360px) {
-  .header-container {
+@media (max-width: 360px)  {
+  .header-container  {
     gap: 12px 8px;
     padding: 14px 12px;
   }
 
-  .brand-icon {
+  .brand-icon  {
     display: none;
   }
 
-  .brand-name {
+  .brand-name  {
     font-size: 24px;
   }
+
 }
 
-@keyframes menu-aparecer {
-  from {
+@keyframes menu-aparecer  {
+  from  {
     opacity: 0;
     transform: translateY(-6px);
   }
 
-  to {
+  to  {
     opacity: 1;
     transform: translateY(0);
   }
+
 }
 
-@media (prefers-reduced-motion: reduce) {
+@media (prefers-reduced-motion: reduce)  {
   nav a,
   nav a::after,
   .contact-button,
-  .menu-icon span {
+  .menu-icon span  {
     transition: none;
   }
 
-  nav.is-open {
+  nav.is-open  {
     animation: none;
   }
 
-  .contact-button:hover {
+  .contact-button:hover  {
     transform: none;
   }
+
+}
+
+.services-nav  {
+  position: relative;
+}
+
+.services-control  {
+  display: flex;
+  align-items: center;
+}
+
+.services-control > a  {
+  padding-right: 4px;
+}
+
+.services-toggle  {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #e0e6da;
+  cursor: pointer;
+}
+
+.services-toggle:hover  {
+  color: var(--accent);
+  background: rgba(180, 211, 136, .1);
+}
+
+.services-toggle svg  {
+  transition: transform .2s ease;
+}
+
+.services-toggle svg.expanded  {
+  transform: rotate(180deg);
+}
+
+nav .services-submenu  {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 3px;
+  width: 240px;
+  padding: 8px;
+  border: none;
+  border-radius: 12px;
+  background: #20271e;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, .2);
+}
+
+nav .services-submenu[hidden]  {
+  display: none;
+}
+
+nav .services-submenu a  {
+  padding: 11px 14px;
+  border-radius: 6px;
+}
+
+nav .services-submenu a::after  {
+  display: none;
+}
+
+nav .services-submenu a:hover,
+nav .services-submenu a.active  {
+  background: rgba(180, 211, 136, .1);
+}
+
+@media (max-width: 900px)  {
+  .services-control > a  {
+    flex: 1;
+  }
+
+  .services-toggle  {
+    width: 44px;
+    min-height: 48px;
+  }
+
+  nav .services-submenu  {
+    position: static;
+    width: auto;
+    margin: 4px 0 8px 16px;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  nav .services-submenu a  {
+    font-size: 14px;
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce)  {
+  .services-toggle svg  {
+    transition: none;
+  }
+
 }

@@ -2,6 +2,55 @@ import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   {
+    path: 'servicios/portes',
+    data: { service: 'portes' },
+    loadComponent: () =>
+      import('./servicio/servicio.component').then(
+        (m) => m.ServicioComponent
+      )
+  },
+  {
+    path: 'servicios/montaje',
+    data: { service: 'montaje' },
+    loadComponent: () =>
+      import('./servicio/servicio.component').then(
+        (m) => m.ServicioComponent
+      )
+  },
+  {
+    path: 'servicios/mudanzas',
+    data: { service: 'mudanzas' },
+    loadComponent: () =>
+      import('./servicio/servicio.component').then(
+        (m) => m.ServicioComponent
+      )
+  },
+  {
+    path: 'servicios/vaciados',
+    data: { service: 'vaciados' },
+    loadComponent: () =>
+      import('./servicio/servicio.component').then(
+        (m) => m.ServicioComponent
+      )
+  },
+  {
+    path: 'servicios/limpieza',
+    data: { service: 'limpieza' },
+    loadComponent: () =>
+      import('./servicio/servicio.component').then(
+        (m) => m.ServicioComponent
+      )
+  },
+  {
+    path: 'servicios/pintura',
+    data: { service: 'pintura' },
+    loadComponent: () =>
+      import('./servicio/servicio.component').then(
+        (m) => m.ServicioComponent
+      )
+  },
+
+  {
     path: '',
     pathMatch: 'full',
     loadComponent: () =>

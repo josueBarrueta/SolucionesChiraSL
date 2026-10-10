@@ -1,0 +1,132 @@
+<div class="detail-page">
+  <section class="hero">
+    <div class="container">
+      <div class="hero-grid">
+        <div>
+          <span class="eyebrow">
+            {{ service.name }} · VALENCIA Y ALREDEDORES
+          </span>
+
+          <h1>{{ service.headline }}</h1>
+          <p class="lead">{{ service.description }}</p>
+
+          <div class="actions">
+            <a class="button primary" routerLink="/formulario">
+              Pedir presupuesto
+            </a>
+            <a class="button secondary" href="tel:+34610928521">
+              Llamar al 610 92 85 21
+            </a>
+          </div>
+        </div>
+
+        <aside class="scope">
+          <span class="eyebrow">CÓMO PODEMOS AYUDARTE</span>
+          <h2>{{ service.name }}</h2>
+
+          <ul>
+            @for (feature of service.features; track feature) {
+              <li>{{ feature }}</li>
+            }
+          </ul>
+
+          <p>Cuéntanos tu caso para acordar el alcance del servicio.</p>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="preparation">
+    <div class="container two-columns">
+      <div>
+        <span class="eyebrow">PREPAREMOS TU CONSULTA</span>
+        <h2>Un presupuesto con los detalles claros.</h2>
+        <p>
+          Esta información nos ayuda a valorar el trabajo.
+          Si todavía no tienes todos los datos, podemos orientarte al contactar.
+        </p>
+      </div>
+
+      <ol>
+        @for (item of service.information; track item) {
+          <li>{{ item }}</li>
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="process">
+    <div class="container">
+      <span class="eyebrow">PASO A PASO</span>
+      <h2>Así organizamos el trabajo.</h2>
+
+      <ol class="steps">
+        <li>
+          <span>01</span>
+          <h3>Cuéntanos qué necesitas</h3>
+          <p>Describe el trabajo, la ubicación y las fechas que tienes en mente.</p>
+        </li>
+        <li>
+          <span>02</span>
+          <h3>Valoramos tu solicitud</h3>
+          <p>Revisamos las condiciones para preparar un presupuesto sin compromiso.</p>
+        </li>
+        <li>
+          <span>03</span>
+          <h3>Acordamos los detalles</h3>
+          <p>Tras aceptar el presupuesto, coordinamos contigo la fecha y el alcance.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="faq">
+    <div class="container two-columns">
+      <div>
+        <span class="eyebrow">ANTES DE EMPEZAR</span>
+        <h2>Preguntas sobre {{ service.name.toLowerCase() }}.</h2>
+      </div>
+
+      <div>
+        @for (faq of service.faqs; track faq.question) {
+          <details>
+            <summary>{{ faq.question }}</summary>
+            <p>{{ faq.answer }}</p>
+          </details>
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="contact">
+    <div class="container">
+      <div>
+        <span class="eyebrow">HABLEMOS DE TU PROYECTO</span>
+        <h2>El siguiente paso empieza contigo.</h2>
+        <p>Cuéntanos qué necesitas y dónde. Lo valoramos contigo.</p>
+      </div>
+
+      <a class="button" routerLink="/formulario">Solicitar presupuesto</a>
+    </div>
+  </section>
+
+  <nav class="related container" aria-label="Otros servicios">
+    <div class="related-heading">
+      <span class="eyebrow">MÁS SOLUCIONES PARA TI</span>
+      <h2>¿Necesitas algo más?</h2>
+      <p>Descubre otros servicios para tu hogar o negocio.</p>
+    </div>
+
+    <div class="related-grid">
+      @for (item of services; track item.slug) {
+        @if (item.slug !== service.slug) {
+          <a class="related-card" [routerLink]="['/servicios', item.slug]">
+            {{ item.name }}
+          </a>
+        }
+      }
+    </div>
+
+    <a class="back" routerLink="/servicios">Ver todos los servicios</a>
+  </nav>
+</div>

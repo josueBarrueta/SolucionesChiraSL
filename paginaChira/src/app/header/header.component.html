@@ -65,15 +65,62 @@
           </a>
         </li>
 
-        <li>
-          <a
-            routerLink="/servicios"
-            routerLinkActive="active"
-            ariaCurrentWhenActive="page"
-            (click)="cerrarMenu()"
+        <li class="services-nav" (focusout)="cerrarAlSalir($event)">
+          <div class="services-control">
+            <a
+              routerLink="/servicios"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: true }"
+              ariaCurrentWhenActive="page"
+              (click)="cerrarMenu()"
+            >
+              Servicios
+            </a>
+
+            <button
+              #servicesButton
+              class="services-toggle"
+              type="button"
+              aria-controls="services-submenu"
+              [attr.aria-expanded]="serviciosAbiertos()"
+              [attr.aria-label]="
+                serviciosAbiertos() ? 'Cerrar lista de servicios' : 'Abrir lista de servicios'
+              "
+              (click)="alternarServicios()"
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                aria-hidden="true"
+                [class.expanded]="serviciosAbiertos()"
+              >
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </button>
+          </div>
+
+          <ul
+            id="services-submenu"
+            class="services-submenu"
+            [hidden]="!serviciosAbiertos()"
           >
-            Servicios
-          </a>
+            @for (service of services; track service.slug) {
+              <li>
+                <a
+                  [routerLink]="['/servicios', service.slug]"
+                  routerLinkActive="active"
+                  ariaCurrentWhenActive="page"
+                  (click)="cerrarMenu()"
+                >
+                  {{ service.name }}
+                </a>
+              </li>
+            }
+          </ul>
         </li>
 
         <li>

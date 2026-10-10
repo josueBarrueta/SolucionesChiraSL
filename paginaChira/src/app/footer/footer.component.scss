@@ -115,6 +115,24 @@
   line-height: 1.5;
 }
 
+.footer-services a {
+  color: inherit;
+  font: inherit;
+  text-decoration: none;
+  border-radius: 3px;
+}
+
+.footer-services a:visited {
+  color: inherit;
+}
+
+.footer-services a:hover,
+.footer-services a:focus-visible {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
 .footer-services li::before {
   content: "";
   flex-shrink: 0;

@@ -1,6 +1,7 @@
 import {
   Component,
   ElementRef,
+  HostListener,
   ViewChild,
   inject,
   signal
@@ -11,6 +12,7 @@ import {
   RouterLink,
   RouterLinkActive
 } from '@angular/router';
+import { SERVICIOS } from '../servicio/servicios.data';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
@@ -26,7 +28,31 @@ export class HeaderComponent {
   @ViewChild('menuButton')
   private menuButton?: ElementRef<HTMLButtonElement>;
 
+  private readonly element = inject(ElementRef<HTMLElement>);
+
+  @ViewChild('servicesButton')
+  private servicesButton?: ElementRef<HTMLButtonElement>;
+
   readonly menuAbierto = signal(false);
+  readonly serviciosAbiertos = signal(false);
+  readonly services = SERVICIOS;
+
+  alternarServicios(): void {
+    this.serviciosAbiertos.update((abierto) => !abierto);
+  }
+
+  @HostListener('document:click', ['$event'])
+  cerrarFuera(event: Event): void {
+    if (!this.element.nativeElement.contains(event.target as Node)) {
+      this.serviciosAbiertos.set(false);
+    }
+  }
+
+  cerrarAlSalir(event: FocusEvent): void {
+    if (!(event.currentTarget as HTMLElement).contains(event.relatedTarget as Node | null)) {
+      this.serviciosAbiertos.set(false);
+    }
+  }
 
   constructor() {
     // También cierra el menú al navegar con atrás o adelante.
@@ -41,13 +67,22 @@ export class HeaderComponent {
 
   alternarMenu(): void {
     this.menuAbierto.update((abierto) => !abierto);
+    this.serviciosAbiertos.set(false);
   }
 
   cerrarMenu(): void {
     this.menuAbierto.set(false);
+    this.serviciosAbiertos.set(false);
   }
 
   cerrarConEscape(evento: Event): void {
+    if (this.serviciosAbiertos()) {
+      evento.preventDefault();
+      evento.stopPropagation();
+      this.serviciosAbiertos.set(false);
+      this.servicesButton?.nativeElement.focus();
+      return;
+    }
     if (!this.menuAbierto()) {
       return;
     }
