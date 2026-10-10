@@ -39,91 +39,91 @@ export class HomeComponent implements OnDestroy {
   readonly fotografias: Fotografia[] = [
   {
     "id": "chira-montaje-mueble",
-    "imagen": "/images/collage/chira-montaje-mueble.webp",
+    "imagen": "images/collage/chira-montaje-mueble.webp",
     "descripcion": "Sofá gris en forma de L instalado en un salón",
     "ancho": 899,
     "alto": 899
   },
   {
     "id": "chira-porte-sillas",
-    "imagen": "/images/collage/chira-porte-sillas.webp",
+    "imagen": "images/collage/chira-porte-sillas.webp",
     "descripcion": "Carga de sillas de oficina en una furgoneta",
     "ancho": 1440,
     "alto": 1440
   },
   {
     "id": "chira-traslado-oficina-cristales",
-    "imagen": "/images/collage/chira-traslado-oficina-cristales.webp",
+    "imagen": "images/collage/chira-traslado-oficina-cristales.webp",
     "descripcion": "Dos trabajadores desmontando una mampara de cristal en una oficina",
     "ancho": 1080,
     "alto": 1080
   },
   {
     "id": "chira-desmontaje-transporte-montaje",
-    "imagen": "/images/collage/chira-desmontaje-transporte-montaje.webp",
+    "imagen": "images/collage/chira-desmontaje-transporte-montaje.webp",
     "descripcion": "Sofá gris con cojines de colores y mesa de centro en un salón",
     "ancho": 810,
     "alto": 810
   },
   {
     "id": "chira-CrLLvGFIWqP",
-    "imagen": "/images/collage/chira-CrLLvGFIWqP.webp",
+    "imagen": "images/collage/chira-CrLLvGFIWqP.webp",
     "descripcion": "Furgoneta con cajas y muebles cargados para un traslado",
     "ancho": 720,
     "alto": 720
   },
   {
     "id": "chira-CsDtYZ9oC6m-1",
-    "imagen": "/images/collage/chira-CsDtYZ9oC6m-1.webp",
+    "imagen": "images/collage/chira-CsDtYZ9oC6m-1.webp",
     "descripcion": "Armario de madera montado en una habitación",
     "ancho": 720,
     "alto": 720
   },
   {
     "id": "chira-CsDtYZ9oC6m-2",
-    "imagen": "/images/collage/chira-CsDtYZ9oC6m-2.webp",
+    "imagen": "images/collage/chira-CsDtYZ9oC6m-2.webp",
     "descripcion": "Cama de dormitorio con cajones rojos y blancos en su base",
     "ancho": 720,
     "alto": 720
   },
   {
     "id": "chira-CsRnaU7IW0t",
-    "imagen": "/images/collage/chira-CsRnaU7IW0t.webp",
+    "imagen": "images/collage/chira-CsRnaU7IW0t.webp",
     "descripcion": "Estructura de madera y mueble durante su montaje",
     "ancho": 720,
     "alto": 720
   },
   {
     "id": "chira-CwnX-joIPtM-2",
-    "imagen": "/images/collage/chira-CwnX-joIPtM-2.webp",
+    "imagen": "images/collage/chira-CwnX-joIPtM-2.webp",
     "descripcion": "Trabajador montando una cama con base de almacenaje",
     "ancho": 1440,
     "alto": 1440
   },
   {
     "id": "chira-CwnX-joIPtM-3",
-    "imagen": "/images/collage/chira-CwnX-joIPtM-3.webp",
+    "imagen": "images/collage/chira-CwnX-joIPtM-3.webp",
     "descripcion": "Armario blanco con franja central de acabado madera",
     "ancho": 1200,
     "alto": 1200
   },
   {
     "id": "chira-CwnX-joIPtM-4",
-    "imagen": "/images/collage/chira-CwnX-joIPtM-4.webp",
+    "imagen": "images/collage/chira-CwnX-joIPtM-4.webp",
     "descripcion": "Trabajador ajustando las divisiones interiores de un mueble",
     "ancho": 1440,
     "alto": 1440
   },
   {
     "id": "chira-CwnX-joIPtM-5",
-    "imagen": "/images/collage/chira-CwnX-joIPtM-5.webp",
+    "imagen": "images/collage/chira-CwnX-joIPtM-5.webp",
     "descripcion": "Estructura de una cama durante el montaje en un dormitorio",
     "ancho": 1440,
     "alto": 1440
   },
   {
     "id": "chira-montaje-armario-herramientas",
-    "imagen": "/images/collage/chira-montaje-armario-herramientas.webp",
+    "imagen": "images/collage/chira-montaje-armario-herramientas.webp",
     "descripcion": "Herramientas y piezas de un armario durante su montaje",
     "ancho": 1440,
     "alto": 1440
