@@ -453,3 +453,24 @@ h2 {
     aspect-ratio: auto;
   }
 }
+.fotos-equipo {
+  position: relative;
+  overflow: hidden;
+  background: #dbe2d2;
+
+  img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 650ms ease-in-out;
+
+    &.activa { opacity: 1; }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fotos-equipo img { transition: none; }
+}

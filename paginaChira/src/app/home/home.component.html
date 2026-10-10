@@ -37,16 +37,16 @@
       <div class="hero-visual">
         <div class="hero-photo">
           <img
-            src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=85"
-            alt="Salón luminoso con sofá y muebles en tonos naturales"
-            width="1200"
-            height="1400"
+            src="/images/trabajos/equipo-mudanzas.webp"
+            alt="Dos miembros del equipo de Chira junto a una furgoneta de mudanzas"
+            width="1440"
+            height="1440"
             fetchpriority="high"
           />
 
           <div class="photo-caption">
             <span>HOGARES · NEGOCIOS · COMUNIDADES</span>
-            <p>Un espacio para disfrutar.</p>
+            <p>Tu mudanza, en buenas manos.</p>
           </div>
         </div>
 
@@ -89,10 +89,10 @@
     <div class="container welcome-grid">
       <div class="welcome-photo reveal">
         <img
-          src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1000&q=85"
-          alt="Vivienda de líneas modernas rodeada de vegetación"
-          width="1000"
-          height="1100"
+          src="/images/trabajos/carga-muebles.webp"
+          alt="Un miembro del equipo de Chira cargando un mueble en una furgoneta"
+          width="899"
+          height="899"
           loading="lazy"
         />
 
@@ -132,7 +132,7 @@
     </div>
   </section>
 
-  <!-- Categorías y collage -->
+  <!-- Collage de trabajos -->
   <section class="galeria" aria-labelledby="galeria-title">
     <div class="container">
       <div class="galeria-intro">
@@ -144,42 +144,19 @@
         </h2>
       </div>
 
-      <p class="sr-only" role="status" aria-live="polite">
-        {{ trabajosFiltrados().length }} imágenes en la categoría
-        {{ filtro() }}.
-      </p>
-
       <div class="collage" id="collage">
-        @for (trabajo of trabajosFiltrados(); track trabajo.id) {
-          <button
-            class="collage-foto"
-            type="button"
-            aria-haspopup="dialog"
-            [attr.aria-label]="'Ampliar fotografía: ' + trabajo.titulo"
-            (click)="abrirTrabajo(trabajo)"
-          >
-            @if (
-              trabajo.imagen &&
-              !imagenesFallidas().has(trabajo.id)
-            ) {
-              <img
-                [src]="trabajo.imagen"
-                [alt]="trabajo.alt"
-                width="1000"
-                height="800"
-                loading="lazy"
-                (error)="marcarImagenFallida(trabajo.id)"
-              />
-            } 
-
-            <span class="foto-overlay" aria-hidden="true">
-              <span class="foto-etiqueta">{{ trabajo.categoria }}</span>
-            </span>
-          </button>
-        } @empty {
-          <p class="galeria-vacia">
-            Próximamente añadiremos fotografías de este servicio.
-          </p>
+        @for (foto of fotografias; track foto.id) {
+          <figure class="collage-foto">
+          <img
+            [src]="foto.imagen"
+            [alt]="foto.descripcion"
+            [width]="foto.ancho"
+            [height]="foto.alto"
+            loading="lazy"
+            decoding="async"
+          />
+          <figcaption><span class="collage-marca">Soluciones <strong>Chira SL</strong></span></figcaption>
+          </figure>
         }
       </div>
 
@@ -215,46 +192,3 @@
     </div>
   </section>
 </div>
-
-<!-- Fotografía ampliada -->
-<dialog
-  #visor
-  class="visor"
-  aria-labelledby="visor-title"
-  (close)="trabajoActivo.set(null)"
-  (click)="cerrarDesdeFondo($event)"
->
-  <div class="visor-cabecera">
-    <h2 id="visor-title">
-      {{ trabajoActivo()?.titulo || 'Fotografía del trabajo' }}
-    </h2>
-
-    <button
-      class="visor-cerrar"
-      type="button"
-      autofocus
-      (click)="cerrarVisor()"
-    >
-      Cerrar ×
-    </button>
-  </div>
-
-  @if (trabajoActivo(); as trabajo) {
-    @if (
-      trabajo.imagen &&
-      !imagenesFallidas().has(trabajo.id)
-    ) {
-      <img
-        class="visor-imagen"
-        [src]="trabajo.imagen"
-        [alt]="trabajo.alt"
-        (error)="marcarImagenFallida(trabajo.id)"
-      />
-    } 
-
-    <div class="visor-detalles">
-      <span class="eyebrow">{{ trabajo.categoria }}</span>
-      <p>{{ trabajo.descripcion }}</p>
-    </div>
-  }
-</dialog>

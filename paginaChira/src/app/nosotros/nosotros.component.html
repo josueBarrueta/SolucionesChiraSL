@@ -20,21 +20,13 @@
         </a>
       </div>
 
-      <div class="imagen-placeholder entrada retraso-1">
-        <!--
-          Cuando tengas la imagen, sustituye este div por:
-
-          <img
-            class="nosotros-imagen"
-            src="assets/images/equipo-chira.jpg"
-            alt="Equipo de Soluciones Chira"
-            width="900"
-            height="1000"
-          />
-
-          Ajusta el alt para describir la fotografía real.
-        -->
-      </div>
+      <img
+        class="nosotros-imagen entrada retraso-1"
+        src="/images/collage/chira-conductor-furgoneta.webp"
+        alt="Miembro del equipo de Soluciones Chira SL al volante de una furgoneta blanca"
+        width="1440"
+        height="1440"
+      />
     </div>
 
     <div class="datos entrada retraso-2" aria-label="Datos de la empresa">
@@ -55,19 +47,18 @@
     </div>
 
     <section class="historia" aria-labelledby="historia-title">
-      <div class="imagen-placeholder imagen-secundaria">
-        <!--
-          Sustituye este div por una fotografía de un trabajo real:
-
+      <div class="nosotros-imagen imagen-secundaria fotos-equipo" aria-label="Nuestro equipo en distintos trabajos">
+        @for (foto of fotosEquipo; track foto.imagen; let indice = $index) {
           <img
-            class="nosotros-imagen imagen-secundaria"
-            src="assets/images/trabajo-chira.jpg"
-            alt="Describe aquí el trabajo que aparece en la imagen"
-            width="1000"
-            height="800"
-            loading="lazy"
+            [src]="foto.imagen"
+            [alt]="foto.descripcion"
+            [class.activa]="fotoActiva() === indice"
+            [attr.aria-hidden]="fotoActiva() !== indice"
+            width="1440"
+            height="1440"
+            decoding="async"
           />
-        -->
+        }
       </div>
 
       <div class="historia-texto">
