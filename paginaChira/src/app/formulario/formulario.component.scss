@@ -552,3 +552,101 @@ button:focus-visible {
     background-position: right 8px center;
   }
 }
+
+/* Detalles opcionales de cada servicio */
+
+.service-details {
+  display: grid;
+  gap: 16px;
+}
+
+.service-detail {
+  padding: 20px;
+  border: 1px solid #e0e4d8;
+  border-radius: 12px;
+  background: #fafbf8;
+
+  h3 {
+    margin: 0 0 20px;
+    color: #42612e;
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 550px) {
+  .service-detail {
+    padding: 16px;
+  }
+}
+
+
+/* Piso y puerta en un bloque separado */
+
+.address-unit {
+  padding: 20px;
+  border: 1px solid #e0e4d8;
+  border-radius: 12px;
+  background: #fafbf8;
+
+  h3 {
+    margin: 0 0 16px;
+    color: #42612e;
+    font-size: 15px;
+  }
+}
+
+.address-unit-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 550px) {
+  .address-unit {
+    padding: 16px;
+  }
+
+  .address-unit-grid {
+    gap: 10px;
+  }
+}
+
+
+/* Lista de direcciones independiente del navegador */
+
+.address-suggestions {
+  max-height: 260px;
+  overflow-y: auto;
+  margin: 8px 0 0;
+  padding: 6px;
+  border: 1px solid #d7dece;
+  border-radius: 10px;
+  background: #ffffff;
+  list-style: none;
+  box-shadow: 0 8px 24px rgba(37, 60, 28, 0.08);
+
+  li {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+
+    &:hover,
+    &.is-active {
+      background: #edf3e6;
+    }
+  }
+
+  strong {
+    color: #253c1c;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  span {
+    color: #68715e;
+    font-size: 12px;
+  }
+}

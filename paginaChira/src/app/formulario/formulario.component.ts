@@ -12,6 +12,9 @@ import {
   Validators
 } from '@angular/forms';
 
+import { ActivatedRoute } from '@angular/router';
+import { AddressFeature, addressSuggestion } from './formulario.address';
+import { SERVICE_QUESTIONS } from './formulario.questions';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   AsYouType,
@@ -21,6 +24,7 @@ import {
 } from 'libphonenumber-js';
 
 import type { CountryCode } from 'libphonenumber-js';
+
 
 type FormStatus = 'idle' | 'sending' | 'success' | 'error';
 
@@ -33,9 +37,42 @@ type FormStatus = 'idle' | 'sending' | 'success' | 'error';
 })
 export class FormularioComponent implements OnDestroy {
   private readonly fb = inject(FormBuilder);
+  private readonly route = inject(ActivatedRoute);
+
+  readonly serviceQuestions = SERVICE_QUESTIONS;
+  readonly details = this.fb.nonNullable.record<string>({});
+
+  get selectedQuestions() {
+    return this.serviceQuestions.filter((block) => this.isSelected(block.service));
+  }
+
+  private budgetDetails(): Record<string, string> {
+    const answers: Record<string, string> = {};
+
+    for (const block of this.selectedQuestions) {
+      for (const field of block.fields) {
+        const value = this.details.controls[field.name].value.trim();
+
+        if (value) {
+          answers[`${block.service} — ${field.label}`] = value;
+        }
+      }
+    }
+
+    return answers;
+  }
+
 
   private readonly accessKey: string =
     '8750e45d-4d4b-482f-afe6-8cffd18cfab8';
+
+  readonly addressSuggestions = signal<{ value: string; locality: string; postcode: string }[]>([]);
+  readonly addressSuggestionsOpen = signal(false);
+  readonly activeAddressSuggestion = signal(-1);
+  readonly addressSearchStatus = signal<'idle' | 'loading' | 'ready' | 'error'>('idle');
+  private addressTimer?: ReturnType<typeof setTimeout>;
+  private addressController?: AbortController;
+  private addressSearchVersion = 0;
 
   private controller?: AbortController;
   private destroyed = false;
@@ -176,8 +213,8 @@ export class FormularioComponent implements OnDestroy {
       ]
     ],
 
-    street: ['', Validators.maxLength(160)],
-    streetNumber: ['', Validators.maxLength(20)],
+    street: ['', Validators.maxLength(180)],
+    postalCode: ['', Validators.pattern(/^\d{5}$/)],
     floor: ['', Validators.maxLength(30)],
     door: ['', Validators.maxLength(30)],
     staircase: ['', Validators.maxLength(40)],
@@ -192,10 +229,36 @@ export class FormularioComponent implements OnDestroy {
       ]
     ],
 
+    details: this.details,
     website: ['']
   });
 
   constructor() {
+    for (const block of this.serviceQuestions) {
+      for (const field of block.fields) {
+        this.details.addControl(
+          field.name,
+          this.fb.nonNullable.control('', Validators.maxLength(300))
+        );
+      }
+    }
+
+    this.form.controls.location.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => this.searchAddress());
+
+    this.route.queryParamMap
+      .pipe(takeUntilDestroyed())
+      .subscribe((params) => {
+        const selected = this.serviceQuestions.find(
+          (block) => block.slug === params.get('servicio')
+        );
+
+        if (selected) {
+          this.form.controls.services.setValue([selected.service]);
+        }
+      });
+
     this.form.controls.phone.setValidators([
       Validators.required,
 
@@ -229,6 +292,131 @@ export class FormularioComponent implements OnDestroy {
       .subscribe(() => {
         this.formatPhoneOnBlur();
       });
+  }
+
+  searchAddress(): void {
+    clearTimeout(this.addressTimer);
+    this.addressController?.abort();
+    const version = ++this.addressSearchVersion;
+    this.form.controls.postalCode.reset();
+    this.addressSuggestions.set([]);
+    this.activeAddressSuggestion.set(-1);
+    this.addressSuggestionsOpen.set(true);
+    this.addressSearchStatus.set('idle');
+
+    const street = this.form.controls.street.value.trim();
+    const locality = this.form.controls.location.value.trim();
+
+    if (street.length < 3 || locality.length < 2) {
+      return;
+    }
+
+    this.addressSearchStatus.set('loading');
+    this.addressTimer = setTimeout(() => {
+      void this.loadAddressSuggestions(street, locality, version);
+    }, 600);
+  }
+
+  private async loadAddressSuggestions(
+    street: string,
+    locality: string,
+    version: number
+  ): Promise<void> {
+    const controller = new AbortController();
+    this.addressController = controller;
+    const timeout = setTimeout(() => controller.abort(), 8000);
+
+    try {
+      const params = new URLSearchParams({
+        q: `${street}, ${locality}, España`,
+        limit: '6',
+        lang: 'default'
+      });
+
+      const response = await fetch(`https://photon.komoot.io/api/?${params}`, {
+        signal: controller.signal
+      });
+
+      if (!response.ok) {
+        throw new Error('No se pudieron cargar las direcciones.');
+      }
+
+      const result: { features?: AddressFeature[] } = await response.json();
+      const typedNumber = street.match(/\s(\d+\s*[a-z]?)$/i)?.[1];
+      const suggestions = (result.features ?? [])
+        .map((feature) => addressSuggestion(feature, typedNumber))
+        .filter((address): address is NonNullable<typeof address> => address !== null);
+
+      if (!this.destroyed && version === this.addressSearchVersion) {
+        this.addressSuggestions.set(
+          suggestions.filter((address, index, all) =>
+            all.findIndex((item) =>
+              item.value === address.value &&
+              item.locality === address.locality &&
+              item.postcode === address.postcode
+            ) === index
+          )
+        );
+        this.addressSearchStatus.set('ready');
+      }
+    } catch {
+      if (!this.destroyed && version === this.addressSearchVersion) {
+        this.addressSearchStatus.set('error');
+      }
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+
+  selectAddress(index: number): void {
+    const address = this.addressSuggestions()[index];
+
+    if (!address) {
+      return;
+    }
+
+    this.form.controls.street.setValue(address.value);
+    this.form.controls.street.markAsDirty();
+    this.form.controls.postalCode.setValue(address.postcode);
+    clearTimeout(this.addressTimer);
+    this.addressController?.abort();
+    this.addressSearchVersion++;
+    this.addressSearchStatus.set('idle');
+    this.addressSuggestionsOpen.set(false);
+    this.activeAddressSuggestion.set(-1);
+  }
+
+  closeAddressSuggestions(): void {
+    this.addressSuggestionsOpen.set(false);
+    this.activeAddressSuggestion.set(-1);
+  }
+
+  addressKeydown(event: KeyboardEvent): void {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      this.closeAddressSuggestions();
+      return;
+    }
+
+    const count = this.addressSuggestions().length;
+
+    if (!count) {
+      return;
+    }
+
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      this.addressSuggestionsOpen.set(true);
+      const direction = event.key === 'ArrowDown' ? 1 : -1;
+      this.activeAddressSuggestion.update((index) => (index + direction + count) % count);
+    } else if (
+      event.key === 'Enter' &&
+      this.addressSuggestionsOpen() &&
+      this.activeAddressSuggestion() >= 0
+    ) {
+      event.preventDefault();
+      this.selectAddress(this.activeAddressSuggestion());
+    }
   }
 
   private buildCountries(): {
@@ -275,6 +463,14 @@ export class FormularioComponent implements OnDestroy {
     control.setValue(selected);
     control.markAsDirty();
     control.markAsTouched();
+
+    if (!checked) {
+      const block = this.serviceQuestions.find((item) => item.service === service);
+
+      for (const field of block?.fields ?? []) {
+        this.details.controls[field.name].reset();
+      }
+    }
   }
 
   formatPhone(event: Event): void {
@@ -355,7 +551,7 @@ export class FormularioComponent implements OnDestroy {
       email: current.email.trim(),
       location: current.location.trim(),
       street: current.street.trim(),
-      streetNumber: current.streetNumber.trim(),
+      postalCode: current.postalCode.trim(),
       floor: current.floor.trim(),
       door: current.door.trim(),
       staircase: current.staircase.trim(),
@@ -380,7 +576,7 @@ export class FormularioComponent implements OnDestroy {
 
     const clave = this.accessKey.trim();
 
-    if (!clave || clave === '8750e45d-4d4b-482f-afe6-8cffd18cfab8') {
+    if (!clave) {
       this.errorMessage.set(
         'El envío todavía no está configurado. Puedes llamarnos al 610 92 85 21.'
       );
@@ -446,12 +642,13 @@ export class FormularioComponent implements OnDestroy {
 
             servicios: values.services.join(', '),
             localidad: values.location,
-            calle: values.street || 'No indicada',
-            numero: values.streetNumber || 'No indicado',
+            direccion: values.street || 'No indicada',
+            codigo_postal: values.postalCode || 'No indicado',
             piso: values.floor || 'No indicado',
             puerta: values.door || 'No indicada',
             escalera_bloque: values.staircase || 'No indicado',
 
+            ...this.budgetDetails(),
             message: values.message,
             botcheck: false
           })
@@ -467,6 +664,11 @@ export class FormularioComponent implements OnDestroy {
 
       if (!this.destroyed) {
         this.form.reset();
+        clearTimeout(this.addressTimer);
+        this.addressController?.abort();
+        this.addressSearchVersion++;
+        this.addressSuggestions.set([]);
+        this.addressSearchStatus.set('idle');
         this.status.set('success');
       }
     } catch {
@@ -493,6 +695,9 @@ export class FormularioComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this.destroyed = true;
+    clearTimeout(this.addressTimer);
+    this.addressSearchVersion++;
+    this.addressController?.abort();
     this.controller?.abort();
   }
 }

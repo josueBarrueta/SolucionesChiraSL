@@ -93,6 +93,50 @@
               </p>
             </fieldset>
 
+            <!-- PREGUNTAS SEGÚN EL SERVICIO -->
+            @if (selectedQuestions.length) {
+              <fieldset [disabled]="status() === 'sending'">
+                <legend class="section-title">Sobre tu servicio</legend>
+
+                <p class="section-help">
+                  Estos datos nos ayudan a preparar el presupuesto.
+                  Son opcionales: completa lo que sepas.
+                </p>
+
+                <div formGroupName="details" class="service-details">
+                  @for (block of selectedQuestions; track block.slug) {
+                    <section class="service-detail" [attr.aria-labelledby]="'details-' + block.slug">
+                      <h3 [id]="'details-' + block.slug">{{ block.service }}</h3>
+
+                      <div class="fields-grid">
+                        @for (field of block.fields; track field.name) {
+                          <div class="field">
+                            <label [for]="field.name">{{ field.label }}</label>
+
+                            @if (field.type === 'select') {
+                              <select [id]="field.name" [formControlName]="field.name">
+                                <option value="">No lo sé todavía</option>
+                                <option value="Sí">Sí</option>
+                                <option value="No">No</option>
+                              </select>
+                            } @else {
+                              <input
+                                [id]="field.name"
+                                type="text"
+                                [formControlName]="field.name"
+                                [placeholder]="field.placeholder"
+                                maxlength="300"
+                              />
+                            }
+                          </div>
+                        }
+                      </div>
+                    </section>
+                  }
+                </div>
+              </fieldset>
+            }
+
             <!-- DATOS PERSONALES -->
             <fieldset [disabled]="status() === 'sending'">
               <legend class="section-title">
@@ -220,51 +264,122 @@
                 </div>
 
                 <div class="field full-width">
-                  <label for="street">Calle o avenida (opcional)</label>
+                  <label for="street">Calle y número (opcional)</label>
                   <input
                     id="street"
                     type="text"
                     formControlName="street"
                     autocomplete="address-line1"
-                    placeholder="Nombre de la calle"
-                    maxlength="160"
+                    role="combobox"
+                    aria-autocomplete="list"
+                    aria-controls="address-suggestions"
+                    [attr.aria-expanded]="addressSuggestionsOpen() && addressSuggestions().length > 0"
+                    [attr.aria-activedescendant]="
+                      addressSuggestionsOpen() && activeAddressSuggestion() >= 0
+                        ? 'address-option-' + activeAddressSuggestion()
+                        : null
+                    "
+                    placeholder="Ej.: Calle del Olivo 24"
+                    maxlength="180"
+                    aria-describedby="address-help address-status"
+                    (input)="searchAddress()"
+                    (focus)="addressSuggestionsOpen.set(true)"
+                    (blur)="closeAddressSuggestions()"
+                    (keydown)="addressKeydown($event)"
                   />
+
+                  @if (addressSuggestionsOpen() && addressSuggestions().length) {
+                    <ul id="address-suggestions" class="address-suggestions" role="listbox" aria-label="Direcciones sugeridas">
+                      @for (address of addressSuggestions(); track $index; let index = $index) {
+                        <li
+                          role="option"
+                          [id]="'address-option-' + index"
+                          [attr.aria-selected]="activeAddressSuggestion() === index"
+                          [class.is-active]="activeAddressSuggestion() === index"
+                          (mousedown)="$event.preventDefault()"
+                          (click)="selectAddress(index)"
+                        >
+                          <strong>{{ address.value }}</strong>
+                          <span>
+                            {{ address.locality }}
+                            @if (address.postcode) {
+                              {{ address.locality ? ' · ' : '' }}{{ address.postcode }}
+                            }
+                          </span>
+                        </li>
+                      }
+                    </ul>
+                  }
+
+                  <p class="field-help" id="address-help">
+                    Indica primero la localidad para buscar sugerencias.
+                    Puedes escribir la dirección completa aunque no aparezca en la lista.
+                  </p>
+
+                  <p class="field-help" id="address-status" role="status">
+                    @if (addressSearchStatus() === 'loading') {
+                      Buscando direcciones…
+                    } @else if (addressSearchStatus() === 'error') {
+                      No se pudieron cargar las sugerencias. Puedes escribir la dirección.
+                    } @else if (addressSearchStatus() === 'ready' && !addressSuggestions().length) {
+                      No encontramos sugerencias. Puedes escribir la dirección.
+                    }
+                  </p>
                 </div>
 
-                <div class="field">
-                  <label for="streetNumber">Número (opcional)</label>
+                <div class="field full-width">
+                  <label for="postalCode">Código postal (opcional)</label>
                   <input
-                    id="streetNumber"
+                    id="postalCode"
                     type="text"
-                    formControlName="streetNumber"
-                    placeholder="Ej.: 24 o s/n"
-                    maxlength="20"
+                    inputmode="numeric"
+                    autocomplete="postal-code"
+                    formControlName="postalCode"
+                    placeholder="5 dígitos"
+                    maxlength="5"
+                    [attr.aria-invalid]="invalid('postalCode')"
+                    aria-describedby="postal-help postal-error"
                   />
+
+                  <p class="field-help" id="postal-help">
+                    Revisa el código postal de tu dirección.
+                    Si la sugerencia no identifica un portal concreto, complétalo tú.
+                  </p>
+                  <p class="field-error" id="postal-error">
+                    @if (invalid('postalCode')) {
+                      Introduce un código postal de 5 dígitos.
+                    }
+                  </p>
                 </div>
 
-                <div class="field">
-                  <label for="floor">Piso (opcional)</label>
-                  <input
-                    id="floor"
-                    type="text"
-                    formControlName="floor"
-                    placeholder="Ej.: 3.º o bajo"
-                    maxlength="30"
-                  />
+                <div class="address-unit full-width">
+                  <h3>Piso y puerta</h3>
+                  <div class="address-unit-grid">
+                    <div class="field">
+                      <label for="floor">Piso (opcional)</label>
+                      <input
+                        id="floor"
+                        type="text"
+                        formControlName="floor"
+                        placeholder="Ej.: 3.º o bajo"
+                        maxlength="30"
+                      />
+                    </div>
+
+                    <div class="field">
+                      <label for="door">Puerta (opcional)</label>
+                      <input
+                        id="door"
+                        type="text"
+                        formControlName="door"
+                        placeholder="Ej.: B o 7"
+                        maxlength="30"
+                      />
+                    </div>
+                  </div>
                 </div>
 
-                <div class="field">
-                  <label for="door">Puerta (opcional)</label>
-                  <input
-                    id="door"
-                    type="text"
-                    formControlName="door"
-                    placeholder="Ej.: B o 7"
-                    maxlength="30"
-                  />
-                </div>
-
-                <div class="field">
+                <div class="field full-width">
                   <label for="staircase">Escalera o bloque (opcional)</label>
                   <input
                     id="staircase"
@@ -316,6 +431,7 @@
             <p class="data-note">
               Utilizaremos estos datos para responder a tu consulta.
               El envío se realiza mediante Web3Forms.
+              La búsqueda de direcciones consulta Photon con la calle y la localidad.
               No incluyas información sensible.
             </p>
 

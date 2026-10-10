@@ -11,7 +11,7 @@
           <p class="lead">{{ service.description }}</p>
 
           <div class="actions">
-            <a class="button primary" routerLink="/formulario">
+            <a class="button primary" routerLink="/formulario" [queryParams]="{ servicio: service.slug }">
               Pedir presupuesto
             </a>
             <a class="button secondary" href="tel:+34610928521">
@@ -106,7 +106,7 @@
         <p>Cuéntanos qué necesitas y dónde. Lo valoramos contigo.</p>
       </div>
 
-      <a class="button" routerLink="/formulario">Solicitar presupuesto</a>
+      <a class="button" routerLink="/formulario" [queryParams]="{ servicio: service.slug }">Solicitar presupuesto</a>
     </div>
   </section>
 
