@@ -117,6 +117,15 @@ nav a  {
 
 }
 
+/* Acciones de contacto */
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
 /* Teléfono */
 
 .contact-button  {
@@ -230,7 +239,7 @@ button:focus-visible  {
 @media (max-width: 900px)  {
   .header-container  {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-columns: minmax(0, 1fr) auto;
     gap: 16px 12px;
   }
 
@@ -247,16 +256,20 @@ button:focus-visible  {
     grid-row: 1;
   }
 
-  .contact-button  {
-    grid-column: 3;
-    grid-row: 1;
-    justify-self: end;
+  .header-actions {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: stretch;
+
+    .contact-button {
+      flex: 1;
+    }
   }
 
   nav  {
     display: none;
     grid-column: 1 / -1;
-    grid-row: 2;
+    grid-row: 3;
     padding-top: 14px;
     border-top: 1px solid rgba(255, 255, 255, 0.12);
     &.is-open  {
@@ -327,14 +340,9 @@ button:focus-visible  {
     font-size: 12px;
   }
 
-  .contact-button  {
-    width: 44px;
-    height: 44px;
-    padding: 0;
-  }
-
-  .contact-number  {
-    display: none;
+  .contact-button {
+    min-height: 44px;
+    padding: 10px 14px;
   }
 
 }
@@ -490,4 +498,21 @@ nav .services-submenu a.active  {
     transition: none;
   }
 
+}
+
+.whatsapp-button {
+  border: 1px solid rgba(180, 211, 136, 0.5);
+  background: transparent;
+  color: var(--accent);
+
+  &:hover {
+    background: rgba(180, 211, 136, 0.1);
+    color: #c6e49f;
+  }
+}
+
+.whatsapp-button .pi-whatsapp {
+  flex-shrink: 0;
+  font-size: 21px;
+  line-height: 1;
 }

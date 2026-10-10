@@ -1,3 +1,4 @@
+import { WhatsappDirective } from '../shared/whatsapp.directive';
 import {
   Component,
   ElementRef,
@@ -18,7 +19,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive, WhatsappDirective],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'
 })

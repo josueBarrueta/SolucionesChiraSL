@@ -149,7 +149,7 @@
   line-height: 1.8;
 }
 
-/* Teléfono, Facebook e Instagram en la misma fila. */
+/* Teléfono, WhatsApp y redes sociales en la misma fila. */
 .footer-actions {
   display: flex;
   align-items: center;
@@ -335,4 +335,14 @@
   .icon-button:hover {
     transform: none;
   }
+}
+.icon-button .pi-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  font-size: 24px;
+  line-height: 1;
 }
