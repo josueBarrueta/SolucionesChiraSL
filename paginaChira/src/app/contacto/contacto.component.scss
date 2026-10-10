@@ -55,7 +55,7 @@
   display: grid;
   grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
   grid-template-areas: "info formulario";
-  align-items: start;
+  align-items: stretch;
   gap: 28px;
 }
 
@@ -75,6 +75,23 @@
 .contacto-info {
   grid-area: info;
   background: #edf1e6;
+}
+
+/* En escritorio, ambas tarjetas comparten la misma fila y altura. */
+@media (min-width: 901px) {
+  .contacto .contacto-content {
+    grid-template-rows: auto;
+    align-items: stretch;
+  }
+
+  .contacto .contacto-content > .contacto-card {
+    box-sizing: border-box;
+    align-self: stretch;
+    height: 100%;
+    min-height: 0;
+    max-height: none;
+    margin: 0;
+  }
 }
 
 .telefono-icono,
@@ -119,11 +136,11 @@
   line-height: 1.2;
   letter-spacing: -1px;
   text-decoration: none;
+}
 
-  &:hover {
-    text-decoration: underline;
-    text-underline-offset: 6px;
-  }
+.contacto-phone:hover {
+  text-decoration: underline;
+  text-underline-offset: 6px;
 }
 
 .contacto-button {
@@ -144,14 +161,14 @@
   text-align: center;
   text-decoration: none;
   transition: background-color 180ms ease;
+}
 
-  &:hover {
-    background: #394b29;
-  }
+.contacto-button:hover {
+  background: #394b29;
+}
 
-  span {
-    font-size: 20px;
-  }
+.contacto-button span {
+  font-size: 20px;
 }
 
 .contacto-button:focus-visible,
@@ -169,37 +186,37 @@
   display: grid;
   gap: 22px;
   margin: 30px 0;
+}
 
-  > div {
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
-  }
+.formulario-pasos > div {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
 
-  > div > span {
-    display: grid;
-    place-items: center;
-    flex-shrink: 0;
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
-    background: #edf1e6;
-    color: #4b6137;
-    font-size: 12px;
-    font-weight: 700;
-  }
+.formulario-pasos > div > span {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: #edf1e6;
+  color: #4b6137;
+  font-size: 12px;
+  font-weight: 700;
+}
 
-  h3 {
-    margin: 0 0 6px;
-    font-size: 16px;
-    line-height: 1.5;
-  }
+.formulario-pasos h3 {
+  margin: 0 0 6px;
+  font-size: 16px;
+  line-height: 1.5;
+}
 
-  p {
-    margin: 0;
-    font-size: 14px;
-    line-height: 1.7;
-  }
+.formulario-pasos p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.7;
 }
 
 .contacto-card .presupuesto-nota {
@@ -213,35 +230,42 @@
   margin-top: 32px;
   padding-top: 26px;
   border-top: 1px solid #cbd6bf;
+}
 
-  h3 {
-    margin: 0 0 16px;
-    font-size: 18px;
-    line-height: 1.4;
-  }
+.contacto-ayuda h3 {
+  margin: 0 0 16px;
+  font-size: 18px;
+  line-height: 1.4;
+}
 
-  ul {
-    display: grid;
-    gap: 12px;
-    margin: 0 0 20px;
-    padding-left: 22px;
-    color: #545c50;
-    font-size: 15px;
-    line-height: 1.7;
-  }
+.contacto-ayuda ul {
+  display: grid;
+  gap: 12px;
+  margin: 0 0 20px;
+  padding-left: 22px;
+  color: #545c50;
+  font-size: 15px;
+  line-height: 1.7;
+}
 
-  p {
-    margin-bottom: 0;
-    font-size: 14px;
-  }
+.contacto-ayuda p {
+  margin-bottom: 0;
+  font-size: 14px;
 }
 
 @media (max-width: 900px) {
   .contacto-content {
     grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto;
     grid-template-areas:
       "formulario"
       "info";
+    align-items: start;
+  }
+
+  .contacto .contacto-content > .contacto-card {
+    height: auto;
+    align-self: start;
   }
 }
 
@@ -270,5 +294,37 @@
 @media (prefers-reduced-motion: reduce) {
   .contacto-button {
     transition: none;
+  }
+}
+
+/* Corrección de altura y desbordamiento. */
+.contacto .contacto-content {
+  grid-template-rows: auto;
+  align-items: stretch;
+}
+
+.contacto .contacto-content > .contacto-card {
+  height: auto;
+  min-height: 0;
+  max-height: none;
+  align-self: stretch;
+  margin: 0;
+}
+
+/* Permite que el texto de los pasos se ajuste al espacio disponible. */
+.formulario-pasos > div > div {
+  min-width: 0;
+}
+
+/* En tablet y móvil, cada tarjeta conserva su altura natural. */
+@media (max-width: 900px) {
+  .contacto .contacto-content {
+    grid-template-rows: auto auto;
+    align-items: start;
+  }
+
+  .contacto .contacto-content > .contacto-card {
+    height: auto;
+    align-self: start;
   }
 }
