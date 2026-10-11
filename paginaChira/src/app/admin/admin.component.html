@@ -1,0 +1,88 @@
+<div class="admin-layout">
+  <aside class="sidebar" aria-label="Panel de administración">
+    <a class="brand" routerLink="/admin" aria-label="Soluciones Chira, administración">
+      <span class="brand-icon"><i class="pi pi-building" aria-hidden="true"></i></span>
+      <span><small>SOLUCIONES</small><strong>Chira <span>SL</span></strong></span>
+    </a>
+
+    <p class="sidebar-label">ADMINISTRACIÓN</p>
+    <nav aria-label="Navegación del panel">
+      <a class="nav-link" routerLink="/admin" routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }" ariaCurrentWhenActive="page">
+        <i class="pi pi-chart-bar" aria-hidden="true"></i> Resumen
+      </a>
+      <a class="nav-link" routerLink="/admin/encuestas" routerLinkActive="active"
+        ariaCurrentWhenActive="page">
+        <i class="pi pi-inbox" aria-hidden="true"></i> Encuestas
+      </a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <a class="nav-link" routerLink="/">
+        <i class="pi pi-external-link" aria-hidden="true"></i> Ver página web
+      </a>
+      <button class="nav-link logout" type="button" [disabled]="saliendo" (click)="cerrarSesion()">
+        <i class="pi pi-sign-out" aria-hidden="true"></i> Cerrar sesión
+      </button>
+    </div>
+  </aside>
+
+  <section class="dashboard" aria-label="Contenido del panel">
+    @if (error) { <p role="alert">{{ error }}</p> }
+    @if (isResumen) {
+    <div class="page-heading">
+      <div>
+        <p class="eyebrow">SOLUCIONES CHIRA SL</p>
+        <h1 id="admin-title">Panel de administración</h1>
+        <p class="subtitle">Un espacio para gestionar las encuestas de tu empresa.</p>
+      </div>
+      <span class="owner-badge"><i class="pi pi-user" aria-hidden="true"></i> Propietario</span>
+    </div>
+
+    <div class="welcome">
+      <div>
+        <p class="welcome-label">TU EMPRESA, EN UN SOLO LUGAR</p>
+        <h2>Bienvenido al panel.</h2>
+        <p>Aquí puedes consultar las respuestas y dar seguimiento a cada solicitud.</p>
+      </div>
+      <i class="pi pi-briefcase welcome-icon" aria-hidden="true"></i>
+    </div>
+
+    <div class="stats" aria-label="Resumen de encuestas">
+      <article class="stat-card">
+        <span class="stat-icon"><i class="pi pi-inbox" aria-hidden="true"></i></span>
+        <p>Encuestas recibidas</p><strong>{{ cargando || error ? '—' : encuestas.length }}</strong><small>Datos recibidos</small>
+      </article>
+      <article class="stat-card">
+        <span class="stat-icon"><i class="pi pi-clock" aria-hidden="true"></i></span>
+        <p>Pendientes de revisar</p><strong>{{ cargando || error ? '—' : pendientes }}</strong><small>Datos recibidos</small>
+      </article>
+      <article class="stat-card">
+        <span class="stat-icon"><i class="pi pi-check-circle" aria-hidden="true"></i></span>
+        <p>Solicitudes revisadas</p><strong>{{ cargando || error ? '—' : revisadas }}</strong><small>Datos recibidos</small>
+      </article>
+    </div>
+
+    <section class="responses" id="encuestas" aria-labelledby="responses-title">
+      <div class="responses-heading">
+        <div><h2 id="responses-title">Últimas encuestas</h2><p>Consulta y gestiona las solicitudes recibidas.</p></div>
+        <a class="status" routerLink="/admin/encuestas">Ver todas las encuestas</a>
+      </div>
+      <div class="empty-state">
+        @if (cargando) { <p>Cargando solicitudes…</p> }
+        @else if (error) { <p>No se pudo obtener el resumen.</p> }
+        @else if (!encuestas.length) {
+          <span class="empty-icon"><i class="pi pi-file" aria-hidden="true"></i></span>
+          <h3>Todavía no hay encuestas</h3>
+          <p>Las solicitudes que se envíen desde el formulario aparecerán aquí.</p>
+        } @else {
+          @for (encuesta of encuestas.slice(0, 5); track encuesta.id) {
+            <p><strong>{{ encuesta.referencia }} · {{ encuesta.nombre }}</strong><br />{{ encuesta.servicios.join(', ') }} · {{ encuesta.estado }}</p>
+          }
+        }
+      </div>
+    </section>
+    }
+    <router-outlet />
+  </section>
+</div>

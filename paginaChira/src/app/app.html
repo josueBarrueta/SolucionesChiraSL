@@ -1,7 +1,11 @@
-<app-header />
+@if (!isPrivatePage) {
+  <app-header />
+}
 
 <main>
   <router-outlet />
 </main>
 
-<app-footer />
+@if (!isPrivatePage) {
+  <app-footer />
+}

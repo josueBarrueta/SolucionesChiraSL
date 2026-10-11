@@ -1,0 +1,29 @@
+# Plantilla de prueba. En Render elige este archivo como Blueprint Path.
+# No se ha creado ni publicado ningún servicio.
+services:
+  - type: web
+    name: soluciones-chira-api
+    runtime: node
+    rootDir: paginaChira
+    plan: free
+    buildCommand: npm ci --omit=dev --ignore-scripts
+    startCommand: npm run server:production
+    healthCheckPath: /api/health
+    autoDeployTrigger: off
+    envVars:
+      - key: NODE_VERSION
+        value: 24.21.0
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: APP_ORIGINS
+        value: https://josuebarrueta.github.io
+      - key: MONGODB_DATABASE
+        value: soluciones_chira
+      - key: ADMIN_EMAIL
+        value: admin@chira.local
+      - key: MONGODB_URI
+        sync: false
+      - key: ADMIN_PASSWORD_HASH
+        sync: false

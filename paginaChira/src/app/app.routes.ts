@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './login/auth.guard';
 
 export const routes: Routes = [
   {
@@ -85,6 +86,31 @@ export const routes: Routes = [
       import('./nosotros/nosotros.component').then(
         (m) => m.NosotrosComponent
       )
+  },
+  {
+    path: 'login',
+    loadComponent: () =>
+      import('./login/login.component').then(
+        (m) => m.LoginComponent
+      )
+  },
+  {
+    path: 'admin',
+    canActivate: [authGuard],
+    canActivateChild: [authGuard],
+    loadComponent: () =>
+      import('./admin/admin.component').then(
+        (m) => m.AdminComponent
+      ),
+    children: [
+      {
+        path: 'encuestas',
+        loadComponent: () =>
+          import('./adminApartados/adminEncuestas/admin-encuestas.component').then(
+            (m) => m.AdminEncuestasComponent
+          )
+      }
+    ]
   },
   {
     path: '**',

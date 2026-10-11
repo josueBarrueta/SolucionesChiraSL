@@ -23,7 +23,7 @@ jobs:
       - name: Preparar Node
         uses: actions/setup-node@v7
         with:
-          node-version: "22"
+          node-version: "24"
           cache: npm
           cache-dependency-path: paginaChira/package-lock.json
 
@@ -33,6 +33,12 @@ jobs:
       - name: Instalar dependencias
         working-directory: paginaChira
         run: npm ci
+
+      - name: Configurar servidor público
+        working-directory: paginaChira
+        env:
+          CHIRA_API_URL: ${{ vars.CHIRA_API_URL }}
+        run: npm run configure:api
 
       - name: Compilar la web
         working-directory: paginaChira

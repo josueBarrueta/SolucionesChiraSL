@@ -13,6 +13,7 @@ import {
 } from '@angular/forms';
 
 import { ActivatedRoute } from '@angular/router';
+import { ChiraApiService } from '../shared/chira-api.service';
 import { AddressFeature, addressSuggestion } from './formulario.address';
 import { SERVICE_QUESTIONS } from './formulario.questions';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -38,6 +39,10 @@ type FormStatus = 'idle' | 'sending' | 'success' | 'error';
 export class FormularioComponent implements OnDestroy {
   private readonly fb = inject(FormBuilder);
   private readonly route = inject(ActivatedRoute);
+  private readonly api = inject(ChiraApiService);
+  private submissionKey: string | null = null;
+  private submissionPayload = '';
+
 
   readonly serviceQuestions = SERVICE_QUESTIONS;
   readonly details = this.fb.nonNullable.record<string>({});
@@ -45,26 +50,6 @@ export class FormularioComponent implements OnDestroy {
   get selectedQuestions() {
     return this.serviceQuestions.filter((block) => this.isSelected(block.service));
   }
-
-  private budgetDetails(): Record<string, string> {
-    const answers: Record<string, string> = {};
-
-    for (const block of this.selectedQuestions) {
-      for (const field of block.fields) {
-        const value = this.details.controls[field.name].value.trim();
-
-        if (value) {
-          answers[`${block.service} — ${field.label}`] = value;
-        }
-      }
-    }
-
-    return answers;
-  }
-
-
-  private readonly accessKey: string =
-    '8750e45d-4d4b-482f-afe6-8cffd18cfab8';
 
   readonly addressSuggestions = signal<{ value: string; locality: string; postcode: string }[]>([]);
   readonly addressSuggestionsOpen = signal(false);
@@ -74,7 +59,6 @@ export class FormularioComponent implements OnDestroy {
   private addressController?: AbortController;
   private addressSearchVersion = 0;
 
-  private controller?: AbortController;
   private destroyed = false;
 
   readonly status = signal<FormStatus>('idle');
@@ -574,17 +558,6 @@ export class FormularioComponent implements OnDestroy {
       return;
     }
 
-    const clave = this.accessKey.trim();
-
-    if (!clave) {
-      this.errorMessage.set(
-        'El envío todavía no está configurado. Puedes llamarnos al 610 92 85 21.'
-      );
-
-      this.status.set('error');
-      return;
-    }
-
     const values = this.form.getRawValue();
 
     const phone = parsePhoneNumberFromString(
@@ -600,67 +573,18 @@ export class FormularioComponent implements OnDestroy {
       return;
     }
 
-    const controller = new AbortController();
-    this.controller = controller;
-
-    const timeout = window.setTimeout(
-      () => controller.abort(),
-      20000
-    );
-
     this.status.set('sending');
 
     try {
-      const response = await fetch(
-        'https://api.web3forms.com/submit',
-        {
-          method: 'POST',
-
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json'
-          },
-
-          signal: controller.signal,
-
-          body: JSON.stringify({
-            access_key: clave,
-            subject: `Presupuesto: ${values.services.join(', ')}`,
-            from_name: 'Web Soluciones Chira SL',
-
-            name: `${values.firstName} ${values.lastName}`,
-            nombre: values.firstName,
-            apellidos: values.lastName,
-            email: values.email,
-
-            telefono: phone.formatInternational(),
-            telefono_internacional: phone.number,
-
-            pais_telefono: this.countries.find(
-              (country) => country.code === values.country
-            )?.name,
-
-            servicios: values.services.join(', '),
-            localidad: values.location,
-            direccion: values.street || 'No indicada',
-            codigo_postal: values.postalCode || 'No indicado',
-            piso: values.floor || 'No indicado',
-            puerta: values.door || 'No indicada',
-            escalera_bloque: values.staircase || 'No indicado',
-
-            ...this.budgetDetails(),
-            message: values.message,
-            botcheck: false
-          })
-        }
-      );
-
-      const result: { success?: boolean } =
-        await response.json();
-
-      if (!response.ok || result.success !== true) {
-        throw new Error('No se pudo confirmar el envío.');
+      const payload = { ...values, phone: phone.number };
+      const signature = JSON.stringify(payload);
+      if (!this.submissionKey || signature !== this.submissionPayload) {
+        this.submissionKey = crypto.randomUUID();
+        this.submissionPayload = signature;
       }
+      const result = await this.api.request<{ success: boolean }>('/encuestas', 'POST', payload, { 'Idempotency-Key': this.submissionKey });
+      if (!result.success) throw new Error('No se pudo confirmar el envío.');
+      this.submissionKey = null;
 
       if (!this.destroyed) {
         this.form.reset();
@@ -679,12 +603,6 @@ export class FormularioComponent implements OnDestroy {
 
         this.status.set('error');
       }
-    } finally {
-      window.clearTimeout(timeout);
-
-      if (this.controller === controller) {
-        this.controller = undefined;
-      }
     }
   }
 
@@ -698,6 +616,5 @@ export class FormularioComponent implements OnDestroy {
     clearTimeout(this.addressTimer);
     this.addressSearchVersion++;
     this.addressController?.abort();
-    this.controller?.abort();
   }
 }

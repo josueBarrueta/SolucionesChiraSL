@@ -1,0 +1,105 @@
+<section aria-labelledby="encuestas-title">
+  <div class="heading">
+    <div><p class="eyebrow">GESTIÓN DE SOLICITUDES</p><h1 id="encuestas-title">Encuestas</h1>
+      <p class="subtitle">Revisa cada respuesta y organiza el siguiente paso.</p></div>
+    <button class="clear" type="button" [disabled]="cargando" (click)="cargar()"><i class="pi pi-refresh" aria-hidden="true"></i> Actualizar</button>
+  </div>
+
+  @if (errorCarga) {
+    <p class="demo-notice" role="alert">{{ errorCarga }}</p>
+  }
+  @if (cargando) { <p class="demo-notice" role="status">Cargando solicitudes…</p> }
+
+  <div class="summary">
+    <article><span>Solicitudes activas</span><strong>{{ activas }}</strong></article>
+    <article><span>Nuevas</span><strong>{{ totalEstado('Nueva') }}</strong></article>
+    <article><span>Presupuestos enviados</span><strong>{{ totalEstado('Presupuesto enviado') }}</strong></article>
+    <article><span>Aceptadas</span><strong>{{ totalEstado('Aceptado') }}</strong></article>
+  </div>
+
+  <div class="tabs" aria-label="Vista de solicitudes">
+    <button type="button" [class.active]="!verArchivadas" [attr.aria-pressed]="!verArchivadas" (click)="mostrarArchivadas(false)">Activas <span>{{ activas }}</span></button>
+    <button type="button" [class.active]="verArchivadas" [attr.aria-pressed]="verArchivadas" (click)="mostrarArchivadas(true)">Archivadas <span>{{ archivadas }}</span></button>
+  </div>
+
+  <form class="filters" (ngSubmit)="buscar()">
+    <label class="search">Buscar<input type="search" placeholder="Número, nombre o localidad…" name="busqueda" [(ngModel)]="busqueda" /></label>
+    <label>Servicio<select name="servicio" [(ngModel)]="servicio"><option value="">Todos los servicios</option>
+      @for (item of servicios; track item) { <option [value]="item">{{ item }}</option> }
+    </select></label>
+    <label>Estado<select name="estado" [(ngModel)]="estado"><option value="">Todos los estados</option>
+      @for (item of estados; track item) { <option [value]="item">{{ item }}</option> }
+    </select></label>
+    <label class="date-filter">Fecha<input type="date" name="fechaFiltro" [(ngModel)]="fechaFiltro" /></label>
+    <div class="filter-actions">
+      <button class="search-button" type="submit"><i class="pi pi-search" aria-hidden="true"></i> Buscar</button>
+      <button class="clear" type="button" (click)="limpiarFiltros()">Limpiar</button>
+    </div>
+  </form>
+
+  <div class="content">
+    <div class="list-card">
+      <div class="list-heading"><h2>{{ verArchivadas ? 'Solicitudes archivadas' : 'Solicitudes recibidas' }}</h2><span aria-live="polite">{{ filtradas.length }} resultados</span></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th scope="col">Recibida</th><th scope="col">Cliente</th><th scope="col">Servicio</th><th scope="col">Estado</th><th scope="col">Detalle</th></tr></thead>
+          <tbody>
+            @for (encuesta of filtradas; track encuesta.id) {
+              <tr [class.selected]="seleccionada?.id === encuesta.id">
+                <td data-label="Recibida">{{ fechaVisible(encuesta.fecha) }}</td>
+                <td data-label="Cliente"><strong>{{ encuesta.nombre }}</strong><small class="reference">{{ referencia(encuesta) }} · {{ encuesta.localidad }}</small><small>{{ encuesta.email }}</small></td>
+                <td data-label="Servicio">{{ encuesta.servicios.join(', ') }}</td>
+                <td data-label="Estado"><span class="badge" [class.new]="encuesta.estado === 'Nueva'" [class.review]="encuesta.estado === 'En revisión'">{{ encuesta.estado }}</span></td>
+                <td><button type="button" class="view" (click)="abrir(encuesta)" [attr.aria-label]="'Ver respuesta de ' + encuesta.nombre" [attr.aria-controls]="seleccionada ? 'detalle-encuesta' : null">Ver respuesta <i class="pi pi-arrow-right" aria-hidden="true"></i></button></td>
+              </tr>
+            } @empty {
+              <tr><td colspan="5" class="empty"><i class="pi pi-search" aria-hidden="true"></i><h3>{{ verArchivadas ? 'No hay solicitudes archivadas con estos filtros' : 'No hay solicitudes con estos filtros' }}</h3><p>{{ encuestas.length ? 'Prueba con otro nombre o cambia los filtros.' : 'Las solicitudes recibidas desde el formulario aparecerán aquí.' }}</p><button class="view" type="button" (click)="limpiarFiltros()">Limpiar filtros</button></td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <p class="save-feedback" role="status">{{ mensajeGuardado }}</p>
+  </div>
+</section>
+
+<dialog #respuestaModal class="response-modal" aria-labelledby="detail-title"
+  (cancel)="$event.preventDefault(); cerrarModal()" (click)="cerrarDesdeFondo($event)">
+    @if (seleccionada; as encuesta) {
+      <section class="detail" id="detalle-encuesta" aria-labelledby="detail-title">
+        <div class="detail-heading"><span class="eyebrow">SOLICITUD · {{ referencia(encuesta) }}</span><button type="button" class="close" aria-label="Cerrar detalle" [disabled]="guardando" (click)="cerrarModal()" autofocus><i class="pi pi-times" aria-hidden="true"></i></button></div>
+        <h2 id="detail-title">{{ encuesta.nombre }}</h2><p class="detail-meta">{{ encuesta.servicios.join(', ') }} · {{ fechaVisible(encuesta.fecha) }}</p>
+        <div class="contact"><i class="pi pi-envelope" aria-hidden="true"></i><span>{{ encuesta.email }}</span></div>
+        <div class="contact"><i class="pi pi-phone" aria-hidden="true"></i><span>{{ encuesta.telefono }}</span></div>
+        <div class="contact-actions">
+          <a [href]="whatsapp(encuesta)" target="_blank" rel="noopener noreferrer"><i class="pi pi-whatsapp" aria-hidden="true"></i> WhatsApp</a>
+          <a [href]="correo(encuesta)"><i class="pi pi-envelope" aria-hidden="true"></i> Correo</a>
+        </div>
+        <h3 class="section-title">Lugar del trabajo</h3>
+        <dl class="address">
+          <div><dt>Localidad</dt><dd>{{ encuesta.localidad }}</dd></div>
+          <div><dt>Calle y número</dt><dd>{{ encuesta.direccion }}</dd></div>
+          <div><dt>Código postal</dt><dd>{{ encuesta.codigoPostal }}</dd></div>
+          <div><dt>Piso · Puerta · Escalera / bloque</dt><dd>{{ encuesta.piso }} · {{ encuesta.puerta }} · {{ encuesta.escalera }}</dd></div>
+        </dl>
+        <h3 class="section-title">Descripción del trabajo</h3>
+        <p class="message">{{ encuesta.mensaje }}</p>
+        <label class="status-label">Estado de la solicitud<select [disabled]="guardando" [(ngModel)]="encuesta.estado">
+          @for (item of estados; track item) { <option [value]="item">{{ item }}</option> }
+        </select></label>
+        <label class="work-date">Fecha prevista del trabajo<input type="date" [disabled]="guardando" [(ngModel)]="encuesta.fechaTrabajo" /></label>
+        <p class="notes-hint">Fecha de seguimiento, distinta de la recepción de la encuesta.</p>
+        <h3 class="section-title">Respuestas del formulario</h3>
+        <dl>@for (respuesta of encuesta.respuestas; track respuesta.pregunta) {
+          <div><dt>{{ respuesta.pregunta }}</dt><dd>{{ respuesta.respuesta }}</dd></div>
+        }</dl>
+        <label class="notes-label">Notas internas<textarea rows="4" maxlength="3000" [disabled]="guardando" placeholder="Añade un recordatorio o el siguiente paso…" [(ngModel)]="encuesta.notas"></textarea></label>
+        <div class="detail-actions">
+          <button class="search-button" type="button" [disabled]="guardando" (click)="guardar()"><i class="pi pi-save" aria-hidden="true"></i> {{ guardando ? 'Guardando…' : 'Guardar cambios' }}</button>
+          <button class="archive-button" type="button" [disabled]="guardando" (click)="archivar(encuesta)"><i class="pi pi-folder" aria-hidden="true"></i> {{ encuesta.archivada ? 'Restaurar solicitud' : 'Archivar solicitud' }}</button>
+        </div>
+        <p class="save-feedback" role="status">{{ mensajeGuardado }}</p>
+      </section>
+    }
+</dialog>
