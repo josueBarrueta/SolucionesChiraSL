@@ -63,6 +63,7 @@ export class AdminEncuestasComponent implements OnDestroy {
   private filtrosAplicados = { busqueda: '', servicio: '', estado: '', fechaFiltro: '' };
   seleccionada: Encuesta | null = null;
   verArchivadas = false;
+  verTodas = false;
   mensajeGuardado = '';
   readonly estados: Estado[] = ['Nueva', 'En revisión', 'Contactado', 'Presupuesto enviado', 'Aceptado', 'Atendida'];
   readonly servicios = [...SERVICE_QUESTIONS.map(block => block.service), 'Otra consulta'];
@@ -77,7 +78,7 @@ export class AdminEncuestasComponent implements OnDestroy {
       (!estado || e.estado === estado) &&
       (!fechaFiltro || e.fecha === fechaFiltro) &&
       (!this.soloPendientes || ['Nueva', 'En revisión'].includes(e.estado)) &&
-      e.archivada === this.verArchivadas
+      (this.verTodas || e.archivada === this.verArchivadas)
     );
   }
 
@@ -103,6 +104,7 @@ export class AdminEncuestasComponent implements OnDestroy {
   }
 
   mostrarArchivadas(archivadas: boolean): void {
+    this.verTodas = false;
     this.verArchivadas = archivadas;
     this.seleccionada = null;
     this.limpiarFiltros();
@@ -121,6 +123,8 @@ export class AdminEncuestasComponent implements OnDestroy {
     try {
       this.encuestas = (await this.api.listar()).encuestas;
       const params = this.route.snapshot.queryParamMap;
+      this.verArchivadas = params.get('archivadas') === 'true';
+      this.verTodas = params.get('todas') === 'true';
       const estado = params.get('estado');
       this.estado = this.estados.includes(estado as Estado) ? estado! : '';
       this.buscar();

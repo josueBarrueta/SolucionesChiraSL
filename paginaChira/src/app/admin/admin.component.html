@@ -69,43 +69,22 @@
 </a>
 </div>
     <div class="stats" aria-label="Resumen de solicitudes">
-<a class="stat-card" routerLink="/admin/encuestas" [queryParams]="{}">
-<span class="stat-icon">
-<i class="pi pi-inbox" aria-hidden="true">
-</i>
-</span>
-<p>Recibidas</p>
-<strong>{{ cargando || error ? '—' : encuestas.length }}</strong>
-<small>Incluye las archivadas</small>
-</a>
-<a class="stat-card" routerLink="/admin/encuestas" [queryParams]="{ estado: 'Nueva' }">
-<span class="stat-icon">
-<i class="pi pi-bell" aria-hidden="true">
-</i>
-</span>
-<p>Nuevas</p>
-<strong>{{ cargando || error ? '—' : nuevas }}</strong>
-<small>Sin revisar · activas</small>
-</a>
-<a class="stat-card" routerLink="/admin/encuestas" [queryParams]="{ pendientes: 'true' }">
-<span class="stat-icon">
-<i class="pi pi-clock" aria-hidden="true">
-</i>
-</span>
-<p>Pendientes de revisar</p>
-<strong>{{ cargando || error ? '—' : pendientes }}</strong>
-<small>Nuevas y en revisión · activas</small>
-</a>
-<a class="stat-card" routerLink="/admin/encuestas" [queryParams]="{ estado: 'Atendida' }">
-<span class="stat-icon">
-<i class="pi pi-check-circle" aria-hidden="true">
-</i>
-</span>
-<p>Completadas</p>
-<strong>{{ cargando || error ? '—' : completadas }}</strong>
-<small>Atendidas · activas</small>
-</a>
-</div>
+      <a class="stat-card" routerLink="/admin/encuestas" [queryParams]="{ todas: 'true' }">
+        <span class="stat-icon"><i class="pi pi-inbox" aria-hidden="true"></i></span>
+        <p>Recibidas</p><strong>{{ cargando || error ? '—' : encuestas.length }}</strong><small>Incluye las archivadas</small>
+      </a>
+      @for (opcion of estadosResumen; track opcion.estado) {
+        <a class="stat-card" routerLink="/admin/encuestas" [queryParams]="{ estado: opcion.estado }">
+          <span class="stat-icon"><i [class]="'pi pi-' + opcion.icono" aria-hidden="true"></i></span>
+          <p>{{ opcion.titulo }}</p><strong>{{ cargando || error ? '—' : totalEstado(opcion.estado) }}</strong><small>Solicitudes activas</small>
+        </a>
+      }
+      <a class="stat-card" routerLink="/admin/encuestas" [queryParams]="{ archivadas: 'true' }">
+        <span class="stat-icon"><i class="pi pi-folder" aria-hidden="true"></i></span>
+        <p>Archivadas</p><strong>{{ cargando || error ? '—' : archivadas }}</strong><small>Todos los estados</small>
+      </a>
+    </div>
+
 @if (!cargando && !error) {<section class="responses" aria-label="Últimas solicitudes">
 <div class="responses-heading">
 <div>
