@@ -12,11 +12,12 @@
   }
   @if (cargando) { <p class="demo-notice" role="status">Cargando solicitudes…</p> }
 
-  <div class="summary">
-    <article><span>Solicitudes activas</span><strong>{{ activas }}</strong></article>
-    <article><span>Nuevas</span><strong>{{ totalEstado('Nueva') }}</strong></article>
-    <article><span>Presupuestos enviados</span><strong>{{ totalEstado('Presupuesto enviado') }}</strong></article>
-    <article><span>Aceptadas</span><strong>{{ totalEstado('Aceptado') }}</strong></article>
+  <div class="summary" aria-label="Contadores de solicitudes">
+    <button type="button" (click)="mostrarArchivadas(false)"><span>Activas</span><strong>{{ cargando || errorCarga ? '—' : activas }}</strong></button>
+    @for (item of estados; track item) {
+      <button type="button" (click)="filtrarEstado(item)"><span>{{ item }}</span><strong>{{ cargando || errorCarga ? '—' : totalEstado(item) }}</strong></button>
+    }
+    <button type="button" (click)="mostrarArchivadas(true)"><span>Archivadas</span><strong>{{ cargando || errorCarga ? '—' : archivadas }}</strong></button>
   </div>
 
   <div class="tabs" aria-label="Vista de solicitudes">

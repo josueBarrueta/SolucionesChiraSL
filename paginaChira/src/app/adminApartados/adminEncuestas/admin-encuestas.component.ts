@@ -162,6 +162,12 @@ export class AdminEncuestasComponent implements OnDestroy {
     return `mailto:${encuesta.email}?subject=${encodeURIComponent('Tu solicitud ' + encuesta.referencia + ' · Soluciones Chira')}`;
   }
 
+  filtrarEstado(estado: Estado): void {
+    this.mostrarArchivadas(false);
+    this.estado = estado;
+    this.buscar();
+  }
+
   totalEstado(estado: Estado): number {
     return this.encuestas.filter(e => !e.archivada && e.estado === estado).length;
   }

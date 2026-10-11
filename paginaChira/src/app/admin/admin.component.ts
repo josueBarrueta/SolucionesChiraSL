@@ -1,7 +1,7 @@
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Component, DestroyRef, inject } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { ChiraApiService, Encuesta, EstadoEncuesta } from '../shared/chira-api.service';
+import { ChiraApiService, Encuesta } from '../shared/chira-api.service';
 import { AuthService } from '../login/auth.service';
 
 @Component({
@@ -28,18 +28,6 @@ export class AdminComponent {
       if (event instanceof NavigationEnd && this.isResumen) void this.actualizar();
     });
   }
-  readonly estadosResumen: { estado: EstadoEncuesta; titulo: string; icono: string }[] = [
-    { estado: 'Nueva', titulo: 'Nuevas', icono: 'bell' },
-    { estado: 'En revisión', titulo: 'En revisión', icono: 'search' },
-    { estado: 'Contactado', titulo: 'Contactadas', icono: 'phone' },
-    { estado: 'Presupuesto enviado', titulo: 'Presupuesto enviado', icono: 'send' },
-    { estado: 'Aceptado', titulo: 'Aceptadas', icono: 'thumbs-up' },
-    { estado: 'Atendida', titulo: 'Atendidas', icono: 'check-circle' }
-  ];
-  totalEstado(estado: EstadoEncuesta): number {
-    return this.encuestas.filter(e => !e.archivada && e.estado === estado).length;
-  }
-  get archivadas(): number { return this.encuestas.filter(e => e.archivada).length; }
   get nuevas(): number { return this.encuestas.filter(e => !e.archivada && e.estado === 'Nueva').length; }
   get completadas(): number { return this.encuestas.filter(e => !e.archivada && e.estado === 'Atendida').length; }
   get necesitanAtencion(): Encuesta[] { return this.encuestas.filter(e => !e.archivada && ['Nueva', 'En revisión'].includes(e.estado)).slice(0, 5); }
