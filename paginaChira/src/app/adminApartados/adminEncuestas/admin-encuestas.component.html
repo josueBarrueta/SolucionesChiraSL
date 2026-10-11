@@ -12,6 +12,12 @@
   }
   @if (cargando) { <p class="demo-notice" role="status">Cargando solicitudes…</p> }
 
+  <details class="status-dropdown">
+    <summary>
+      <span class="dropdown-label"><i class="pi pi-filter" aria-hidden="true"></i> Estados de las solicitudes</span>
+      <span class="dropdown-selection">{{ estadoVisible }}</span>
+      <i class="pi pi-chevron-down dropdown-chevron" aria-hidden="true"></i>
+    </summary>
   <div class="summary" role="group" aria-label="Filtrar solicitudes por estado">
     <button class="summary-total" type="button" [class.selected]="estadoSeleccionado('')" [attr.aria-pressed]="estadoSeleccionado('')" (click)="mostrarArchivadas(false)">
       <i class="pi pi-inbox" aria-hidden="true"></i><span>Activas</span><strong>{{ cargando || errorCarga ? '—' : activas }}</strong>
@@ -27,6 +33,8 @@
       <i class="pi pi-folder" aria-hidden="true"></i><span>Archivadas</span><strong>{{ cargando || errorCarga ? '—' : archivadas }}</strong>
     </button>
   </div>
+
+  </details>
 
   <form class="filters" (ngSubmit)="buscar()">
     <label class="search">Buscar<input type="search" placeholder="Número, nombre o localidad…" name="busqueda" [(ngModel)]="busqueda" /></label>

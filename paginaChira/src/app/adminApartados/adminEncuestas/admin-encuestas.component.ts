@@ -162,6 +162,13 @@ export class AdminEncuestasComponent implements OnDestroy {
     return `mailto:${encuesta.email}?subject=${encodeURIComponent('Tu solicitud ' + encuesta.referencia + ' · Soluciones Chira')}`;
   }
 
+  get estadoVisible(): string {
+    if (this.verTodas) return 'Todas las solicitudes';
+    if (this.verArchivadas) return 'Archivadas';
+    if (this.soloPendientes) return 'Pendientes de revisar';
+    return this.filtrosAplicados.estado || 'Activas';
+  }
+
   readonly iconosEstado: Record<Estado, string> = {
     'Nueva': 'pi-bell', 'En revisión': 'pi-search', 'Contactado': 'pi-phone',
     'Presupuesto enviado': 'pi-send', 'Aceptado': 'pi-thumbs-up', 'Atendida': 'pi-check-circle'
