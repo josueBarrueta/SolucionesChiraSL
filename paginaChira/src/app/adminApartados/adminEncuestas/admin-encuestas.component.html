@@ -12,17 +12,20 @@
   }
   @if (cargando) { <p class="demo-notice" role="status">Cargando solicitudes…</p> }
 
-  <div class="summary" aria-label="Contadores de solicitudes">
-    <button type="button" (click)="mostrarArchivadas(false)"><span>Activas</span><strong>{{ cargando || errorCarga ? '—' : activas }}</strong></button>
+  <div class="summary" role="group" aria-label="Filtrar solicitudes por estado">
+    <button class="summary-total" type="button" [class.selected]="estadoSeleccionado('')" [attr.aria-pressed]="estadoSeleccionado('')" (click)="mostrarArchivadas(false)">
+      <i class="pi pi-inbox" aria-hidden="true"></i><span>Activas</span><strong>{{ cargando || errorCarga ? '—' : activas }}</strong>
+    </button>
+    <span class="summary-divider" aria-hidden="true"></span>
     @for (item of estados; track item) {
-      <button type="button" (click)="filtrarEstado(item)"><span>{{ item }}</span><strong>{{ cargando || errorCarga ? '—' : totalEstado(item) }}</strong></button>
+      <button type="button" [class.selected]="estadoSeleccionado(item)" [attr.aria-pressed]="estadoSeleccionado(item)" (click)="filtrarEstado(item)">
+        <i [class]="'pi ' + iconosEstado[item]" aria-hidden="true"></i><span>{{ item }}</span><strong>{{ cargando || errorCarga ? '—' : totalEstado(item) }}</strong>
+      </button>
     }
-    <button type="button" (click)="mostrarArchivadas(true)"><span>Archivadas</span><strong>{{ cargando || errorCarga ? '—' : archivadas }}</strong></button>
-  </div>
-
-  <div class="tabs" aria-label="Vista de solicitudes">
-    <button type="button" [class.active]="!verArchivadas" [attr.aria-pressed]="!verArchivadas" (click)="mostrarArchivadas(false)">Activas <span>{{ activas }}</span></button>
-    <button type="button" [class.active]="verArchivadas" [attr.aria-pressed]="verArchivadas" (click)="mostrarArchivadas(true)">Archivadas <span>{{ archivadas }}</span></button>
+    <span class="summary-divider" aria-hidden="true"></span>
+    <button class="summary-total" type="button" [class.selected]="verArchivadas && !verTodas" [attr.aria-pressed]="verArchivadas && !verTodas" (click)="mostrarArchivadas(true)">
+      <i class="pi pi-folder" aria-hidden="true"></i><span>Archivadas</span><strong>{{ cargando || errorCarga ? '—' : archivadas }}</strong>
+    </button>
   </div>
 
   <form class="filters" (ngSubmit)="buscar()">

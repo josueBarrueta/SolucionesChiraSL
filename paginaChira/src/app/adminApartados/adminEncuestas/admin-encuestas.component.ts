@@ -162,6 +162,15 @@ export class AdminEncuestasComponent implements OnDestroy {
     return `mailto:${encuesta.email}?subject=${encodeURIComponent('Tu solicitud ' + encuesta.referencia + ' · Soluciones Chira')}`;
   }
 
+  readonly iconosEstado: Record<Estado, string> = {
+    'Nueva': 'pi-bell', 'En revisión': 'pi-search', 'Contactado': 'pi-phone',
+    'Presupuesto enviado': 'pi-send', 'Aceptado': 'pi-thumbs-up', 'Atendida': 'pi-check-circle'
+  };
+
+  estadoSeleccionado(estado: Estado | ''): boolean {
+    return !this.verTodas && !this.verArchivadas && !this.soloPendientes && this.filtrosAplicados.estado === estado;
+  }
+
   filtrarEstado(estado: Estado): void {
     this.mostrarArchivadas(false);
     this.estado = estado;

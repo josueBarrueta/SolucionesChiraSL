@@ -15,11 +15,43 @@ h1 { margin-top: 10px; font-size: 36px; letter-spacing: -1px; }
 .subtitle { color: var(--muted); margin-top: 12px; font-size: 14px; line-height: 1.7; }
 .preview { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 30px; background: #edf3e5; color: var(--green); font-size: 12px; white-space: nowrap; }
 .demo-notice { display: flex; align-items: baseline; gap: 10px; padding: 14px 18px; margin: 24px 0; border: 1px solid #d5e1c6; border-radius: 12px; color: var(--green-dark); background: #edf3e5; font-size: 13px; line-height: 1.6; }
-.summary { display: grid; grid-template-columns: repeat(8, minmax(115px, 1fr)); gap: 10px; margin: 24px 0; padding: 4px 4px 10px; overflow-x: auto; }
-.summary button { padding: 16px 12px; background: #fff; border: 1px solid var(--border); border-radius: 12px; text-align: left; }
-.summary button:hover { background: #edf3e5; border-color: var(--green); }
-.summary span { display: block; min-height: 32px; line-height: 1.4; font-size: 12px; color: var(--muted); }
-.summary strong { display: block; margin-top: 12px; font-size: 30px; color: var(--green-dark); }
+.summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 24px 0;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: #fff;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #c3cbb9 transparent;
+}
+.summary button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex: 1 0 auto;
+  min-height: 46px;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--muted);
+  white-space: nowrap;
+  font-size: 12px;
+  transition: background .15s, color .15s;
+}
+.summary button > .pi { color: var(--green); font-size: 14px; }
+.summary strong { display: inline-grid; place-items: center; min-width: 24px; height: 24px; padding: 0 6px; border-radius: 7px; background: #edf3e5; color: var(--green-dark); font-size: 12px; }
+.summary button:hover { background: #f1f5eb; color: var(--green-dark); }
+.summary button.selected { background: var(--green-dark); color: #fff; }
+.summary button.selected > .pi { color: #b4d388; }
+.summary button.selected strong { background: #b4d388; color: var(--green-dark); }
+.summary .summary-total { font-weight: 600; }
+.summary-divider { flex: 0 0 1px; height: 28px; margin: 0 4px; background: var(--border); }
 .filters { display: flex; flex-wrap: wrap; align-items: end; gap: 14px; margin-bottom: 24px; }
 label { display: flex; flex-direction: column; gap: 8px; color: var(--green-dark); font-size: 12px; font-weight: 600; min-width: 0; }
 .filters label { flex: 1 1 150px; }
