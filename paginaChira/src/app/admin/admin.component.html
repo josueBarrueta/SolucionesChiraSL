@@ -1,28 +1,39 @@
 <div class="admin-layout">
   <aside class="sidebar" aria-label="Panel de administración">
     <a class="brand" routerLink="/admin" aria-label="Soluciones Chira, administración">
-      <span class="brand-icon"><i class="pi pi-building" aria-hidden="true"></i></span>
-      <span><small>SOLUCIONES</small><strong>Chira <span>SL</span></strong></span>
+      <span class="brand-icon">
+<i class="pi pi-building" aria-hidden="true">
+</i>
+</span>
+      <span>
+<small>SOLUCIONES</small>
+<strong>Chira <span>SL</span>
+</strong>
+</span>
     </a>
 
     <p class="sidebar-label">ADMINISTRACIÓN</p>
     <nav aria-label="Navegación del panel">
       <a class="nav-link" routerLink="/admin" routerLinkActive="active"
         [routerLinkActiveOptions]="{ exact: true }" ariaCurrentWhenActive="page">
-        <i class="pi pi-chart-bar" aria-hidden="true"></i> Resumen
+        <i class="pi pi-chart-bar" aria-hidden="true">
+</i> Resumen
       </a>
       <a class="nav-link" routerLink="/admin/encuestas" routerLinkActive="active"
         ariaCurrentWhenActive="page">
-        <i class="pi pi-inbox" aria-hidden="true"></i> Encuestas
+        <i class="pi pi-inbox" aria-hidden="true">
+</i> Encuestas
       </a>
     </nav>
 
     <div class="sidebar-bottom">
       <a class="nav-link" routerLink="/">
-        <i class="pi pi-external-link" aria-hidden="true"></i> Ver página web
+        <i class="pi pi-external-link" aria-hidden="true">
+</i> Ver página web
       </a>
       <button class="nav-link logout" type="button" [disabled]="saliendo" (click)="cerrarSesion()">
-        <i class="pi pi-sign-out" aria-hidden="true"></i> Cerrar sesión
+        <i class="pi pi-sign-out" aria-hidden="true">
+</i> Cerrar sesión
       </button>
     </div>
   </aside>
@@ -36,52 +47,127 @@
         <h1 id="admin-title">Panel de administración</h1>
         <p class="subtitle">Un espacio para gestionar las encuestas de tu empresa.</p>
       </div>
-      <span class="owner-badge"><i class="pi pi-user" aria-hidden="true"></i> Propietario</span>
+      <span class="owner-badge">
+<i class="pi pi-user" aria-hidden="true">
+</i> Propietario</span>
     </div>
 
+    <div class="summary-toolbar">
+<p aria-live="polite">{{ cargando ? 'Actualizando…' : ultimaActualizacion ? 'Última actualización: ' + ultimaActualizacion : 'Sin actualizar' }}</p>
+<button type="button" class="refresh" [disabled]="cargando" (click)="actualizar()">
+<i class="pi pi-refresh" aria-hidden="true">
+</i> Actualizar</button>
+</div>
     <div class="welcome">
-      <div>
-        <p class="welcome-label">TU EMPRESA, EN UN SOLO LUGAR</p>
-        <h2>Bienvenido al panel.</h2>
-        <p>Aquí puedes consultar las respuestas y dar seguimiento a cada solicitud.</p>
-      </div>
-      <i class="pi pi-briefcase welcome-icon" aria-hidden="true"></i>
-    </div>
-
-    <div class="stats" aria-label="Resumen de encuestas">
-      <article class="stat-card">
-        <span class="stat-icon"><i class="pi pi-inbox" aria-hidden="true"></i></span>
-        <p>Encuestas recibidas</p><strong>{{ cargando || error ? '—' : encuestas.length }}</strong><small>Datos recibidos</small>
-      </article>
-      <article class="stat-card">
-        <span class="stat-icon"><i class="pi pi-clock" aria-hidden="true"></i></span>
-        <p>Pendientes de revisar</p><strong>{{ cargando || error ? '—' : pendientes }}</strong><small>Datos recibidos</small>
-      </article>
-      <article class="stat-card">
-        <span class="stat-icon"><i class="pi pi-check-circle" aria-hidden="true"></i></span>
-        <p>Solicitudes revisadas</p><strong>{{ cargando || error ? '—' : revisadas }}</strong><small>Datos recibidos</small>
-      </article>
-    </div>
-
-    <section class="responses" id="encuestas" aria-labelledby="responses-title">
-      <div class="responses-heading">
-        <div><h2 id="responses-title">Últimas encuestas</h2><p>Consulta y gestiona las solicitudes recibidas.</p></div>
-        <a class="status" routerLink="/admin/encuestas">Ver todas las encuestas</a>
-      </div>
-      <div class="empty-state">
-        @if (cargando) { <p>Cargando solicitudes…</p> }
-        @else if (error) { <p>No se pudo obtener el resumen.</p> }
-        @else if (!encuestas.length) {
-          <span class="empty-icon"><i class="pi pi-file" aria-hidden="true"></i></span>
-          <h3>Todavía no hay encuestas</h3>
-          <p>Las solicitudes que se envíen desde el formulario aparecerán aquí.</p>
-        } @else {
-          @for (encuesta of encuestas.slice(0, 5); track encuesta.id) {
-            <p><strong>{{ encuesta.referencia }} · {{ encuesta.nombre }}</strong><br />{{ encuesta.servicios.join(', ') }} · {{ encuesta.estado }}</p>
-          }
-        }
-      </div>
-    </section>
+<div>
+<p class="welcome-label">TU EMPRESA, EN UN SOLO LUGAR</p>
+<h2>¿Qué necesita atención hoy?</h2>
+<p>{{ cargando || error ? 'Consulta y organiza las solicitudes de tu empresa.' : pendientes ? 'Tienes ' + pendientes + ' solicitudes pendientes de revisar.' : 'No hay solicitudes pendientes de revisar.' }}</p>
+</div>
+<a class="welcome-link" routerLink="/admin/encuestas" [queryParams]="{ pendientes: 'true' }">Revisar pendientes <i class="pi pi-arrow-right" aria-hidden="true">
+</i>
+</a>
+</div>
+    <div class="stats" aria-label="Resumen de solicitudes">
+<a class="stat-card" routerLink="/admin/encuestas" [queryParams]="{}">
+<span class="stat-icon">
+<i class="pi pi-inbox" aria-hidden="true">
+</i>
+</span>
+<p>Recibidas</p>
+<strong>{{ cargando || error ? '—' : encuestas.length }}</strong>
+<small>Incluye las archivadas</small>
+</a>
+<a class="stat-card" routerLink="/admin/encuestas" [queryParams]="{ estado: 'Nueva' }">
+<span class="stat-icon">
+<i class="pi pi-bell" aria-hidden="true">
+</i>
+</span>
+<p>Nuevas</p>
+<strong>{{ cargando || error ? '—' : nuevas }}</strong>
+<small>Sin revisar · activas</small>
+</a>
+<a class="stat-card" routerLink="/admin/encuestas" [queryParams]="{ pendientes: 'true' }">
+<span class="stat-icon">
+<i class="pi pi-clock" aria-hidden="true">
+</i>
+</span>
+<p>Pendientes de revisar</p>
+<strong>{{ cargando || error ? '—' : pendientes }}</strong>
+<small>Nuevas y en revisión · activas</small>
+</a>
+<a class="stat-card" routerLink="/admin/encuestas" [queryParams]="{ estado: 'Atendida' }">
+<span class="stat-icon">
+<i class="pi pi-check-circle" aria-hidden="true">
+</i>
+</span>
+<p>Completadas</p>
+<strong>{{ cargando || error ? '—' : completadas }}</strong>
+<small>Atendidas · activas</small>
+</a>
+</div>
+@if (!cargando && !error) {<section class="responses" aria-label="Últimas solicitudes">
+<div class="responses-heading">
+<div>
+<h2>Últimas solicitudes</h2>
+<p>Las cinco más recientes, incluidas las archivadas.</p>
+</div>
+<a class="status" routerLink="/admin/encuestas">Ver encuestas</a>
+</div>@for (encuesta of encuestas.slice(0, 5); track encuesta.id) {<a class="request-row" routerLink="/admin/encuestas" [queryParams]="{ respuesta: encuesta.id }">
+<span class="request-person">
+<small>{{ encuesta.referencia }} · {{ fechaVisible(encuesta.fecha) }}</small>
+<strong>{{ encuesta.nombre }}</strong>
+<span>{{ encuesta.servicios.join(', ') }}</span>
+</span>
+<span class="request-state">{{ encuesta.archivada ? 'Archivada' : encuesta.estado }}</span>
+<i class="pi pi-angle-right" aria-hidden="true">
+</i>
+</a>}
+@empty {<div class="empty-state">
+<p>Todavía no hay solicitudes. Las encuestas de la web aparecerán aquí.</p>
+</div>}</section>
+<section class="responses" aria-label="Necesitan atención">
+<div class="responses-heading">
+<div>
+<h2>Necesitan atención</h2>
+<p>Solicitudes nuevas o en revisión.</p>
+</div>
+<a class="status" routerLink="/admin/encuestas">Ver encuestas</a>
+</div>@for (encuesta of necesitanAtencion; track encuesta.id) {<a class="request-row" routerLink="/admin/encuestas" [queryParams]="{ respuesta: encuesta.id }">
+<span class="request-person">
+<small>{{ encuesta.referencia }} · {{ fechaVisible(encuesta.fecha) }}</small>
+<strong>{{ encuesta.nombre }}</strong>
+<span>{{ encuesta.servicios.join(', ') }}</span>
+</span>
+<span class="request-state">{{ encuesta.archivada ? 'Archivada' : encuesta.estado }}</span>
+<i class="pi pi-angle-right" aria-hidden="true">
+</i>
+</a>}
+@empty {<div class="empty-state">
+<p>Todo al día. No hay solicitudes pendientes de revisar.</p>
+</div>}</section>
+<section class="responses" aria-label="Próximos trabajos">
+<div class="responses-heading">
+<div>
+<h2>Próximos trabajos</h2>
+<p>Solicitudes con fecha de trabajo asignada.</p>
+</div>
+<a class="status" routerLink="/admin/encuestas">Ver encuestas</a>
+</div>@for (encuesta of proximosTrabajos; track encuesta.id) {<a class="request-row" routerLink="/admin/encuestas" [queryParams]="{ respuesta: encuesta.id }">
+<span class="request-person">
+<small>{{ encuesta.referencia }} · {{ fechaVisible(encuesta.fechaTrabajo) }}</small>
+<strong>{{ encuesta.nombre }}</strong>
+<span>{{ encuesta.servicios.join(', ') }}</span>
+</span>
+<span class="request-state">{{ encuesta.archivada ? 'Archivada' : encuesta.estado }}</span>
+<i class="pi pi-angle-right" aria-hidden="true">
+</i>
+</a>}
+@empty {<div class="empty-state">
+<p>No hay próximos trabajos con fecha asignada. Puedes añadirla al ver una respuesta.</p>
+</div>}</section>} @else { <div class="empty-state" aria-live="polite">
+<p>{{ cargando ? 'Cargando el resumen…' : 'No se pudo obtener el resumen. Pulsa Actualizar para intentarlo de nuevo.' }}</p>
+</div> }
     }
     <router-outlet />
   </section>

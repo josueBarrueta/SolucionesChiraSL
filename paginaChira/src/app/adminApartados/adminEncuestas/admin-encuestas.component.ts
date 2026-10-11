@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { SERVICE_QUESTIONS } from '../../formulario/formulario.questions';
 
 import { ApiError, ChiraApiService, Encuesta, EstadoEncuesta } from '../../shared/chira-api.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 type Estado = EstadoEncuesta;
 
 @Component({
@@ -21,6 +21,8 @@ export class AdminEncuestasComponent implements OnDestroy {
   private readonly document = inject(DOCUMENT);
   private readonly api = inject(ChiraApiService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  soloPendientes = false;
   cargando = true;
   guardando = false;
   errorCarga = '';
@@ -74,6 +76,7 @@ export class AdminEncuestasComponent implements OnDestroy {
       (!servicio || e.servicios.includes(servicio)) &&
       (!estado || e.estado === estado) &&
       (!fechaFiltro || e.fecha === fechaFiltro) &&
+      (!this.soloPendientes || ['Nueva', 'En revisión'].includes(e.estado)) &&
       e.archivada === this.verArchivadas
     );
   }
@@ -117,6 +120,13 @@ export class AdminEncuestasComponent implements OnDestroy {
     this.errorCarga = '';
     try {
       this.encuestas = (await this.api.listar()).encuestas;
+      const params = this.route.snapshot.queryParamMap;
+      const estado = params.get('estado');
+      this.estado = this.estados.includes(estado as Estado) ? estado! : '';
+      this.buscar();
+      this.soloPendientes = params.get('pendientes') === 'true';
+      const respuesta = this.encuestas.find(e => e.id === params.get('respuesta'));
+      if (respuesta) { this.verArchivadas = respuesta.archivada; this.abrir(respuesta); }
     } catch (error) {
       this.errorCarga = error instanceof Error ? error.message : 'No se pudieron cargar las encuestas.';
       if (error instanceof ApiError && error.status === 401) await this.router.navigate(['/login']);
@@ -157,6 +167,7 @@ export class AdminEncuestasComponent implements OnDestroy {
   }
 
   buscar(): void {
+    this.soloPendientes = false;
     this.filtrosAplicados = {
       busqueda: this.busqueda, servicio: this.servicio,
       estado: this.estado, fechaFiltro: this.fechaFiltro

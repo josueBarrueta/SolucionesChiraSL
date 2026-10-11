@@ -1,5 +1,6 @@
-import { Component, inject } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Component, DestroyRef, inject } from '@angular/core';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { ChiraApiService, Encuesta } from '../shared/chira-api.service';
 import { AuthService } from '../login/auth.service';
 
@@ -19,12 +20,29 @@ export class AdminComponent {
   error = '';
   saliendo = false;
 
-  constructor() { void this.actualizar(); }
+  ultimaActualizacion = '';
+  private readonly destroyRef = inject(DestroyRef);
+  constructor() {
+    void this.actualizar();
+    this.router.events.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(event => {
+      if (event instanceof NavigationEnd && this.isResumen) void this.actualizar();
+    });
+  }
+  get nuevas(): number { return this.encuestas.filter(e => !e.archivada && e.estado === 'Nueva').length; }
+  get completadas(): number { return this.encuestas.filter(e => !e.archivada && e.estado === 'Atendida').length; }
+  get necesitanAtencion(): Encuesta[] { return this.encuestas.filter(e => !e.archivada && ['Nueva', 'En revisión'].includes(e.estado)).slice(0, 5); }
+  get proximosTrabajos(): Encuesta[] {
+    const hoy = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Madrid' }).format(new Date());
+    return this.encuestas.filter(e => !e.archivada && e.fechaTrabajo >= hoy && e.estado !== 'Atendida')
+      .sort((a, b) => a.fechaTrabajo.localeCompare(b.fechaTrabajo)).slice(0, 5);
+  }
+  fechaVisible(fecha: string): string { return fecha.split('-').reverse().join('/'); }
+
 
   async actualizar(): Promise<void> {
     this.cargando = true;
     this.error = '';
-    try { this.encuestas = (await this.api.listar()).encuestas; }
+    try { this.encuestas = (await this.api.listar()).encuestas; this.ultimaActualizacion = new Intl.DateTimeFormat('es', { hour: '2-digit', minute: '2-digit' }).format(new Date()); }
     catch (error) { this.error = error instanceof Error ? error.message : 'No se pudieron cargar las solicitudes.'; }
     finally { this.cargando = false; }
   }
