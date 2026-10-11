@@ -1,4 +1,5 @@
-import { Component, inject } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { ChangeDetectorRef, Component, ElementRef, OnDestroy, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ApiError, ChiraApiService, Encuesta } from '../../shared/chira-api.service';
@@ -10,7 +11,39 @@ import { ApiError, ChiraApiService, Encuesta } from '../../shared/chira-api.serv
   templateUrl: './admin-agenda.component.html',
   styleUrls: ['./admin-agenda.component.scss']
 })
-export class AdminAgendaComponent {
+export class AdminAgendaComponent implements OnDestroy {
+  @ViewChild('diaModal', { static: true }) private diaModal!: ElementRef<HTMLDialogElement>;
+  private readonly document = inject(DOCUMENT);
+  private readonly changeDetector = inject(ChangeDetectorRef);
+  private previousOverflow: string | null = null;
+
+  abrirDia(fecha: string): void {
+    this.seleccion = fecha;
+    this.changeDetector.detectChanges();
+    if (!this.diaModal.nativeElement.open) {
+      this.previousOverflow = this.document.body.style.overflow;
+      this.document.body.style.overflow = 'hidden';
+      this.diaModal.nativeElement.showModal();
+    }
+  }
+  cerrarDia(): void {
+    this.diaModal.nativeElement.close();
+    this.restaurarScroll();
+  }
+  cerrarDesdeFondo(event: MouseEvent): void {
+    const dialog = this.diaModal.nativeElement;
+    if (event.target !== dialog) return;
+    const bounds = dialog.getBoundingClientRect();
+    if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) this.cerrarDia();
+  }
+  private restaurarScroll(): void {
+    if (this.previousOverflow !== null) {
+      this.document.body.style.overflow = this.previousOverflow;
+      this.previousOverflow = null;
+    }
+  }
+  ngOnDestroy(): void { this.restaurarScroll(); }
+
   private readonly api = inject(ChiraApiService);
   private readonly router = inject(Router);
   readonly hoy = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Madrid' }).format(new Date());
