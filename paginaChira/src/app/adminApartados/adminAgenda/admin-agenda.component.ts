@@ -1,0 +1,66 @@
+import { Component, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+import { ApiError, ChiraApiService, Encuesta } from '../../shared/chira-api.service';
+
+@Component({
+  selector: 'app-admin-agenda',
+  standalone: true,
+  imports: [FormsModule, RouterLink],
+  templateUrl: './admin-agenda.component.html',
+  styleUrls: ['./admin-agenda.component.scss']
+})
+export class AdminAgendaComponent {
+  private readonly api = inject(ChiraApiService);
+  private readonly router = inject(Router);
+  readonly hoy = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Madrid' }).format(new Date());
+  mes = new Date(Number(this.hoy.slice(0, 4)), Number(this.hoy.slice(5, 7)) - 1, 1);
+  seleccion = this.hoy;
+  encuestas: Encuesta[] = [];
+  cargando = true;
+  error = '';
+  mostrarFinalizadas = false;
+  readonly diasSemana = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+
+  constructor() { void this.cargar(); }
+
+  async cargar(): Promise<void> {
+    this.cargando = true;
+    this.error = '';
+    try { this.encuestas = (await this.api.listar()).encuestas; }
+    catch (error) {
+      this.error = error instanceof Error ? error.message : 'No se pudo cargar la agenda.';
+      if (error instanceof ApiError && error.status === 401) await this.router.navigate(['/login']);
+    } finally { this.cargando = false; }
+  }
+
+  private fecha(date: Date): string {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  }
+  get tituloMes(): string { return new Intl.DateTimeFormat('es', { month: 'long', year: 'numeric' }).format(this.mes); }
+  get fechaSeleccionada(): string {
+    const [year, month, day] = this.seleccion.split('-').map(Number);
+    return new Intl.DateTimeFormat('es', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(year, month - 1, day));
+  }
+  get visibles(): Encuesta[] { return this.encuestas.filter(e => !e.archivada && (this.mostrarFinalizadas || e.estado !== 'Finalizada')); }
+  get dias(): { fecha: string; numero: number; delMes: boolean; trabajos: Encuesta[] }[] {
+    const inicio = new Date(this.mes.getFullYear(), this.mes.getMonth(), 1);
+    inicio.setDate(1 - (inicio.getDay() + 6) % 7);
+    return Array.from({ length: 42 }, (_, index) => {
+      const date = new Date(inicio.getFullYear(), inicio.getMonth(), inicio.getDate() + index);
+      const fecha = this.fecha(date);
+      return { fecha, numero: date.getDate(), delMes: date.getMonth() === this.mes.getMonth(), trabajos: this.visibles.filter(e => e.fechaTrabajo === fecha) };
+    });
+  }
+  get trabajosDia(): Encuesta[] { return this.visibles.filter(e => e.fechaTrabajo === this.seleccion); }
+  get sinFecha(): Encuesta[] { return this.encuestas.filter(e => !e.archivada && e.estado === 'Aceptada' && !e.fechaTrabajo); }
+  get totalMes(): number { return this.visibles.filter(e => e.fechaTrabajo.startsWith(this.fecha(this.mes).slice(0, 7))).length; }
+  cambiarMes(delta: number): void {
+    this.mes = new Date(this.mes.getFullYear(), this.mes.getMonth() + delta, 1);
+    this.seleccion = this.fecha(this.mes);
+  }
+  irHoy(): void {
+    this.mes = new Date(Number(this.hoy.slice(0, 4)), Number(this.hoy.slice(5, 7)) - 1, 1);
+    this.seleccion = this.hoy;
+  }
+}

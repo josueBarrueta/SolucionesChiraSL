@@ -104,6 +104,10 @@ export const routes: Routes = [
       ),
     children: [
       {
+        path: 'agenda',
+        loadComponent: () => import('./adminApartados/adminAgenda/admin-agenda.component').then(m => m.AdminAgendaComponent)
+      },
+      {
         path: 'encuestas',
         loadComponent: () =>
           import('./adminApartados/adminEncuestas/admin-encuestas.component').then(

@@ -1,0 +1,50 @@
+<section aria-labelledby="agenda-title">
+  <div class="heading">
+    <div><p class="eyebrow">ORGANIZACIÓN DEL TRABAJO</p><h1 id="agenda-title">Agenda</h1><p class="subtitle">Las fechas asignadas en las encuestas, en un solo calendario.</p></div>
+    <button class="button" type="button" [disabled]="cargando" (click)="cargar()"><i class="pi pi-refresh" aria-hidden="true"></i> Actualizar</button>
+  </div>
+  @if (error) { <p class="notice" role="alert">{{ error }}</p> }
+  @if (cargando) { <p class="notice" role="status">Cargando agenda…</p> }
+  @if (!cargando && !error) {
+    <div class="agenda-layout">
+      <section class="calendar" aria-label="Calendario mensual">
+        <div class="calendar-heading">
+          <div><h2 aria-live="polite">{{ tituloMes }}</h2><p>{{ totalMes }} trabajos con fecha este mes</p></div>
+          <div class="navigation">
+            <button class="button" type="button" (click)="irHoy()">Hoy</button>
+            <button class="button icon" type="button" aria-label="Mes anterior" (click)="cambiarMes(-1)"><i class="pi pi-chevron-left" aria-hidden="true"></i></button>
+            <button class="button icon" type="button" aria-label="Mes siguiente" (click)="cambiarMes(1)"><i class="pi pi-chevron-right" aria-hidden="true"></i></button>
+          </div>
+        </div>
+        <label class="completed-filter"><input type="checkbox" [(ngModel)]="mostrarFinalizadas" /> Mostrar trabajos finalizados</label>
+        <div class="calendar-scroll">
+          <div class="month-grid">
+            @for (dia of diasSemana; track dia) { <div class="weekday">{{ dia }}</div> }
+            @for (dia of dias; track dia.fecha) {
+              <div class="day" [class.outside]="!dia.delMes" [class.today]="dia.fecha === hoy" [class.selected]="dia.fecha === seleccion">
+                <button class="day-number" type="button" [attr.aria-label]="dia.fecha + ', ' + dia.trabajos.length + ' trabajos'" [attr.aria-pressed]="dia.fecha === seleccion" [attr.aria-current]="dia.fecha === hoy ? 'date' : null" (click)="seleccion = dia.fecha">{{ dia.numero }}</button>
+                @for (trabajo of dia.trabajos.slice(0, 2); track trabajo.id) {
+                  <a class="calendar-job" [class.finished]="trabajo.estado === 'Finalizada'" routerLink="/admin/encuestas" [queryParams]="{ respuesta: trabajo.id }" [title]="trabajo.nombre + ' · ' + trabajo.servicios.join(', ')"><strong>{{ trabajo.nombre }}</strong><span>{{ trabajo.servicios.join(', ') }}</span></a>
+                }
+                @if (dia.trabajos.length > 2) { <button class="more" type="button" (click)="seleccion = dia.fecha">+{{ dia.trabajos.length - 2 }} más</button> }
+              </div>
+            }
+          </div>
+        </div>
+        <p class="calendar-hint"><i class="pi pi-info-circle" aria-hidden="true"></i> Pulsa un trabajo para abrir su respuesta y cambiar la fecha. Las archivadas no aparecen.</p>
+      </section>
+      <aside class="day-panel" aria-labelledby="day-title">
+        <p class="eyebrow">TRABAJOS DEL DÍA</p><h2 id="day-title">{{ fechaSeleccionada }}</h2>
+        @for (trabajo of trabajosDia; track trabajo.id) {
+          <a class="job-card" routerLink="/admin/encuestas" [queryParams]="{ respuesta: trabajo.id }"><small>{{ trabajo.referencia }}</small><strong>{{ trabajo.nombre }}</strong><span>{{ trabajo.servicios.join(', ') }}</span><span>{{ trabajo.localidad }}</span><span class="badge">{{ trabajo.estado }}</span></a>
+        } @empty { <div class="empty"><i class="pi pi-calendar" aria-hidden="true"></i><p>No hay trabajos programados para este día.</p></div> }
+      </aside>
+    </div>
+    <section class="unscheduled" aria-labelledby="unscheduled-title">
+      <div><h2 id="unscheduled-title">Aceptadas sin fecha <span class="badge">{{ sinFecha.length }}</span></h2><p>Asigna una fecha a estos trabajos para que aparezcan en el calendario.</p></div>
+      @for (trabajo of sinFecha; track trabajo.id) {
+        <a class="unscheduled-row" routerLink="/admin/encuestas" [queryParams]="{ respuesta: trabajo.id }"><span><strong>{{ trabajo.nombre }}</strong><small>{{ trabajo.referencia }} · {{ trabajo.servicios.join(', ') }}</small></span><span class="assign">Asignar fecha <i class="pi pi-arrow-right" aria-hidden="true"></i></span></a>
+      } @empty { <p class="all-set">No hay trabajos aceptados pendientes de asignar fecha.</p> }
+    </section>
+  }
+</section>
