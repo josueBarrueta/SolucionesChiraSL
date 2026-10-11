@@ -103,6 +103,15 @@ export const routes: Routes = [
         (m) => m.AdminComponent
       ),
     children: [
+      { path: 'clientes', loadComponent: () => import('./adminApartados/adminClientes/admin-clientes.component').then(m => m.AdminClientesComponent) },
+      { path: 'presupuestos', loadComponent: () => import('./adminApartados/adminPresupuestos/admin-presupuestos.component').then(m => m.AdminPresupuestosComponent) },
+      { path: 'trabajos', loadComponent: () => import('./adminApartados/adminTrabajos/admin-trabajos.component').then(m => m.AdminTrabajosComponent) },
+      { path: 'facturas', loadComponent: () => import('./adminApartados/adminFacturas/admin-facturas.component').then(m => m.AdminFacturasComponent) },
+      { path: 'equipo', loadComponent: () => import('./adminApartados/adminEquipo/admin-equipo.component').then(m => m.AdminEquipoComponent) },
+      { path: 'gastos', loadComponent: () => import('./adminApartados/adminGastos/admin-gastos.component').then(m => m.AdminGastosComponent) },
+      { path: 'informes', loadComponent: () => import('./adminApartados/adminInformes/admin-informes.component').then(m => m.AdminInformesComponent) },
+      { path: 'configuracion', loadComponent: () => import('./adminApartados/adminConfiguracion/admin-configuracion.component').then(m => m.AdminConfiguracionComponent) },
+
       {
         path: 'agenda',
         loadComponent: () => import('./adminApartados/adminAgenda/admin-agenda.component').then(m => m.AdminAgendaComponent)

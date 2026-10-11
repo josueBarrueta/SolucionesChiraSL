@@ -12,21 +12,21 @@
 </span>
     </a>
 
-    <p class="sidebar-label">ADMINISTRACIÓN</p>
     <nav aria-label="Navegación del panel">
-      <a class="nav-link" routerLink="/admin" routerLinkActive="active"
-        [routerLinkActiveOptions]="{ exact: true }" ariaCurrentWhenActive="page">
-        <i class="pi pi-chart-bar" aria-hidden="true">
-</i> Resumen
-      </a>
-      <a class="nav-link" routerLink="/admin/encuestas" routerLinkActive="active"
-        ariaCurrentWhenActive="page">
-        <i class="pi pi-inbox" aria-hidden="true">
-</i> Encuestas
-      </a>
-      <a class="nav-link" routerLink="/admin/agenda" routerLinkActive="active" ariaCurrentWhenActive="page">
-        <i class="pi pi-calendar" aria-hidden="true"></i> Agenda
-      </a>
+      <p class="sidebar-label">GENERAL</p>
+      <a class="nav-link" routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" ariaCurrentWhenActive="page"><i class="pi pi-chart-bar" aria-hidden="true"></i> Resumen</a>
+      <a class="nav-link" routerLink="/admin/encuestas" routerLinkActive="active" ariaCurrentWhenActive="page"><i class="pi pi-inbox" aria-hidden="true"></i> Encuestas</a>
+      <a class="nav-link" routerLink="/admin/agenda" routerLinkActive="active" ariaCurrentWhenActive="page"><i class="pi pi-calendar" aria-hidden="true"></i> Agenda</a>
+      <p class="sidebar-label">GESTIÓN</p>
+      <a class="nav-link" routerLink="/admin/clientes" routerLinkActive="active" ariaCurrentWhenActive="page"><i class="pi pi-users" aria-hidden="true"></i> Clientes</a>
+      <a class="nav-link" routerLink="/admin/presupuestos" routerLinkActive="active" ariaCurrentWhenActive="page"><i class="pi pi-file-edit" aria-hidden="true"></i> Presupuestos</a>
+      <a class="nav-link" routerLink="/admin/trabajos" routerLinkActive="active" ariaCurrentWhenActive="page"><i class="pi pi-briefcase" aria-hidden="true"></i> Trabajos</a>
+      <a class="nav-link" routerLink="/admin/facturas" routerLinkActive="active" ariaCurrentWhenActive="page"><i class="pi pi-receipt" aria-hidden="true"></i> Facturas</a>
+      <a class="nav-link" routerLink="/admin/equipo" routerLinkActive="active" ariaCurrentWhenActive="page"><i class="pi pi-id-card" aria-hidden="true"></i> Equipo</a>
+      <p class="sidebar-label">EMPRESA</p>
+      <a class="nav-link" routerLink="/admin/gastos" routerLinkActive="active" ariaCurrentWhenActive="page"><i class="pi pi-wallet" aria-hidden="true"></i> Gastos</a>
+      <a class="nav-link" routerLink="/admin/informes" routerLinkActive="active" ariaCurrentWhenActive="page"><i class="pi pi-chart-line" aria-hidden="true"></i> Informes</a>
+      <a class="nav-link" routerLink="/admin/configuracion" routerLinkActive="active" ariaCurrentWhenActive="page"><i class="pi pi-cog" aria-hidden="true"></i> Configuración</a>
     </nav>
 
     <div class="sidebar-bottom">
