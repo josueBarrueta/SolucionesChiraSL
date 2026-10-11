@@ -107,11 +107,11 @@ test('API: login, permiso, envío sin duplicados, edición, archivo y cierre de 
   assert.equal(listed.data.encuestas.length, 1);
   const row = listed.data.encuestas[0];
   assert.equal(row.estado, 'Nueva'); assert.equal(row.notas, ''); assert.equal(row.submissionKey, undefined);
-  const update = {estado:'Presupuesto enviado',notas:'Llamar mañana',fechaTrabajo:'2026-10-24',archivada:true};
+  const update = {estado:'Contactado',notas:'Llamar mañana',fechaTrabajo:'2026-10-24',archivada:true};
   assert.equal((await call(`/api/encuestas/${row.id}`, 'PATCH', {...update, fechaTrabajo:'2026-02-30'})).response.status,400);
   assert.equal((await call(`/api/encuestas/${row.id}`, 'PATCH', update, {Origin:'https://evil.example'})).response.status,403);
   const changed = await call(`/api/encuestas/${row.id}`, 'PATCH', update);
-  assert.equal(changed.response.status,200); assert.equal(changed.data.encuesta.archivada,true);
+  assert.equal(changed.response.status,200); assert.equal(changed.data.encuesta.estado, 'Contactado'); assert.equal(changed.data.encuesta.archivada,true);
   listed = await call('/api/encuestas'); assert.equal(listed.data.encuestas[0].notas, 'Llamar mañana');
   assert.equal((await call('/api/logout','POST',{})).response.status,200);
   assert.equal((await call('/api/encuestas')).response.status,401);

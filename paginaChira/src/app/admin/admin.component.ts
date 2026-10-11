@@ -29,11 +29,11 @@ export class AdminComponent {
     });
   }
   get nuevas(): number { return this.encuestas.filter(e => !e.archivada && e.estado === 'Nueva').length; }
-  get completadas(): number { return this.encuestas.filter(e => !e.archivada && e.estado === 'Atendida').length; }
-  get necesitanAtencion(): Encuesta[] { return this.encuestas.filter(e => !e.archivada && ['Nueva', 'En revisión'].includes(e.estado)).slice(0, 5); }
+  get completadas(): number { return this.encuestas.filter(e => !e.archivada && e.estado === 'Finalizada').length; }
+  get necesitanAtencion(): Encuesta[] { return this.encuestas.filter(e => !e.archivada && e.estado === 'Nueva').slice(0, 5); }
   get proximosTrabajos(): Encuesta[] {
     const hoy = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Madrid' }).format(new Date());
-    return this.encuestas.filter(e => !e.archivada && e.fechaTrabajo >= hoy && e.estado !== 'Atendida')
+    return this.encuestas.filter(e => !e.archivada && e.fechaTrabajo >= hoy && e.estado !== 'Finalizada')
       .sort((a, b) => a.fechaTrabajo.localeCompare(b.fechaTrabajo)).slice(0, 5);
   }
   fechaVisible(fecha: string): string { return fecha.split('-').reverse().join('/'); }
@@ -48,11 +48,11 @@ export class AdminComponent {
   }
 
   get pendientes(): number {
-    return this.encuestas.filter(e => !e.archivada && ['Nueva', 'En revisión'].includes(e.estado)).length;
+    return this.encuestas.filter(e => !e.archivada && e.estado === 'Nueva').length;
   }
 
   get revisadas(): number {
-    return this.encuestas.filter(e => !['Nueva', 'En revisión'].includes(e.estado)).length;
+    return this.encuestas.filter(e => e.estado !== 'Nueva').length;
   }
 
   protected get isResumen(): boolean {

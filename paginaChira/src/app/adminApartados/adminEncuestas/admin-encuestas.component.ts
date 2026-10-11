@@ -65,7 +65,7 @@ export class AdminEncuestasComponent implements OnDestroy {
   verArchivadas = false;
   verTodas = false;
   mensajeGuardado = '';
-  readonly estados: Estado[] = ['Nueva', 'En revisión', 'Contactado', 'Presupuesto enviado', 'Aceptado', 'Atendida'];
+  readonly estados: Estado[] = ['Nueva', 'Contactado', 'Aceptada', 'Finalizada'];
   readonly servicios = [...SERVICE_QUESTIONS.map(block => block.service), 'Otra consulta'];
   encuestas: Encuesta[] = [];
 
@@ -77,7 +77,7 @@ export class AdminEncuestasComponent implements OnDestroy {
       (!servicio || e.servicios.includes(servicio)) &&
       (!estado || e.estado === estado) &&
       (!fechaFiltro || e.fecha === fechaFiltro) &&
-      (!this.soloPendientes || ['Nueva', 'En revisión'].includes(e.estado)) &&
+      (!this.soloPendientes || e.estado === 'Nueva') &&
       (this.verTodas || e.archivada === this.verArchivadas)
     );
   }
@@ -170,8 +170,8 @@ export class AdminEncuestasComponent implements OnDestroy {
   }
 
   readonly iconosEstado: Record<Estado, string> = {
-    'Nueva': 'pi-bell', 'En revisión': 'pi-search', 'Contactado': 'pi-phone',
-    'Presupuesto enviado': 'pi-send', 'Aceptado': 'pi-thumbs-up', 'Atendida': 'pi-check-circle'
+    'Nueva': 'pi-bell', 'Contactado': 'pi-phone',
+    'Aceptada': 'pi-thumbs-up', 'Finalizada': 'pi-check-circle'
   };
 
   estadoSeleccionado(estado: Estado | ''): boolean {

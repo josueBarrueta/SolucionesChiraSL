@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 
-export type EstadoEncuesta = 'Nueva' | 'En revisión' | 'Contactado' | 'Presupuesto enviado' | 'Aceptado' | 'Atendida';
+export type EstadoEncuesta = 'Nueva' | 'Contactado' | 'Aceptada' | 'Finalizada';
 export interface Encuesta {
   id: string;
   referencia: string;
@@ -77,7 +77,14 @@ export class ChiraApiService {
     if (!response.ok) throw new ApiError(response.status, data.message ?? 'No se pudo completar la operación.');
     return data;
   }
-  listar(): Promise<{ encuestas: Encuesta[] }> { return this.request('/encuestas'); }
+  async listar(): Promise<{ encuestas: Encuesta[] }> {
+    const data = await this.request<{ encuestas: Encuesta[] }>('/encuestas');
+    const anteriores: Record<string, EstadoEncuesta> = {
+      'En revisión': 'Nueva', 'Presupuesto enviado': 'Contactado',
+      'Aceptado': 'Aceptada', 'Atendida': 'Finalizada'
+    };
+    return { encuestas: data.encuestas.map(e => ({ ...e, estado: anteriores[e.estado] ?? e.estado })) };
+  }
   guardar(encuesta: Encuesta): Promise<{ encuesta: Encuesta }> {
     return this.request(`/encuestas/${encuesta.id}`, 'PATCH', {
       estado: encuesta.estado, notas: encuesta.notas,

@@ -6,7 +6,8 @@ import { SERVICE_QUESTIONS } from '../src/app/formulario/formulario.questions.ts
 import { verifyPassword, tokenHash } from './security.mjs';
 import { serveWeb } from './web.mjs';
 
-export const ESTADOS = ['Nueva', 'En revisión', 'Contactado', 'Presupuesto enviado', 'Aceptado', 'Atendida'];
+export const ESTADOS = ['Nueva', 'Contactado', 'Aceptada', 'Finalizada'];
+const ESTADOS_ANTERIORES = { 'En revisión': 'Nueva', 'Presupuesto enviado': 'Contactado', 'Aceptado': 'Aceptada', 'Atendida': 'Finalizada' };
 const SERVICIOS = [...SERVICE_QUESTIONS.map(b => b.service), 'Otra consulta'];
 const COOKIE = 'chira_session';
 class ApiError extends Error {
@@ -64,7 +65,7 @@ export function validateSubmission(body) {
 }
 function publicDocument(row) {
   const { _id, submissionKey, ...data } = row;
-  return { ...data, id: _id.toString() };
+  return { ...data, estado: ESTADOS_ANTERIORES[data.estado] ?? data.estado, id: _id.toString() };
 }
 async function readJson(req) {
   if (!req.headers['content-type']?.startsWith('application/json')) throw new ApiError(415, 'Se requiere JSON.');

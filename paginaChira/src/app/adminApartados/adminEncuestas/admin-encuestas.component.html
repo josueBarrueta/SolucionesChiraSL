@@ -1,5 +1,5 @@
 @if (verTodas) { <p role="status">Mostrando todas las solicitudes, incluidas las archivadas.</p> }
-@if (soloPendientes) { <p role="status">Mostrando solicitudes nuevas y en revisión. Pulsa Limpiar para ver todas.</p> }
+@if (soloPendientes) { <p role="status">Mostrando solicitudes nuevas. Pulsa Limpiar para ver todas.</p> }
 <section aria-labelledby="encuestas-title">
   <div class="heading">
     <div><p class="eyebrow">GESTIÓN DE SOLICITUDES</p><h1 id="encuestas-title">Encuestas</h1>
@@ -63,7 +63,7 @@
                 <td data-label="Recibida">{{ fechaVisible(encuesta.fecha) }}</td>
                 <td data-label="Cliente"><strong>{{ encuesta.nombre }}</strong><small class="reference">{{ referencia(encuesta) }} · {{ encuesta.localidad }}</small><small>{{ encuesta.email }}</small></td>
                 <td data-label="Servicio">{{ encuesta.servicios.join(', ') }}</td>
-                <td data-label="Estado"><span class="badge" [class.new]="encuesta.estado === 'Nueva'" [class.review]="encuesta.estado === 'En revisión'">{{ encuesta.estado }}</span></td>
+                <td data-label="Estado"><span class="badge" [class.new]="encuesta.estado === 'Nueva'">{{ encuesta.estado }}</span></td>
                 <td><button type="button" class="view" (click)="abrir(encuesta)" [attr.aria-label]="'Ver respuesta de ' + encuesta.nombre" [attr.aria-controls]="seleccionada ? 'detalle-encuesta' : null">Ver respuesta <i class="pi pi-arrow-right" aria-hidden="true"></i></button></td>
               </tr>
             } @empty {
