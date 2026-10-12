@@ -20,6 +20,7 @@ export class AdminComponent {
   error = '';
   saliendo = false;
   menuAbierto = false;
+  barraMinimizada = false;
   grupoAbierto: 'general' | 'gestion' | 'empresa' | null = null;
 
   ultimaActualizacion = '';
