@@ -23,6 +23,7 @@
             @for (dia of dias; track dia.fecha) {
               <div class="day" (click)="abrirDia(dia.fecha)" [class.outside]="!dia.delMes" [class.today]="dia.fecha === hoy" [class.selected]="dia.fecha === seleccion">
                 <button class="day-number" type="button" aria-haspopup="dialog" aria-controls="dia-modal" [attr.aria-label]="dia.fecha + ', ' + dia.trabajos.length + ' trabajos'" [attr.aria-pressed]="dia.fecha === seleccion" [attr.aria-current]="dia.fecha === hoy ? 'date' : null" (click)="abrirDia(dia.fecha)">{{ dia.numero }}</button>
+                @if (dia.trabajos.length) { <span class="mobile-job-count" aria-hidden="true">{{ dia.trabajos.length }}</span> }
                 @for (trabajo of dia.trabajos.slice(0, 2); track trabajo.id) {
                   <a (click)="$event.stopPropagation()" class="calendar-job" [class.finished]="trabajo.estado === 'Finalizada'" routerLink="/admin/encuestas" [queryParams]="{ respuesta: trabajo.id }" [title]="trabajo.nombre + ' · ' + trabajo.servicios.join(', ')"><strong>{{ trabajo.nombre }}</strong><span>{{ trabajo.servicios.join(', ') }}</span></a>
                 }

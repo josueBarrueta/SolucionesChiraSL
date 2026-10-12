@@ -19,15 +19,25 @@ export class AdminComponent {
   cargando = true;
   error = '';
   saliendo = false;
+  menuAbierto = false;
+  grupoAbierto: 'general' | 'gestion' | 'empresa' | null = null;
 
   ultimaActualizacion = '';
   private readonly destroyRef = inject(DestroyRef);
   constructor() {
     void this.actualizar();
     this.router.events.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(event => {
-      if (event instanceof NavigationEnd && this.isResumen) void this.actualizar();
+      if (event instanceof NavigationEnd) {
+        this.menuAbierto = false;
+        this.grupoAbierto = null;
+        if (this.isResumen) void this.actualizar();
+      }
     });
   }
+  alternarGrupo(grupo: 'general' | 'gestion' | 'empresa'): void {
+    this.grupoAbierto = this.grupoAbierto === grupo ? null : grupo;
+  }
+
   get nuevas(): number { return this.encuestas.filter(e => !e.archivada && e.estado === 'Nueva').length; }
   get completadas(): number { return this.encuestas.filter(e => !e.archivada && e.estado === 'Finalizada').length; }
   get necesitanAtencion(): Encuesta[] { return this.encuestas.filter(e => !e.archivada && e.estado === 'Nueva').slice(0, 5); }

@@ -1,5 +1,6 @@
 <div class="admin-layout">
-  <aside class="sidebar" aria-label="Panel de administración">
+  <aside class="sidebar" aria-label="Panel de administración" [class.menu-open]="menuAbierto" (keydown.escape)="menuAbierto = false">
+    <div class="sidebar-header">
     <a class="brand" routerLink="/admin" aria-label="Soluciones Chira, administración">
       <span class="brand-icon">
 <i class="pi pi-building" aria-hidden="true">
@@ -12,21 +13,47 @@
 </span>
     </a>
 
+    <button class="menu-toggle" type="button" aria-controls="admin-navigation" [attr.aria-expanded]="menuAbierto" (click)="menuAbierto = !menuAbierto">
+      <i [class]="menuAbierto ? 'pi pi-times' : 'pi pi-bars'" aria-hidden="true"></i> {{ menuAbierto ? 'Cerrar' : 'Menú' }}
+    </button>
+    </div>
+    <div class="sidebar-menu" id="admin-navigation">
     <nav aria-label="Navegación del panel">
-      <p class="sidebar-label">GENERAL</p>
+      <div class="nav-group" [class.group-open]="grupoAbierto === 'general'">
+        <p class="sidebar-label desktop-group-label">GENERAL</p>
+        <button class="group-toggle" type="button" [attr.aria-expanded]="grupoAbierto === 'general'" aria-controls="admin-group-general" (click)="alternarGrupo('general')">
+          General<i class="pi pi-chevron-down" aria-hidden="true"></i>
+        </button>
+        <div class="group-links" id="admin-group-general">
       <a class="nav-link" routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" ariaCurrentWhenActive="page"><i class="pi pi-chart-bar" aria-hidden="true"></i> Resumen</a>
       <a class="nav-link" routerLink="/admin/encuestas" routerLinkActive="active" ariaCurrentWhenActive="page"><i class="pi pi-inbox" aria-hidden="true"></i> Encuestas</a>
       <a class="nav-link" routerLink="/admin/agenda" routerLinkActive="active" ariaCurrentWhenActive="page"><i class="pi pi-calendar" aria-hidden="true"></i> Agenda</a>
-      <p class="sidebar-label">GESTIÓN</p>
+        </div>
+      </div>
+      <div class="nav-group" [class.group-open]="grupoAbierto === 'gestion'">
+        <p class="sidebar-label desktop-group-label">GESTIÓN</p>
+        <button class="group-toggle" type="button" [attr.aria-expanded]="grupoAbierto === 'gestion'" aria-controls="admin-group-gestion" (click)="alternarGrupo('gestion')">
+          Gestión<i class="pi pi-chevron-down" aria-hidden="true"></i>
+        </button>
+        <div class="group-links" id="admin-group-gestion">
       <a class="nav-link" routerLink="/admin/clientes" routerLinkActive="active" ariaCurrentWhenActive="page"><i class="pi pi-users" aria-hidden="true"></i> Clientes</a>
       <a class="nav-link" routerLink="/admin/presupuestos" routerLinkActive="active" ariaCurrentWhenActive="page"><i class="pi pi-file-edit" aria-hidden="true"></i> Presupuestos</a>
       <a class="nav-link" routerLink="/admin/trabajos" routerLinkActive="active" ariaCurrentWhenActive="page"><i class="pi pi-briefcase" aria-hidden="true"></i> Trabajos</a>
       <a class="nav-link" routerLink="/admin/facturas" routerLinkActive="active" ariaCurrentWhenActive="page"><i class="pi pi-receipt" aria-hidden="true"></i> Facturas</a>
       <a class="nav-link" routerLink="/admin/equipo" routerLinkActive="active" ariaCurrentWhenActive="page"><i class="pi pi-id-card" aria-hidden="true"></i> Equipo</a>
-      <p class="sidebar-label">EMPRESA</p>
+        </div>
+      </div>
+      <div class="nav-group" [class.group-open]="grupoAbierto === 'empresa'">
+        <p class="sidebar-label desktop-group-label">EMPRESA</p>
+        <button class="group-toggle" type="button" [attr.aria-expanded]="grupoAbierto === 'empresa'" aria-controls="admin-group-empresa" (click)="alternarGrupo('empresa')">
+          Empresa<i class="pi pi-chevron-down" aria-hidden="true"></i>
+        </button>
+        <div class="group-links" id="admin-group-empresa">
       <a class="nav-link" routerLink="/admin/gastos" routerLinkActive="active" ariaCurrentWhenActive="page"><i class="pi pi-wallet" aria-hidden="true"></i> Gastos</a>
       <a class="nav-link" routerLink="/admin/informes" routerLinkActive="active" ariaCurrentWhenActive="page"><i class="pi pi-chart-line" aria-hidden="true"></i> Informes</a>
       <a class="nav-link" routerLink="/admin/configuracion" routerLinkActive="active" ariaCurrentWhenActive="page"><i class="pi pi-cog" aria-hidden="true"></i> Configuración</a>
+        </div>
+      </div>
     </nav>
 
     <div class="sidebar-bottom">
@@ -38,6 +65,7 @@
         <i class="pi pi-sign-out" aria-hidden="true">
 </i> Cerrar sesión
       </button>
+    </div>
     </div>
   </aside>
 

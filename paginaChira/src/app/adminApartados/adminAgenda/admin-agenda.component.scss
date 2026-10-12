@@ -79,3 +79,24 @@ a:focus-visible, button:focus-visible, input:focus-visible { outline: 3px solid 
 .work-description p { margin-top: 6px; white-space: pre-wrap; }
 .work-link { margin-top: 18px; background: #edf3e5; }
 @media (max-width: 600px) { .modal-heading, .modal-body { padding: 18px; } .daily-work { padding: 16px; } }
+
+.mobile-job-count { display: none; }
+@media (max-width: 600px) {
+  .month-grid { min-width: 0; }
+  .day { min-width: 0; min-height: 72px; padding: 2px; }
+  .day-number { width: 100%; min-height: 44px; height: 44px; border-radius: 8px; margin: 0; }
+  .calendar-job, .more { display: none; }
+  .mobile-job-count { display: block; width: fit-content; margin: 2px auto; padding: 2px 6px; border-radius: 10px; background: #e5efd8; color: var(--green); font-size: 10px; font-weight: 600; }
+  .weekday { font-size: 10px; }
+  .navigation { width: 100%; justify-content: space-between; }
+  .button { min-height: 44px; }
+  .icon { width: 44px; }
+  .calendar-hint { padding: 14px; }
+  .unscheduled-row > span:first-child { min-width: 0; overflow-wrap: anywhere; }
+  .assign { display: inline-flex; align-items: center; min-height: 44px; }
+  .day-modal { width: calc(100% - 16px); max-height: calc(100dvh - 16px); }
+  .modal-heading > div { min-width: 0; overflow-wrap: anywhere; }
+  .daily-work h3 { overflow-wrap: anywhere; }
+  .work-heading { flex-wrap: wrap; }
+  .work-link { width: 100%; }
+}
