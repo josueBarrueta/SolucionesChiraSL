@@ -1,5 +1,6 @@
+import { TooltipModule } from 'primeng/tooltip';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Component, DestroyRef, inject } from '@angular/core';
+import { Component, DestroyRef, ElementRef, HostListener, inject } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { ChiraApiService, Encuesta } from '../shared/chira-api.service';
 import { AuthService } from '../login/auth.service';
@@ -7,11 +8,31 @@ import { AuthService } from '../login/auth.service';
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, RouterOutlet],
+  imports: [RouterLink, RouterLinkActive, RouterOutlet, TooltipModule],
   templateUrl: './admin.component.html',
   styleUrls: ['./admin.component.scss']
 })
 export class AdminComponent {
+  private readonly element = inject(ElementRef<HTMLElement>);
+  private esBarraLateral(): boolean {
+    return this.element.nativeElement.ownerDocument.defaultView?.matchMedia('(min-width: 801px)').matches ?? false;
+  }
+
+  ampliarBarra(): void {
+    if (this.esBarraLateral()) this.barraMinimizada = false;
+  }
+
+  ampliarConCursor(event: PointerEvent): void {
+    if (event.pointerType === 'mouse') this.ampliarBarra();
+  }
+
+  @HostListener('document:click', ['$event'])
+  minimizarFuera(event: MouseEvent): void {
+    if (!this.esBarraLateral()) return;
+    const sidebar = this.element.nativeElement.querySelector('.sidebar');
+    if (event.target && !sidebar?.contains(event.target as Node)) this.barraMinimizada = true;
+  }
+
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly api = inject(ChiraApiService);

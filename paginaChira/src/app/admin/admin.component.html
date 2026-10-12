@@ -1,8 +1,6 @@
 <div class="admin-layout" [class.sidebar-collapsed]="barraMinimizada">
-  <aside class="sidebar" aria-label="Panel de administración" [class.menu-open]="menuAbierto" (keydown.escape)="menuAbierto = false">
-    <button class="sidebar-collapse" type="button" [attr.aria-label]="barraMinimizada ? 'Ampliar menú lateral' : 'Minimizar menú lateral'" [title]="barraMinimizada ? 'Ampliar menú lateral' : 'Minimizar menú lateral'" [attr.aria-expanded]="!barraMinimizada" aria-controls="admin-navigation" (click)="barraMinimizada = !barraMinimizada">
-      <i [class]="barraMinimizada ? 'pi pi-angle-double-right' : 'pi pi-angle-double-left'" aria-hidden="true"></i>
-    </button>
+  <aside class="sidebar" aria-label="Panel de administración" [class.menu-open]="menuAbierto" (keydown.escape)="menuAbierto = false" (pointerenter)="ampliarConCursor($event)" (pointerdown)="ampliarBarra()" (focusin)="ampliarBarra()">
+
     <div class="sidebar-header">
     <a class="brand" routerLink="/admin" aria-label="Soluciones Chira, administración">
       <span class="brand-icon">
@@ -28,9 +26,9 @@
           General<i class="pi pi-chevron-down" aria-hidden="true"></i>
         </button>
         <div class="group-links" id="admin-group-general">
-      <a class="nav-link" routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" ariaCurrentWhenActive="page" title="Resumen" aria-label="Resumen"><i class="pi pi-chart-bar" aria-hidden="true"></i> <span class="nav-caption">Resumen</span></a>
-      <a class="nav-link" routerLink="/admin/encuestas" routerLinkActive="active" ariaCurrentWhenActive="page" title="Encuestas" aria-label="Encuestas"><i class="pi pi-inbox" aria-hidden="true"></i> <span class="nav-caption">Encuestas</span></a>
-      <a class="nav-link" routerLink="/admin/agenda" routerLinkActive="active" ariaCurrentWhenActive="page" title="Agenda" aria-label="Agenda"><i class="pi pi-calendar" aria-hidden="true"></i> <span class="nav-caption">Agenda</span></a>
+      <a class="nav-link" routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" ariaCurrentWhenActive="page" pTooltip="Resumen" [tooltipDisabled]="!barraMinimizada" tooltipPosition="right" tooltipEvent="both" appendTo="body" tooltipStyleClass="chira-tooltip" aria-label="Resumen"><i class="pi pi-chart-bar" aria-hidden="true"></i> <span class="nav-caption">Resumen</span></a>
+      <a class="nav-link" routerLink="/admin/encuestas" routerLinkActive="active" ariaCurrentWhenActive="page" pTooltip="Encuestas" [tooltipDisabled]="!barraMinimizada" tooltipPosition="right" tooltipEvent="both" appendTo="body" tooltipStyleClass="chira-tooltip" aria-label="Encuestas"><i class="pi pi-inbox" aria-hidden="true"></i> <span class="nav-caption">Encuestas</span></a>
+      <a class="nav-link" routerLink="/admin/agenda" routerLinkActive="active" ariaCurrentWhenActive="page" pTooltip="Agenda" [tooltipDisabled]="!barraMinimizada" tooltipPosition="right" tooltipEvent="both" appendTo="body" tooltipStyleClass="chira-tooltip" aria-label="Agenda"><i class="pi pi-calendar" aria-hidden="true"></i> <span class="nav-caption">Agenda</span></a>
         </div>
       </div>
       <div class="nav-group" [class.group-open]="grupoAbierto === 'gestion'">
@@ -39,11 +37,11 @@
           Gestión<i class="pi pi-chevron-down" aria-hidden="true"></i>
         </button>
         <div class="group-links" id="admin-group-gestion">
-      <a class="nav-link" routerLink="/admin/clientes" routerLinkActive="active" ariaCurrentWhenActive="page" title="Clientes" aria-label="Clientes"><i class="pi pi-users" aria-hidden="true"></i> <span class="nav-caption">Clientes</span></a>
-      <a class="nav-link" routerLink="/admin/presupuestos" routerLinkActive="active" ariaCurrentWhenActive="page" title="Presupuestos" aria-label="Presupuestos"><i class="pi pi-file-edit" aria-hidden="true"></i> <span class="nav-caption">Presupuestos</span></a>
-      <a class="nav-link" routerLink="/admin/trabajos" routerLinkActive="active" ariaCurrentWhenActive="page" title="Trabajos" aria-label="Trabajos"><i class="pi pi-briefcase" aria-hidden="true"></i> <span class="nav-caption">Trabajos</span></a>
-      <a class="nav-link" routerLink="/admin/facturas" routerLinkActive="active" ariaCurrentWhenActive="page" title="Facturas" aria-label="Facturas"><i class="pi pi-receipt" aria-hidden="true"></i> <span class="nav-caption">Facturas</span></a>
-      <a class="nav-link" routerLink="/admin/equipo" routerLinkActive="active" ariaCurrentWhenActive="page" title="Equipo" aria-label="Equipo"><i class="pi pi-id-card" aria-hidden="true"></i> <span class="nav-caption">Equipo</span></a>
+      <a class="nav-link" routerLink="/admin/clientes" routerLinkActive="active" ariaCurrentWhenActive="page" pTooltip="Clientes" [tooltipDisabled]="!barraMinimizada" tooltipPosition="right" tooltipEvent="both" appendTo="body" tooltipStyleClass="chira-tooltip" aria-label="Clientes"><i class="pi pi-users" aria-hidden="true"></i> <span class="nav-caption">Clientes</span></a>
+      <a class="nav-link" routerLink="/admin/presupuestos" routerLinkActive="active" ariaCurrentWhenActive="page" pTooltip="Presupuestos" [tooltipDisabled]="!barraMinimizada" tooltipPosition="right" tooltipEvent="both" appendTo="body" tooltipStyleClass="chira-tooltip" aria-label="Presupuestos"><i class="pi pi-file-edit" aria-hidden="true"></i> <span class="nav-caption">Presupuestos</span></a>
+      <a class="nav-link" routerLink="/admin/trabajos" routerLinkActive="active" ariaCurrentWhenActive="page" pTooltip="Trabajos" [tooltipDisabled]="!barraMinimizada" tooltipPosition="right" tooltipEvent="both" appendTo="body" tooltipStyleClass="chira-tooltip" aria-label="Trabajos"><i class="pi pi-briefcase" aria-hidden="true"></i> <span class="nav-caption">Trabajos</span></a>
+      <a class="nav-link" routerLink="/admin/facturas" routerLinkActive="active" ariaCurrentWhenActive="page" pTooltip="Facturas" [tooltipDisabled]="!barraMinimizada" tooltipPosition="right" tooltipEvent="both" appendTo="body" tooltipStyleClass="chira-tooltip" aria-label="Facturas"><i class="pi pi-receipt" aria-hidden="true"></i> <span class="nav-caption">Facturas</span></a>
+      <a class="nav-link" routerLink="/admin/equipo" routerLinkActive="active" ariaCurrentWhenActive="page" pTooltip="Equipo" [tooltipDisabled]="!barraMinimizada" tooltipPosition="right" tooltipEvent="both" appendTo="body" tooltipStyleClass="chira-tooltip" aria-label="Equipo"><i class="pi pi-id-card" aria-hidden="true"></i> <span class="nav-caption">Equipo</span></a>
         </div>
       </div>
       <div class="nav-group" [class.group-open]="grupoAbierto === 'empresa'">
@@ -52,18 +50,18 @@
           Empresa<i class="pi pi-chevron-down" aria-hidden="true"></i>
         </button>
         <div class="group-links" id="admin-group-empresa">
-      <a class="nav-link" routerLink="/admin/gastos" routerLinkActive="active" ariaCurrentWhenActive="page" title="Gastos" aria-label="Gastos"><i class="pi pi-wallet" aria-hidden="true"></i> <span class="nav-caption">Gastos</span></a>
-      <a class="nav-link" routerLink="/admin/informes" routerLinkActive="active" ariaCurrentWhenActive="page" title="Informes" aria-label="Informes"><i class="pi pi-chart-line" aria-hidden="true"></i> <span class="nav-caption">Informes</span></a>
-      <a class="nav-link" routerLink="/admin/configuracion" routerLinkActive="active" ariaCurrentWhenActive="page" title="Configuración" aria-label="Configuración"><i class="pi pi-cog" aria-hidden="true"></i> <span class="nav-caption">Configuración</span></a>
+      <a class="nav-link" routerLink="/admin/gastos" routerLinkActive="active" ariaCurrentWhenActive="page" pTooltip="Gastos" [tooltipDisabled]="!barraMinimizada" tooltipPosition="right" tooltipEvent="both" appendTo="body" tooltipStyleClass="chira-tooltip" aria-label="Gastos"><i class="pi pi-wallet" aria-hidden="true"></i> <span class="nav-caption">Gastos</span></a>
+      <a class="nav-link" routerLink="/admin/informes" routerLinkActive="active" ariaCurrentWhenActive="page" pTooltip="Informes" [tooltipDisabled]="!barraMinimizada" tooltipPosition="right" tooltipEvent="both" appendTo="body" tooltipStyleClass="chira-tooltip" aria-label="Informes"><i class="pi pi-chart-line" aria-hidden="true"></i> <span class="nav-caption">Informes</span></a>
+      <a class="nav-link" routerLink="/admin/configuracion" routerLinkActive="active" ariaCurrentWhenActive="page" pTooltip="Configuración" [tooltipDisabled]="!barraMinimizada" tooltipPosition="right" tooltipEvent="both" appendTo="body" tooltipStyleClass="chira-tooltip" aria-label="Configuración"><i class="pi pi-cog" aria-hidden="true"></i> <span class="nav-caption">Configuración</span></a>
         </div>
       </div>
     </nav>
 
     <div class="sidebar-bottom">
-      <a class="nav-link" routerLink="/" title="Ver página web" aria-label="Ver página web">
+      <a class="nav-link" routerLink="/" pTooltip="Ver página web" [tooltipDisabled]="!barraMinimizada" tooltipPosition="right" tooltipEvent="both" appendTo="body" tooltipStyleClass="chira-tooltip" aria-label="Ver página web">
         <i class="pi pi-external-link" aria-hidden="true">
 </i> <span class="nav-caption">Ver página web</span></a>
-      <button class="nav-link logout" type="button" [disabled]="saliendo" (click)="cerrarSesion()" title="Cerrar sesión" aria-label="Cerrar sesión">
+      <button class="nav-link logout" type="button" [disabled]="saliendo" (click)="cerrarSesion()" pTooltip="Cerrar sesión" [tooltipDisabled]="!barraMinimizada" tooltipPosition="right" tooltipEvent="both" appendTo="body" tooltipStyleClass="chira-tooltip" aria-label="Cerrar sesión">
         <i class="pi pi-sign-out" aria-hidden="true">
 </i> <span class="nav-caption">Cerrar sesión</span></button>
     </div>
