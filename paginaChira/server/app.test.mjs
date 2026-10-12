@@ -184,6 +184,16 @@ test('gestión: importación sin duplicados, relaciones, importes, emisión inmu
   assert.equal((await call(`/api/gestion/facturas/${invoice.id}/emitir`,'POST',{})).body.registro.referencia,issued.body.registro.referencia);
   assert.equal((await call(`/api/gestion/facturas/${invoice.id}`,'PATCH',draft)).status,400);
   assert.equal((await call(`/api/gestion/facturas/${invoice.id}/pago`,'POST',{importe:25,fecha:'2026-10-12',metodo:'Transferencia'})).status,400);
+  for (const importe of [0.001, 0.005, 1.001, 10.999]) {
+    assert.equal((await call(`/api/gestion/facturas/${invoice.id}/pago`,'POST',{importe,fecha:'2026-10-12',metodo:'Transferencia'})).status,400);
+    assert.equal((await call('/api/gestion/gastos','POST',{concepto:'Precisión inválida',fecha:'2026-10-12',categoria:'Otros',importe})).status,400);
+  }
+  const untouched=(await call('/api/gestion/facturas')).body.registros.find(row=>row.id===invoice.id);
+  assert.equal(untouched.pagadoCentimos,0);assert.equal(untouched.pagos.length,0);
+  for (const importe of [0.01, 0.29, 30.50, 1000000]) {
+    const expense=await call('/api/gestion/gastos','POST',{concepto:'Precisión válida',fecha:'2026-10-12',categoria:'Otros',importe});
+    assert.equal(expense.status,201);assert.equal(expense.body.registro.importeCentimos,Math.round(importe*100));
+  }
   const paid=await call(`/api/gestion/facturas/${invoice.id}/pago`,'POST',{importe:10,fecha:'2026-10-12',metodo:'Transferencia'});assert.equal(paid.status,200);assert.equal(paid.body.registro.pagadoCentimos,1000);assert.equal(paid.body.registro.pagos.length,1);
   assert.equal((await call('/api/gestion/contrasena','POST',{actual:'bad',nueva:'otra-password-test'})).status,400);
   assert.equal((await call('/api/gestion/contrasena','POST',{actual:'management-test-password',nueva:'otra-password-test'})).status,200);

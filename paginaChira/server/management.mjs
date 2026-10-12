@@ -8,6 +8,12 @@ const date = value => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(va
 const txt = (body, key, max = 250, required = false) => { const value = body[key] ?? ''; if (typeof value !== 'string' || value.trim().length > max || (required && !value.trim())) fail(`Revisa ${key}.`); return value.trim(); };
 const num = (value, label, max = 100000000, positive = false) => { if (typeof value !== 'number' || !Number.isFinite(value) || value < 0 || value > max || (positive && value === 0)) fail(`Revisa ${label}.`); return value; };
 const cents = value => Math.round(value * 100);
+const positiveMoney = (value, label, max) => {
+  const scaled = num(value, label, max, true) * 100;
+  const rounded = Math.round(scaled);
+  if (rounded < 1 || Math.abs(scaled - rounded) > Number.EPSILON * Math.max(1, Math.abs(scaled)) * 4) fail(`Revisa ${label}: mínimo 0,01 € y como máximo dos decimales.`);
+  return rounded;
+};
 const optionalDate = (body, key, required = false) => { const value = txt(body, key, 10, required); if (value && !date(value)) fail(`Revisa ${key}.`); return value; };
 const publicRow = row => { const { _id, ...rest } = row; return { ...rest, id: _id.toString() }; };
 const reference = value => { if (!value) return ''; if (typeof value !== 'string' || !/^[a-f0-9]{24}$/i.test(value)) fail('Referencia no válida.'); return value; };
@@ -30,7 +36,7 @@ export function validateManagement(resource, body) {
     if (!Array.isArray(body.equipoIds) || body.equipoIds.length > 50) fail('Equipo no válido.');
     Object.assign(data, { titulo: txt(body, 'titulo', 200, true), clienteId: reference(body.clienteId), encuestaId: reference(body.encuestaId), presupuestoId: reference(body.presupuestoId), fecha: optionalDate(body, 'fecha'), estado: body.estado, direccion: txt(body, 'direccion'), descripcion: txt(body, 'descripcion', 3000), tareas: txt(body, 'tareas', 3000), equipoIds: [...new Set(body.equipoIds.map(reference))] });
   } else if (resource === 'gastos') {
-    Object.assign(data, { concepto: txt(body, 'concepto', 200, true), fecha: optionalDate(body, 'fecha', true), categoria: txt(body, 'categoria', 100, true), trabajoId: reference(body.trabajoId), importeCentimos: cents(num(body.importe, 'el importe', 1000000, true)), justificante: txt(body, 'justificante', 500) });
+    Object.assign(data, { concepto: txt(body, 'concepto', 200, true), fecha: optionalDate(body, 'fecha', true), categoria: txt(body, 'categoria', 100, true), trabajoId: reference(body.trabajoId), importeCentimos: positiveMoney(body.importe, 'el importe', 1000000), justificante: txt(body, 'justificante', 500) });
   } else if (['presupuestos', 'facturas'].includes(resource)) {
     if (!states[resource].includes(body.estado)) fail('Estado de documento no válido.');
     if (!Array.isArray(body.lineas) || !body.lineas.length || body.lineas.length > 50) fail('Añade entre 1 y 50 conceptos.');
@@ -108,7 +114,7 @@ export function createManagement(db) {
     }
     if (id && action === 'pago' && method === 'POST' && resource === 'facturas') {
       const invoice = await find(resource, id); if (invoice.estado !== 'Registrada') fail('Confirma la factura antes de registrar un pago.');
-      const body = await readBody(); const importeCentimos = cents(num(body.importe, 'el pago', 100000000, true)); const fecha = optionalDate(body, 'fecha', true);
+      const body = await readBody(); const importeCentimos = positiveMoney(body.importe, 'el pago', 100000000); const fecha = optionalDate(body, 'fecha', true);
       const saldo = invoice.totalCentimos - (invoice.pagadoCentimos ?? 0); if (importeCentimos > saldo) fail('El pago supera el importe pendiente.');
       const pago = { importeCentimos, fecha, metodo: txt(body, 'metodo', 100, true) };
       const row = await collection(resource).findOneAndUpdate({ _id: new ObjectId(id), pagadoCentimos: invoice.pagadoCentimos ?? 0 }, { $inc: { pagadoCentimos: importeCentimos }, $push: { pagos: pago }, $set: { updatedAt: new Date() } }, { returnDocument: 'after' });

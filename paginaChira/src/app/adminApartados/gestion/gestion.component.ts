@@ -46,10 +46,10 @@ export class GestionComponent implements OnInit, OnDestroy {
   get rows(): Row[] { return this.data[this.resource].filter(row => row['archivada'] === this.showArchived && (!this.status || row['estado'] === this.status) && `${row['nombre']??''} ${row['titulo']??''} ${row['concepto']??''} ${row['referencia']??''} ${this.clientName(row['clienteId'])} ${row['email']??''}`.toLocaleLowerCase('es').includes(this.search.toLocaleLowerCase('es'))); }
   get states(): string[] { return fields[this.resource].find(f=>f.key==='estado')?.options ?? (this.resource==='facturas' ? ['Borrador','Registrada'] : []); }
   get draftTotal(): number { return (this.draft['lineas'] ?? []).reduce((sum:number,line:Row) => {const base=Math.round(Number(line['cantidad']??0)*Number(line['precio']??0)*100);return sum+base+Math.round(base*Number(line['iva']??0)/100);},0); }
-  get history(): {label:string; url:string; id?:string}[] {
+  get history(): {label:string; url:string; query:Record<string,string>}[] {
     if (this.resource !== 'clientes' || !this.draft['id']) return [];
     const email = String(this.draft['email']??'').toLowerCase();
-    return [...this.encuestas.filter(e=>email && e.email.toLowerCase()===email).map(e=>({label:`${e.referencia} · ${e.servicios.join(', ')} · ${e.estado}`,url:'/admin/encuestas',id:e.id})), ...(['trabajos','presupuestos','facturas'] as Resource[]).flatMap(name=>this.data[name].filter(r=>r['clienteId']===this.draft['id']).map(r=>({label:`${r['titulo']??r['referencia']??'Borrador'} · ${r['estado']}`,url:`/admin/${name}`})))];
+    return [...this.encuestas.filter(e=>email && e.email.toLowerCase()===email).map(e=>({label:`${e.referencia} · ${e.servicios.join(', ')} · ${e.estado}`,url:'/admin/encuestas',query:{respuesta:e.id}})), ...(['trabajos','presupuestos','facturas'] as Resource[]).flatMap(name=>this.data[name].filter(r=>r['clienteId']===this.draft['id']).map(r=>({label:`${r['titulo']??r['referencia']??'Borrador'} · ${r['estado']}`,url:`/admin/${name}`,query:{registro:r['id']}})))];
   }
   ngOnInit(): void { const state=this.route.snapshot.queryParamMap.get('estado');if(state && this.states.includes(state))this.status=state;void this.load(); }
   ngOnDestroy(): void { this.restoreScroll(); }
@@ -75,7 +75,9 @@ export class GestionComponent implements OnInit, OnDestroy {
   close(): void {if(this.saving)return;this.editor.nativeElement.close();this.restoreScroll();if(this.route.snapshot.queryParamMap.has('registro'))void this.router.navigate([], {relativeTo:this.route,queryParams:{registro:null},queryParamsHandling:'merge',replaceUrl:true});}
   restoreScroll(): void {if(this.overflow!==null) {this.document.body.style.overflow=this.overflow;this.overflow=null;}}
   async save(): Promise<void> {
-    if(this.saving || this.issued)return;this.saving=true;this.editorError='';
+    if(this.saving || this.issued)return;this.editorError='';
+    if(this.resource==='gastos' && !this.validAmount(this.draft['importe'])) {this.editorError='Introduce un importe de al menos 0,01 € y como máximo dos decimales.';return;}
+    this.saving=true;
     try {await this.api.request(`/gestion/${this.resource}${this.draft['id']?'/'+this.draft['id']:''}`,this.draft['id']?'PATCH':'POST',this.draft);this.message='Registro guardado.';this.saving=false;this.close();await this.load();}
     catch(e){this.editorError=e instanceof Error?e.message:'No se pudo guardar.';}finally{this.saving=false;}
   }
@@ -85,7 +87,8 @@ export class GestionComponent implements OnInit, OnDestroy {
   addLine(): void {this.draft['lineas'].push({concepto:'',cantidad:1,precio:0,iva:this.empresa['ivaPredeterminado']});}
   useBudget(): void {const budget=this.data.presupuestos.find(r=>r['id']===this.draft['presupuestoId']);if(budget){this.draft['clienteId']=budget['clienteId'];this.draft['trabajoId']=budget['trabajoId'];this.draft['lineas']=structuredClone(budget['lineas']);}}
   async issue(): Promise<void> {if(this.saving)return;this.saving=true;this.editorError='';try{const result=await this.api.request<{registro:Row}>(`/gestion/facturas/${this.draft['id']}/emitir`,'POST',{});this.draft=result.registro;this.message='Factura registrada para el control interno.';await this.load();}catch(e){this.editorError=e instanceof Error?e.message:'No se pudo emitir.';}finally{this.saving=false;}}
-  async pay(): Promise<void> {if(this.saving)return;this.saving=true;this.editorError='';try{const result=await this.api.request<{registro:Row}>(`/gestion/facturas/${this.draft['id']}/pago`,'POST',this.payment);this.draft=result.registro;this.payment['importe']=0;this.message='Pago registrado.';await this.load();}catch(e){this.editorError=e instanceof Error?e.message:'No se pudo registrar el pago.';}finally{this.saving=false;}}
+  validAmount(value:unknown): boolean {if(typeof value!=='number' || !Number.isFinite(value) || value<0.01)return false;const scaled=value*100;return Math.abs(scaled-Math.round(scaled))<=Number.EPSILON*Math.max(1,Math.abs(scaled))*4;}
+  async pay(): Promise<void> {if(this.saving)return;if(!this.validAmount(this.payment['importe'])){this.editorError='Introduce un pago de al menos 0,01 € y como máximo dos decimales.';return;}this.saving=true;this.editorError='';try{const result=await this.api.request<{registro:Row}>(`/gestion/facturas/${this.draft['id']}/pago`,'POST',this.payment);this.draft=result.registro;this.payment['importe']=0;this.message='Pago registrado.';await this.load();}catch(e){this.editorError=e instanceof Error?e.message:'No se pudo registrar el pago.';}finally{this.saving=false;}}
   print(): void {
     const row=this.data[this.resource].find(r=>r['id']===this.draft['id']) ?? this.draft;const empresa=row['empresa']??this.empresa;const cliente=row['cliente']??this.data.clientes.find(r=>r['id']===row['clienteId'])??{};
     const escape=(value:unknown)=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]!));
