@@ -179,12 +179,12 @@ a:focus-visible, button:focus-visible { outline: 3px solid var(--green); outline
 @media (max-width: 800px) {
   .sidebar nav { grid-template-columns: minmax(0, 1fr); gap: 8px; }
   .desktop-group-label { display: none; }
-  .group-toggle { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 48px; padding: 12px 14px; border: 0; border-radius: 10px; background: #172014; color: #e0e6da; font: inherit; font-size: 14px; text-align: left; cursor: pointer; }
+  .group-toggle { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 48px; padding: 12px 14px; border: 0; border-radius: 0; background: transparent; color: #e0e6da; font: inherit; font-size: 14px; text-align: left; cursor: pointer; }
   .group-toggle:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
   .group-toggle .pi { font-size: 12px; }
   .group-links { display: none; padding: 8px 0 0 12px; }
   .group-open .group-links { display: grid; }
-  .group-toggle:hover { background: #1c2817; }
-  .group-open .group-toggle { color: var(--accent); background: #1c2817; }
+  .group-toggle:hover { color: var(--accent); }
+  .group-open .group-toggle { color: var(--accent); background: transparent; }
   .group-open .group-toggle .pi { transform: rotate(180deg); }
 }
