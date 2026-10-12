@@ -1,6 +1,6 @@
 <section aria-labelledby="agenda-title">
   <div class="heading">
-    <div><p class="eyebrow">ORGANIZACIÓN DEL TRABAJO</p><h1 id="agenda-title">Agenda</h1><p class="subtitle">Las fechas asignadas en las encuestas, en un solo calendario.</p></div>
+    <div><p class="eyebrow">ORGANIZACIÓN DEL TRABAJO</p><h1 id="agenda-title">Agenda</h1><p class="subtitle">Tus trabajos y solicitudes con fecha, en un solo calendario.</p></div>
     <button class="button" type="button" [disabled]="cargando" (click)="cargar()"><i class="pi pi-refresh" aria-hidden="true"></i> Actualizar</button>
   </div>
   @if (error) { <p class="notice" role="alert">{{ error }}</p> }
@@ -25,7 +25,7 @@
                 <button class="day-number" type="button" aria-haspopup="dialog" aria-controls="dia-modal" [attr.aria-label]="dia.fecha + ', ' + dia.trabajos.length + ' trabajos'" [attr.aria-pressed]="dia.fecha === seleccion" [attr.aria-current]="dia.fecha === hoy ? 'date' : null" (click)="abrirDia(dia.fecha)">{{ dia.numero }}</button>
                 @if (dia.trabajos.length) { <span class="mobile-job-count" aria-hidden="true">{{ dia.trabajos.length }}</span> }
                 @for (trabajo of dia.trabajos.slice(0, 2); track trabajo.id) {
-                  <a (click)="$event.stopPropagation()" class="calendar-job" [class.finished]="trabajo.estado === 'Finalizada'" routerLink="/admin/encuestas" [queryParams]="{ respuesta: trabajo.id }" [title]="trabajo.nombre + ' · ' + trabajo.servicios.join(', ')"><strong>{{ trabajo.nombre }}</strong><span>{{ trabajo.servicios.join(', ') }}</span></a>
+                  <a (click)="$event.stopPropagation()" class="calendar-job" [class.finished]="trabajo.estado === 'Finalizada'" [routerLink]="trabajo.gestionId ? '/admin/trabajos' : '/admin/encuestas'" [queryParams]="trabajo.gestionId ? { registro: trabajo.gestionId } : { respuesta: trabajo.id }" [title]="trabajo.nombre + ' · ' + trabajo.servicios.join(', ')"><strong>{{ trabajo.nombre }}</strong><span>{{ trabajo.servicios.join(', ') }}</span></a>
                 }
                 @if (dia.trabajos.length > 2) { <button class="more" type="button" (click)="abrirDia(dia.fecha)">+{{ dia.trabajos.length - 2 }} más</button> }
               </div>
@@ -39,7 +39,7 @@
     <section class="unscheduled" aria-labelledby="unscheduled-title">
       <div><h2 id="unscheduled-title">Aceptadas sin fecha <span class="badge">{{ sinFecha.length }}</span></h2><p>Asigna una fecha a estos trabajos para que aparezcan en el calendario.</p></div>
       @for (trabajo of sinFecha; track trabajo.id) {
-        <a class="unscheduled-row" routerLink="/admin/encuestas" [queryParams]="{ respuesta: trabajo.id }"><span><strong>{{ trabajo.nombre }}</strong><small>{{ trabajo.referencia }} · {{ trabajo.servicios.join(', ') }}</small></span><span class="assign">Asignar fecha <i class="pi pi-arrow-right" aria-hidden="true"></i></span></a>
+        <a class="unscheduled-row" [routerLink]="trabajo.gestionId ? '/admin/trabajos' : '/admin/encuestas'" [queryParams]="trabajo.gestionId ? { registro: trabajo.gestionId } : { respuesta: trabajo.id }"><span><strong>{{ trabajo.nombre }}</strong><small>{{ trabajo.referencia }} · {{ trabajo.servicios.join(', ') }}</small></span><span class="assign">Asignar fecha <i class="pi pi-arrow-right" aria-hidden="true"></i></span></a>
       } @empty { <p class="all-set">No hay trabajos aceptados pendientes de asignar fecha.</p> }
     </section>
   }
@@ -59,7 +59,7 @@
         <p><i class="pi pi-phone" aria-hidden="true"></i> {{ trabajo.telefono }}</p>
         @if (trabajo.mensaje) { <div class="work-description"><strong>Qué hay que hacer</strong><p>{{ trabajo.mensaje }}</p></div> }
         @if (trabajo.notas) { <div class="work-description"><strong>Notas internas</strong><p>{{ trabajo.notas }}</p></div> }
-        <a class="button work-link" routerLink="/admin/encuestas" [queryParams]="{ respuesta: trabajo.id }" (click)="cerrarDia()">Ver respuesta y editar <i class="pi pi-arrow-right" aria-hidden="true"></i></a>
+        <a class="button work-link" [routerLink]="trabajo.gestionId ? '/admin/trabajos' : '/admin/encuestas'" [queryParams]="trabajo.gestionId ? { registro: trabajo.gestionId } : { respuesta: trabajo.id }" (click)="cerrarDia()">Ver trabajo y editar <i class="pi pi-arrow-right" aria-hidden="true"></i></a>
       </article>
     } @empty { <div class="empty"><i class="pi pi-calendar" aria-hidden="true"></i><p>No hay trabajos programados para este día.</p></div> }
   </div>

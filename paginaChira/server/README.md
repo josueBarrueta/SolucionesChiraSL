@@ -102,3 +102,46 @@ No publiques todavía: faltan el alojamiento activo, la conexión real de Atlas 
 de prueba enviada desde la URL pública. La plantilla no inventa una URL del API.
 
 Documentación: https://render.com/docs/deploy-node-express-app y https://render.com/docs/free
+
+## Gestión del panel
+
+Clientes, equipo, trabajos, gastos, presupuestos, facturas internas y configuración se guardan
+mediante rutas privadas `/api/gestion/*`. La API existente de encuestas se mantiene.
+Las colecciones se crean al guardar el primer registro; `server/index.mjs` crea sus índices.
+No hay borrado definitivo: se archivan y restauran registros. Las facturas confirmadas son inmutables.
+
+Una encuesta aceptada o finalizada crea un cliente (por correo normalizado) y un trabajo vinculado.
+Para solicitudes anteriores usa **Sincronizar solicitudes** en Clientes o Trabajos.
+Repetir la sincronización no duplica registros. Las fechas y notas actualizadas desde una encuesta
+se propagan cuando el propietario no ha personalizado ese campo en el trabajo.
+Los trabajos manuales y los importados aparecen en Agenda, Resumen e Informes.
+
+Presupuestos y facturas se calculan en céntimos, con redondeo por concepto y por impuesto.
+Los datos fiscales, condiciones y el IVA predeterminado se rellenan en Configuración;
+el IVA no se inventa. La moneda es EUR. La impresión abre una vista del documento guardado,
+con opción de imprimir o guardar en PDF desde el navegador; las notas internas no se imprimen.
+
+**Facturas es control interno**, según el alcance elegido por el propietario. No es un sistema
+certificado de emisión fiscal ni incluye comunicaciones con la administración tributaria.
+Puede anotarse la referencia de una factura externa. Confirmar asigna una referencia interna,
+fija los importes y permite registrar pagos parciales sin superar el saldo pendiente.
+Los informes distinguen facturado, cobrado y pendiente; cobros menos gastos no es beneficio contable.
+Los justificantes de gastos se referencian por su nombre o ubicación, sin almacenar archivos adjuntos.
+
+El cambio de contraseña comprueba la contraseña actual y guarda un hash con sal en `credenciales`;
+el hash inicial del entorno se usa solo hasta el primer cambio. No se muestra en las rutas de configuración.
+
+### Publicar esta actualización
+
+Servicio existente: `soluciones-chira-api` en Render, rama `main`, directorio `paginaChira`.
+El despliegue automático está desactivado. Una vez que los cambios estén publicados en GitHub,
+selecciona **Manual Deploy → Deploy latest commit** en ese servicio. No cambies los secretos.
+El comando existente `npm ci --omit=dev --ignore-scripts` instala las dependencias del servidor;
+el arranque sigue siendo `npm run server:production`.
+Publica también el frontend con su flujo de GitHub Pages para que aparezcan las nuevas pantallas.
+Comprueba `/api/health` y prueba una entrada manual y la sincronización de una solicitud aceptada.
+
+Las pruebas HTTP usan una base temporal en memoria. No insertan datos de prueba en MongoDB real.
+La revisión local incluye alta de cliente en navegador y compilación del frontend.
+Si la caché nativa de Angular falla en este Mac, `CI=1 NG_BUILD_MAX_WORKERS=1 NG_BUILD_PARALLEL_TS=0 npm run build`
+permite compilar sin esa caché; no es necesario cambiar la configuración del alojamiento.

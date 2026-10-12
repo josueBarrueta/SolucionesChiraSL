@@ -3,7 +3,8 @@ import { randomBytes } from 'node:crypto';
 import { ObjectId } from 'mongodb';
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
 import { SERVICE_QUESTIONS } from '../src/app/formulario/formulario.questions.ts';
-import { verifyPassword, tokenHash } from './security.mjs';
+import { verifyPassword, tokenHash, hashPassword } from './security.mjs';
+import { createManagement, ManagementError } from './management.mjs';
 import { serveWeb } from './web.mjs';
 
 export const ESTADOS = ['Nueva', 'Contactado', 'Aceptada', 'Finalizada'];
@@ -81,6 +82,7 @@ async function readJson(req) {
 }
 
 export function createApp({ db, adminEmail, passwordHash, origins, secureCookies = false, webDirectory = null }) {
+  const management = createManagement(db);
   const surveys = db.collection('encuestas');
   const sessions = db.collection('sesiones');
   const counters = db.collection('contadores');
@@ -138,7 +140,8 @@ export function createApp({ db, adminEmail, passwordHash, origins, secureCookies
         const body = await readJson(req);
         const username = text(body?.username, 'el usuario', 254, 1);
         const password = text(body?.password, 'la contraseña', 256, 1);
-        const verified = await verifyPassword(password, passwordHash);
+        const savedCredentials = await db.collection('credenciales').findOne({ _id: 'admin' });
+        const verified = await verifyPassword(password, savedCredentials?.passwordHash ?? passwordHash);
         if (username !== adminEmail || !verified) throw new ApiError(401, 'Usuario o contraseña incorrectos.');
         const token = randomBytes(32).toString('hex');
         await sessions.insertOne({ _id: tokenHash(token), expiresAt: new Date(Date.now() + 12 * 3600000) });
@@ -189,11 +192,29 @@ export function createApp({ db, adminEmail, passwordHash, origins, secureCookies
           estado: body.estado, notas, fechaTrabajo, archivada: body.archivada, updatedAt: new Date()
         } }, { returnDocument: 'after' });
         if (!row) throw new ApiError(404, 'No se encontró la solicitud.');
+        await management.syncSurvey(row);
         return send(200, { encuesta: publicDocument(row) });
+      }
+      if (path === '/api/gestion/contrasena' && method === 'POST') {
+        await session(req);
+        rateLimit(attempts, req.socket.remoteAddress, 10, 15 * 60 * 1000);
+        const body = await readJson(req);
+        const actual = text(body.actual, 'la contraseña actual', 256, 1);
+        const nueva = text(body.nueva, 'la contraseña nueva (mínimo 12 caracteres)', 256, 12);
+        const credentials = db.collection('credenciales');
+        const saved = await credentials.findOne({ _id: 'admin' });
+        if (!await verifyPassword(actual, saved?.passwordHash ?? passwordHash)) throw new ApiError(400, 'La contraseña actual no es correcta.');
+        await credentials.findOneAndUpdate({ _id: 'admin' }, { $set: { passwordHash: await hashPassword(nueva) } }, { upsert: true, returnDocument: 'after' });
+        return send(200, { success: true });
+      }
+      if (path.startsWith('/api/gestion/')) {
+        await session(req);
+        const result = await management.handle(path, method, () => readJson(req));
+        if (result) return send(result.status, result.body);
       }
       send(404, { message: 'No se encontró esta ruta.' });
     } catch (error) {
-      const status = error instanceof ApiError ? error.status : 503;
+      const status = error instanceof ApiError || error instanceof ManagementError ? error.status : 503;
       send(status, { message: status === 503 ? 'El servicio no está disponible. Inténtalo de nuevo.' : error.message });
     }
   });

@@ -1,14 +1,5 @@
-<section aria-labelledby="informes-title">
-  <div class="section-heading">
-    <div><p class="eyebrow">SOLUCIONES CHIRA SL</p><h1 id="informes-title">Informes</h1><p class="subtitle">Consulta la evolución de la actividad de tu empresa.</p></div>
-    <span class="preview-badge"><i class="pi pi-sparkles" aria-hidden="true"></i> Vista previa</span>
-  </div>
-  <div class="section-welcome"><span class="section-icon"><i class="pi pi-chart-line" aria-hidden="true"></i></span><div><h2>Tu espacio de informes</h2><p>Este apartado está preparado para ampliar la gestión de tu empresa.</p></div></div>
-  <div class="feature-grid">
-    <article class="feature-card"><span class="feature-number">01</span><h3>Actividad de la empresa</h3><p>Solicitudes recibidas y trabajos finalizados por periodo.</p><small>Próximamente</small></article>
-    <article class="feature-card"><span class="feature-number">02</span><h3>Servicios solicitados</h3><p>Distribución de solicitudes según el tipo de servicio.</p><small>Próximamente</small></article>
-    <article class="feature-card"><span class="feature-number">03</span><h3>Resultados</h3><p>Ingresos y gastos cuando estén disponibles sus registros.</p><small>Próximamente</small></article>
-  </div>
-  <div class="section-notice"><i class="pi pi-info-circle" aria-hidden="true"></i><p>Esta es una primera vista del apartado. Sus funciones todavía no están disponibles.</p></div>
-  <a class="back-link" routerLink="/admin"><i class="pi pi-arrow-left" aria-hidden="true"></i> Volver al resumen</a>
+<section><div class="heading"><div><p class="eyebrow">SOLUCIONES CHIRA SL</p><h1>Informes</h1><p class="subtitle">Actividad, facturación y cobros calculados a partir de tus registros.</p></div><button class="button" type="button" [disabled]="loading" (click)="load()">Actualizar</button></div>
+<div class="filters"><label>Desde<input type="date" [(ngModel)]="desde" /></label><label>Hasta<input type="date" [(ngModel)]="hasta" /></label><button class="button" type="button" (click)="desde='';hasta=''">Todo el periodo</button></div>
+@if(invalid){<p class="notice error" role="alert">La fecha final debe ser posterior a la inicial.</p>}@if(error){<p class="notice error" role="alert">{{ error }}</p>}@if(loading){<p class="notice" role="status">Cargando informes…</p>}
+@if(!loading && !error && !invalid){<div class="metrics">@for(metric of metrics;track metric.label){<article class="metric"><p>{{ metric.label }}</p><strong>{{ metric.value }}</strong></article>}</div><p class="hint">Cobros menos gastos refleja los movimientos registrados, con impuestos incluidos. No equivale al beneficio contable. Los trabajos sin fecha no se incluyen en el periodo.</p><div class="breakdowns"><div class="records"><h3>Servicios solicitados</h3>@for(service of services;track service.name){<article class="record"><span>{{ service.name }}</span><strong>{{ service.count }}</strong></article>}@empty{<p>No hay solicitudes en este periodo.</p>}</div><div class="records"><h3>Gastos por categoría</h3>@for(category of categories;track category.name){<article class="record"><span>{{ category.name }}</span><strong>{{ money(category.value) }}</strong></article>}@empty{<p>No hay gastos en este periodo.</p>}</div></div>}
 </section>

@@ -111,7 +111,7 @@
         <span class="stat-icon"><i class="pi pi-clock" aria-hidden="true"></i></span>
         <p>Pendientes de revisar</p><strong>{{ cargando || error ? '—' : pendientes }}</strong><small>Sin revisar · activas</small>
       </a>
-      <a class="stat-card" routerLink="/admin/encuestas" [queryParams]="{ estado: 'Finalizada' }">
+      <a class="stat-card" routerLink="/admin/trabajos" [queryParams]="{ estado: 'Finalizado' }">
         <span class="stat-icon"><i class="pi pi-check-circle" aria-hidden="true"></i></span>
         <p>Completadas</p><strong>{{ cargando || error ? '—' : completadas }}</strong><small>Finalizadas · activas</small>
       </a>
@@ -161,10 +161,10 @@
 <div class="responses-heading">
 <div>
 <h2>Próximos trabajos</h2>
-<p>Solicitudes con fecha de trabajo asignada.</p>
+<p>Trabajos manuales y solicitudes con fecha asignada.</p>
 </div>
-<a class="status" routerLink="/admin/encuestas">Ver encuestas</a>
-</div>@for (encuesta of proximosTrabajos; track encuesta.id) {<a class="request-row" routerLink="/admin/encuestas" [queryParams]="{ respuesta: encuesta.id }">
+<a class="status" routerLink="/admin/trabajos">Ver trabajos</a>
+</div>@for (encuesta of proximosTrabajos; track encuesta.id) {<a class="request-row" [routerLink]="encuesta.gestionId ? '/admin/trabajos' : '/admin/encuestas'" [queryParams]="encuesta.gestionId ? { registro: encuesta.gestionId } : { respuesta: encuesta.id }">
 <span class="request-person">
 <small>{{ encuesta.referencia }} · {{ fechaVisible(encuesta.fechaTrabajo) }}</small>
 <strong>{{ encuesta.nombre }}</strong>

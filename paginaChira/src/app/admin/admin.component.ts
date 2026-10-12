@@ -37,6 +37,7 @@ export class AdminComponent {
   private readonly router = inject(Router);
   private readonly api = inject(ChiraApiService);
   encuestas: Encuesta[] = [];
+  trabajos: (Encuesta & { gestionId?: string })[] = [];
   cargando = true;
   error = '';
   saliendo = false;
@@ -61,11 +62,11 @@ export class AdminComponent {
   }
 
   get nuevas(): number { return this.encuestas.filter(e => !e.archivada && e.estado === 'Nueva').length; }
-  get completadas(): number { return this.encuestas.filter(e => !e.archivada && e.estado === 'Finalizada').length; }
+  get completadas(): number { return this.trabajos.filter(e => !e.archivada && e.estado === 'Finalizada').length; }
   get necesitanAtencion(): Encuesta[] { return this.encuestas.filter(e => !e.archivada && e.estado === 'Nueva').slice(0, 5); }
-  get proximosTrabajos(): Encuesta[] {
+  get proximosTrabajos(): (Encuesta & { gestionId?: string })[] {
     const hoy = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Madrid' }).format(new Date());
-    return this.encuestas.filter(e => !e.archivada && e.fechaTrabajo >= hoy && e.estado !== 'Finalizada')
+    return this.trabajos.filter(e => !e.archivada && e.fechaTrabajo >= hoy && e.estado !== 'Finalizada')
       .sort((a, b) => a.fechaTrabajo.localeCompare(b.fechaTrabajo)).slice(0, 5);
   }
   fechaVisible(fecha: string): string { return fecha.split('-').reverse().join('/'); }
@@ -74,7 +75,15 @@ export class AdminComponent {
   async actualizar(): Promise<void> {
     this.cargando = true;
     this.error = '';
-    try { this.encuestas = (await this.api.listar()).encuestas; this.ultimaActualizacion = new Intl.DateTimeFormat('es', { hour: '2-digit', minute: '2-digit' }).format(new Date()); }
+    try {
+      const [surveys, jobs, clients] = await Promise.all([this.api.listar(), this.api.request<{registros: Record<string, any>[]}>('/gestion/trabajos'), this.api.request<{registros: Record<string, any>[]}>('/gestion/clientes')]);
+      this.encuestas = surveys.encuestas;
+      const linked = new Set(jobs.registros.map(job => job['encuestaId']).filter(Boolean));
+      this.trabajos = [...jobs.registros.filter(job => job['estado'] !== 'Cancelado').map(job => {
+        const client = clients.registros.find(c => c['id'] === job['clienteId']);
+        return { id: `trabajo-${job['id']}`, gestionId: job['id'], referencia: job['titulo'], nombre: client?.['nombre'] ?? job['titulo'], fecha: job['fecha'] ?? '', servicios:[job['titulo']], telefono:'', telefonoInternacional:'', localidad:'', direccion:job['direccion'] ?? '', codigoPostal:'', piso:'',puerta:'',escalera:'', mensaje:job['descripcion'] ?? '', fechaTrabajo:job['fecha'] ?? '', archivada:job['archivada'], estado: (job['estado'] === 'Finalizado' ? 'Finalizada' : 'Aceptada') as Encuesta['estado'], email:'',respuestas:[],notas:job['notas'] ?? '' };
+      }), ...this.encuestas.filter(e => !linked.has(e.id))];
+      this.ultimaActualizacion = new Intl.DateTimeFormat('es', { hour: '2-digit', minute: '2-digit' }).format(new Date()); }
     catch (error) { this.error = error instanceof Error ? error.message : 'No se pudieron cargar las solicitudes.'; }
     finally { this.cargando = false; }
   }
