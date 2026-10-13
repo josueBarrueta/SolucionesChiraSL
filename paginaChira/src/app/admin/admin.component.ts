@@ -1,3 +1,4 @@
+import { DOCUMENT } from '@angular/common';
 import { TooltipModule } from 'primeng/tooltip';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Component, DestroyRef, ElementRef, HostListener, inject } from '@angular/core';
@@ -13,6 +14,8 @@ import { AuthService } from '../login/auth.service';
   styleUrls: ['./admin.component.scss']
 })
 export class AdminComponent {
+  private readonly document = inject(DOCUMENT);
+  private refreshing = false;
   private readonly element = inject(ElementRef<HTMLElement>);
   private esBarraLateral(): boolean {
     return this.element.nativeElement.ownerDocument.defaultView?.matchMedia('(min-width: 801px)').matches ?? false;
@@ -49,6 +52,8 @@ export class AdminComponent {
   private readonly destroyRef = inject(DestroyRef);
   constructor() {
     void this.actualizar();
+    const timer = setInterval(() => { if(this.isResumen && this.document.visibilityState === 'visible') void this.actualizar(true); }, 30000);
+    this.destroyRef.onDestroy(() => clearInterval(timer));
     this.router.events.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(event => {
       if (event instanceof NavigationEnd) {
         this.menuAbierto = false;
@@ -72,8 +77,10 @@ export class AdminComponent {
   fechaVisible(fecha: string): string { return fecha.split('-').reverse().join('/'); }
 
 
-  async actualizar(): Promise<void> {
-    this.cargando = true;
+  async actualizar(silencioso = false): Promise<void> {
+    if(this.refreshing) return;
+    this.refreshing = true;
+    if(!silencioso) this.cargando = true;
     this.error = '';
     try {
       const [surveys, jobs, clients] = await Promise.all([this.api.listar(), this.api.request<{registros: Record<string, any>[]}>('/gestion/trabajos'), this.api.request<{registros: Record<string, any>[]}>('/gestion/clientes')]);
@@ -85,7 +92,7 @@ export class AdminComponent {
       }), ...this.encuestas.filter(e => !linked.has(e.id))];
       this.ultimaActualizacion = new Intl.DateTimeFormat('es', { hour: '2-digit', minute: '2-digit' }).format(new Date()); }
     catch (error) { this.error = error instanceof Error ? error.message : 'No se pudieron cargar las solicitudes.'; }
-    finally { this.cargando = false; }
+    finally { this.cargando = false; this.refreshing = false; }
   }
 
   get pendientes(): number {

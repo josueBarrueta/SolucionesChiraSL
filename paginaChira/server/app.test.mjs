@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { ObjectId } from 'mongodb';
 import { createApp, validateSubmission, validDate } from './app.mjs';
+import { createManagement } from './management.mjs';
 import { hashPassword, verifyPassword } from './security.mjs';
 
 function memoryDb() {
@@ -199,4 +200,57 @@ test('gestión: importación sin duplicados, relaciones, importes, emisión inmu
   assert.equal((await call('/api/gestion/contrasena','POST',{actual:'management-test-password',nueva:'otra-password-test'})).status,200);
   assert.equal((await call('/api/login','POST',{username:'test@example.com',password:'management-test-password'})).status,401);
   assert.equal((await call('/api/login','POST',{username:'test@example.com',password:'otra-password-test'})).status,200);
+});
+
+
+test('encuesta nueva: cliente y trabajo automáticos, reintentos y cambios manuales', async () => {
+  const db = memoryDb();
+  const management = createManagement(db);
+  const survey = { ...validateSubmission(submission), _id: new ObjectId(), fecha: '2026-10-13', referencia: 'CHI-AUTO', respuestas: [{pregunta: 'Accesos', respuesta: 'Ascensor'}] };
+  await Promise.all([management.syncSurvey(survey), management.syncSurvey(survey)]);
+  const clients = await db.collection('clientes').find({}).toArray();
+  const jobs = await db.collection('trabajos').find({}).toArray();
+  assert.equal(clients.length, 1);
+  assert.equal(jobs.length, 1);
+  assert.equal(jobs[0].estado, 'Pendiente');
+  assert.equal(jobs[0].tareas, 'Accesos: Ascensor');
+  assert.equal(jobs[0].clienteId, clients[0]._id.toString());
+  await db.collection('trabajos').findOneAndUpdate({_id: jobs[0]._id}, {$set: {estado: 'Finalizado', fecha: '2026-10-20', notas: 'Dato manual'}}, {});
+  await management.syncSurvey({...survey, fechaTrabajo: '2026-10-22', notas: 'Cambio de encuesta'});
+  const saved = await db.collection('trabajos').findOne({_id: jobs[0]._id});
+  assert.equal(saved.estado, 'Finalizado');
+  assert.equal(saved.fecha, '2026-10-20');
+  assert.equal(saved.notas, 'Dato manual');
+  await management.syncSurvey({...survey, _id: new ObjectId()});
+  assert.equal((await db.collection('clientes').find({}).toArray()).length, 1);
+  assert.equal((await db.collection('trabajos').find({}).toArray()).length, 2);
+});
+
+test('encuestas anteriores se importan al abrir gestión, sin duplicados', async () => {
+  const db = memoryDb();
+  await db.collection('encuestas').insertOne({...validateSubmission(submission), referencia: 'CHI-ANTERIOR'});
+  const management = createManagement(db);
+  const [clients, jobs] = await Promise.all([
+    management.handle('/api/gestion/clientes', 'GET'),
+    management.handle('/api/gestion/trabajos', 'GET')
+  ]);
+  assert.equal(clients.body.registros.length, 1);
+  assert.equal(jobs.body.registros.length, 1);
+  await management.handle('/api/gestion/trabajos', 'GET');
+  assert.equal((await db.collection('trabajos').find({}).toArray()).length, 1);
+});
+
+
+test('finalizar trabajo actualiza la encuesta y mantiene el vínculo para facturar', async () => {
+  const db = memoryDb();
+  const management = createManagement(db);
+  const survey = {...validateSubmission(submission), referencia: 'CHI-FINAL'};
+  const result = await db.collection('encuestas').insertOne(survey);
+  await management.syncSurvey(await db.collection('encuestas').findOne({_id: result.insertedId}));
+  const job = (await management.handle('/api/gestion/trabajos', 'GET')).body.registros[0];
+  const saved = await management.handle('/api/gestion/trabajos/' + job.id, 'PATCH', async () => ({...job, estado: 'Finalizado', fecha: '2026-10-20'}));
+  assert.equal(saved.body.registro.estado, 'Finalizado');
+  const source = await db.collection('encuestas').findOne({_id: result.insertedId});
+  assert.equal(source.estado, 'Finalizada');
+  assert.equal(source.fechaTrabajo, '2026-10-20');
 });

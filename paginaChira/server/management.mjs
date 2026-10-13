@@ -73,8 +73,14 @@ export function createManagement(db) {
     const row = await collection('clientes').findOneAndUpdate({ origenEmail: key }, { $setOnInsert: { nombre: survey.nombre, email: key, telefono: survey.telefono, nif: '', direccion: survey.direccion === 'No indicada' ? '' : survey.direccion, localidad: survey.localidad, codigoPostal: survey.codigoPostal === 'No indicado' ? '' : survey.codigoPostal, notas: '', archivada: false, createdAt: new Date(), updatedAt: new Date() } }, { upsert: true, returnDocument: 'after' });
     return row._id.toString();
   }
-  async function syncSurvey(survey) {
-    if (survey.archivada || !['Aceptada', 'Finalizada', 'Aceptado', 'Atendida'].includes(survey.estado)) return null;
+  let syncQueue = Promise.resolve();
+  function syncSurvey(survey) {
+    const next = syncQueue.then(() => importSurvey(survey));
+    syncQueue = next.catch(() => {});
+    return next;
+  }
+  async function importSurvey(survey) {
+    if (survey.archivada) return null;
     const clienteId = await clientFromSurvey(survey);
     const encuestaId = survey._id.toString();
     const previous = await collection('trabajos').findOne({ encuestaId });
@@ -88,7 +94,14 @@ export function createManagement(db) {
       updates.origen.estadoTrabajo = ['Finalizada', 'Atendida'].includes(survey.estado) ? 'Finalizado' : 'Pendiente';
       return collection('trabajos').findOneAndUpdate({ _id: previous._id }, { $set: updates }, { returnDocument: 'after' });
     }
-    return collection('trabajos').findOneAndUpdate({ encuestaId }, { $setOnInsert: { clienteId, titulo: survey.servicios.join(', '), presupuestoId: '', fecha: survey.fechaTrabajo ?? '', estado: ['Finalizada', 'Atendida'].includes(survey.estado) ? 'Finalizado' : 'Pendiente', direccion: `${survey.direccion} · ${survey.localidad}`, descripcion: survey.mensaje, tareas: '', equipoIds: [], origen: { fecha: survey.fechaTrabajo ?? '', estado: survey.estado, estadoTrabajo: ['Finalizada','Atendida'].includes(survey.estado) ? 'Finalizado' : 'Pendiente', notas: survey.notas ?? '' }, notas: survey.notas ?? '', archivada: false, createdAt: new Date(), updatedAt: new Date() } }, { upsert: true, returnDocument: 'after' });
+    return collection('trabajos').findOneAndUpdate({ encuestaId }, { $setOnInsert: { clienteId, titulo: survey.servicios.join(', '), presupuestoId: '', fecha: survey.fechaTrabajo ?? '', estado: ['Finalizada', 'Atendida'].includes(survey.estado) ? 'Finalizado' : 'Pendiente', direccion: `${survey.direccion} · ${survey.localidad}`, descripcion: survey.mensaje, tareas: (survey.respuestas ?? []).map(r => `${r.pregunta}: ${r.respuesta}`).join('\n'), equipoIds: [], origen: { fecha: survey.fechaTrabajo ?? '', estado: survey.estado, estadoTrabajo: ['Finalizada','Atendida'].includes(survey.estado) ? 'Finalizado' : 'Pendiente', notas: survey.notas ?? '' }, notas: survey.notas ?? '', archivada: false, createdAt: new Date(), updatedAt: new Date() } }, { upsert: true, returnDocument: 'after' });
+  }
+  let backfill = null;
+  async function ensureImported() {
+    if (!backfill) backfill = (async () => {
+      for (const survey of await collection('encuestas').find({}).toArray()) await syncSurvey(survey);
+    })().catch(error => { backfill = null; throw error; });
+    await backfill;
   }
   async function handle(path, method, readBody) {
     if (path === '/api/gestion/configuracion') {
@@ -103,6 +116,9 @@ export function createManagement(db) {
     const match = path.match(/^\/api\/gestion\/([a-z]+)(?:\/([a-f0-9]{24})(?:\/(emitir|pago))?)?$/i);
     if (!match || !resources.includes(match[1])) return null;
     const [, resource, id, action] = match;
+    if (!id && method === 'GET' && ['clientes', 'trabajos'].includes(resource)) {
+      await ensureImported();
+    }
     if (!id && method === 'GET') return { status: 200, body: { registros: (await collection(resource).find({}).sort({ createdAt: -1 }).toArray()).map(publicRow) } };
     if (id && action === 'emitir' && method === 'POST' && resource === 'facturas') {
       const invoice = await find(resource, id); if (invoice.estado === 'Registrada') return { status: 200, body: { registro: publicRow(invoice) } };
@@ -132,6 +148,11 @@ export function createManagement(db) {
       const query = { _id: new ObjectId(id), ...(resource === 'facturas' ? { estado: 'Borrador' } : {}) };
       const row = await collection(resource).findOneAndUpdate(query, { $set: data }, { returnDocument: 'after' });
       if (!row) throw new ManagementError(409, 'El registro ha cambiado. Actualiza la página.');
+      if (resource === 'trabajos' && row.encuestaId) {
+        const source = await find('encuestas', row.encuestaId);
+        const estado = row.estado === 'Finalizado' ? 'Finalizada' : row.estado === 'En curso' ? 'Aceptada' : source.estado === 'Finalizada' ? 'Aceptada' : source.estado;
+        await collection('encuestas').findOneAndUpdate({_id: source._id}, {$set: {estado, fechaTrabajo: row.fecha, updatedAt: new Date()}}, {});
+      }
       return { status: 200, body: { registro: publicRow(row) } };
     }
     return null;

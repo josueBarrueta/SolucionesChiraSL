@@ -162,7 +162,7 @@ export function createApp({ db, adminEmail, passwordHash, origins, secureCookies
         if (typeof key !== 'string' || !/^[a-f0-9-]{36}$/i.test(key)) invalid('Identificador de envío no válido.');
         const data = validateSubmission(await readJson(req));
         const existing = await surveys.findOne({ submissionKey: key });
-        if (existing) return send(200, { success: true, referencia: existing.referencia });
+        if (existing) { await management.syncSurvey(existing); return send(200, { success: true, referencia: existing.referencia }); }
         const count = await counters.findOneAndUpdate({ _id: 'encuestas' }, { $inc: { value: 1 } }, { upsert: true, returnDocument: 'after' });
         const row = { ...data, fecha: new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Madrid' }).format(new Date()),
           createdAt: new Date(), updatedAt: new Date(), submissionKey: key,
@@ -171,8 +171,10 @@ export function createApp({ db, adminEmail, passwordHash, origins, secureCookies
         catch (error) {
           if (error.code !== 11000) throw error;
           const saved = await surveys.findOne({ submissionKey: key });
+          await management.syncSurvey(saved);
           return send(200, { success: true, referencia: saved.referencia });
         }
+        await management.syncSurvey(await surveys.findOne({ submissionKey: key }));
         return send(201, { success: true, referencia: row.referencia });
       }
       if (path === '/api/encuestas' && method === 'GET') {

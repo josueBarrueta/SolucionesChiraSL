@@ -23,6 +23,7 @@ export class GestionComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly document = inject(DOCUMENT);
+  private refreshTimer?: ReturnType<typeof setInterval>;
   private overflow: string | null = null;
   data: Record<Resource, Row[]> = {clientes:[],equipo:[],trabajos:[],gastos:[],presupuestos:[],facturas:[]};
   encuestas: Encuesta[] = [];
@@ -40,7 +41,7 @@ export class GestionComponent implements OnInit, OnDestroy {
   payment: Row = {};
   readonly today = new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Madrid'}).format(new Date());
   get title(): string { return {clientes:'Clientes',equipo:'Equipo',trabajos:'Trabajos',gastos:'Gastos',presupuestos:'Presupuestos',facturas:'Facturas'}[this.resource]; }
-  get fields(): Field[] { return fields[this.resource]; }
+  get fields(): Field[] { return fields[this.resource].filter(field => field.key !== 'presupuestoId'); }
   get documents(): boolean { return ['presupuestos','facturas'].includes(this.resource); }
   get issued(): boolean { return this.resource === 'facturas' && this.draft['estado'] === 'Registrada'; }
   get rows(): Row[] { return this.data[this.resource].filter(row => row['archivada'] === this.showArchived && (!this.status || row['estado'] === this.status) && `${row['nombre']??''} ${row['titulo']??''} ${row['concepto']??''} ${row['referencia']??''} ${this.clientName(row['clienteId'])} ${row['email']??''}`.toLocaleLowerCase('es').includes(this.search.toLocaleLowerCase('es'))); }
@@ -51,8 +52,8 @@ export class GestionComponent implements OnInit, OnDestroy {
     const email = String(this.draft['email']??'').toLowerCase();
     return [...this.encuestas.filter(e=>email && e.email.toLowerCase()===email).map(e=>({label:`${e.referencia} · ${e.servicios.join(', ')} · ${e.estado}`,url:'/admin/encuestas',query:{respuesta:e.id}})), ...(['trabajos','presupuestos','facturas'] as Resource[]).flatMap(name=>this.data[name].filter(r=>r['clienteId']===this.draft['id']).map(r=>({label:`${r['titulo']??r['referencia']??'Borrador'} · ${r['estado']}`,url:`/admin/${name}`,query:{registro:r['id']}})))];
   }
-  ngOnInit(): void { const state=this.route.snapshot.queryParamMap.get('estado');if(state && this.states.includes(state))this.status=state;void this.load(); }
-  ngOnDestroy(): void { this.restoreScroll(); }
+  ngOnInit(): void { const state=this.route.snapshot.queryParamMap.get('estado');if(state && this.states.includes(state))this.status=state;void this.load(); this.refreshTimer = setInterval(() => { if(!this.loading && !this.saving && !this.editor.nativeElement.open && this.document.visibilityState === 'visible') void this.load(); }, 30000); }
+  ngOnDestroy(): void { clearInterval(this.refreshTimer); this.restoreScroll(); }
   money(cents:number): string { return new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR'}).format((cents??0)/100); }
   clientName(id:string): string { return this.data.clientes.find(r=>r['id']===id)?.['nombre'] ?? 'Sin cliente'; }
   label(row:Row): string { return row['nombre']??row['titulo']??row['concepto']??row['referencia']??'Factura en borrador'; }
@@ -61,6 +62,17 @@ export class GestionComponent implements OnInit, OnDestroy {
     this.loading=true; this.error='';
     try { const names=Object.keys(this.data) as Resource[]; const [records,surveys,settings]=await Promise.all([Promise.all(names.map(name=>this.api.request<{registros:Row[]}>(`/gestion/${name}`))),this.api.listar(),this.api.request<{configuracion:Row}>('/gestion/configuracion')]); names.forEach((name,i)=>this.data[name]=records[i].registros); this.encuestas=surveys.encuestas;this.empresa=settings.configuracion;
       const id=this.route.snapshot.queryParamMap.get('registro');
+      const trabajoId = this.route.snapshot.queryParamMap.get('trabajo');
+      if(this.resource === 'facturas' && trabajoId && !this.editor.nativeElement.open) {
+        const job = this.data.trabajos.find(r => r['id'] === trabajoId && r['estado'] === 'Finalizado');
+        if(job && !job['clienteId']) throw new Error('Completa el cliente del trabajo antes de preparar la factura.');
+        if(job) {
+          const invoice = this.data.facturas.find(r => r['trabajoId'] === trabajoId && !r['archivada']);
+          this.open(invoice);
+          if(!invoice) Object.assign(this.draft, {clienteId: job['clienteId'], trabajoId, lineas: [{concepto: job['titulo'], cantidad: 1, precio: 0, iva: this.empresa['ivaPredeterminado']}]});
+          this.message = invoice ? 'Factura vinculada al trabajo.' : 'Completa el precio y el IVA antes de guardar la factura.';
+        }
+      }
       if(id && !this.editor.nativeElement.open) {const row=this.data[this.resource].find(r=>r['id']===id);if(row)this.open(row);} }
     catch(e) { this.error=e instanceof Error?e.message:'No se pudieron cargar los datos.'; if(e instanceof ApiError && e.status===401) await this.router.navigate(['/login']); }
     finally {this.loading=false;}
@@ -72,7 +84,7 @@ export class GestionComponent implements OnInit, OnDestroy {
     this.payment={importe:0,fecha:this.today,metodo:'Transferencia'};
     if(!this.editor.nativeElement.open) {this.overflow=this.document.body.style.overflow;this.document.body.style.overflow='hidden';this.editor.nativeElement.showModal();}
   }
-  close(): void {if(this.saving)return;this.editor.nativeElement.close();this.restoreScroll();if(this.route.snapshot.queryParamMap.has('registro'))void this.router.navigate([], {relativeTo:this.route,queryParams:{registro:null},queryParamsHandling:'merge',replaceUrl:true});}
+  close(): void {if(this.saving)return;this.editor.nativeElement.close();this.restoreScroll();if(this.route.snapshot.queryParamMap.has('registro') || this.route.snapshot.queryParamMap.has('trabajo'))void this.router.navigate([], {relativeTo:this.route,queryParams:{registro:null,trabajo:null},queryParamsHandling:'merge',replaceUrl:true});}
   restoreScroll(): void {if(this.overflow!==null) {this.document.body.style.overflow=this.overflow;this.overflow=null;}}
   async save(): Promise<void> {
     if(this.saving || this.issued)return;this.editorError='';
@@ -82,6 +94,10 @@ export class GestionComponent implements OnInit, OnDestroy {
     catch(e){this.editorError=e instanceof Error?e.message:'No se pudo guardar.';}finally{this.saving=false;}
   }
   async archive(): Promise<void> {this.draft['archivada']=!this.draft['archivada'];await this.save(); if(this.editorError)this.draft['archivada']=!this.draft['archivada'];}
+  contact(row: Row): Row | undefined { return this.resource === 'clientes' ? row : this.data.clientes.find(client => client['id'] === row['clienteId']); }
+  whatsapp(row: Row): string { return 'https://wa.me/' + String(this.contact(row)?.['telefono'] ?? '').replace(/\D/g, ''); }
+  correo(row: Row): string { return 'mailto:' + this.contact(row)?.['email'] + '?subject=' + encodeURIComponent('Tu solicitud · Soluciones Chira'); }
+  get solicitud(): Encuesta | undefined { return this.encuestas.find(e => e.id === this.draft['encuestaId']); }
   async sync(): Promise<void> {if(this.loading)return;this.loading=true;this.error='';try{const result=await this.api.request<{trabajos:number}>('/gestion/sincronizar','POST',{});this.message=`Solicitudes sincronizadas: ${result.trabajos} trabajos vinculados, sin duplicados.`;await this.load();}catch(e){this.error=e instanceof Error?e.message:'No se pudo sincronizar.';}finally{this.loading=false;}}
   team(id:string,event:Event): void {const checked=(event.target as HTMLInputElement).checked;this.draft['equipoIds']=checked?[...this.draft['equipoIds'],id]:this.draft['equipoIds'].filter((x:string)=>x!==id);}
   addLine(): void {this.draft['lineas'].push({concepto:'',cantidad:1,precio:0,iva:this.empresa['ivaPredeterminado']});}
@@ -93,6 +109,11 @@ export class GestionComponent implements OnInit, OnDestroy {
     const row=this.data[this.resource].find(r=>r['id']===this.draft['id']) ?? this.draft;const empresa=row['empresa']??this.empresa;const cliente=row['cliente']??this.data.clientes.find(r=>r['id']===row['clienteId'])??{};
     const escape=(value:unknown)=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]!));
     const popup=this.document.defaultView?.open('','_blank'); if(!popup){this.editorError='Permite ventanas emergentes para imprimir o guardar como PDF.';return;}
+    if(this.resource === 'trabajos') {
+      const survey = this.encuestas.find(e => e.id === row['encuestaId']);
+      popup.document.write(`<html lang="es"><head><title>Ficha de trabajo</title><style>body{font:14px Arial;max-width:900px;margin:40px auto;padding:24px}p{white-space:pre-wrap}@media print{button{display:none}}</style></head><body><h1>${escape(row['titulo'])}</h1><p>${escape(empresa['nombre'])}</p><h2>Cliente</h2><p>${escape(cliente['nombre'])}\n${escape(cliente['telefono'])}\n${escape(cliente['email'])}</p><p>Fecha prevista: ${escape(row['fecha'] || 'Sin asignar')} · Estado: ${escape(row['estado'])}</p><p>${escape(row['direccion'])}</p><h2>Descripción</h2><p>${escape(row['descripcion'])}</p><h2>Tareas y materiales</h2><p>${escape(row['tareas'])}</p>${(survey?.respuestas ?? []).map(r => `<p><strong>${escape(r.pregunta)}</strong><br>${escape(r.respuesta)}</p>`).join('')}<button onclick="window.print()">Imprimir / guardar PDF</button></body></html>`);
+      popup.document.close(); popup.opener = null; return;
+    }
     popup.document.write(`<html lang="es"><head><title>${escape(row['referencia']??'Borrador')}</title><style>body{font:14px Arial;color:#20271e;max-width:900px;margin:40px auto;padding:24px}h1{color:#253c1c}table{width:100%;border-collapse:collapse;margin:30px 0}th,td{padding:12px;text-align:left;border-bottom:1px solid #ddd}.total{text-align:right;font-size:18px}p{white-space:pre-wrap}@media print{button{display:none}}</style></head><body><h1>${this.resource==='facturas'?'Registro interno de factura':'Presupuesto'} ${escape(row['referencia']??'BORRADOR')}</h1><p>${escape(empresa['nombre'])}\n${escape(empresa['nif'])}\n${escape(empresa['direccion'])}\n${escape(empresa['email'])}</p><h2>Cliente</h2><p>${escape(cliente['nombre'])}\n${escape(cliente['nif'])}\n${escape(cliente['direccion'])}</p><p>Fecha: ${escape(row['fecha'])} · Vencimiento: ${escape(row['vencimiento'])}</p><table><thead><tr><th>Concepto</th><th>Cantidad</th><th>Precio</th><th>IVA</th><th>Base</th></tr></thead><tbody>${(row['lineas']??[]).map((line:Row)=>`<tr><td>${escape(line['concepto'])}</td><td>${escape(line['cantidad'])}</td><td>${this.money(Math.round(line['precio']*100))}</td><td>${escape(line['iva'])}%</td><td>${this.money(Math.round(line['cantidad']*line['precio']*100))}</td></tr>`).join('')}</tbody></table><p class="total">Base: ${this.money(row['baseCentimos'])}\nIVA: ${this.money(row['ivaCentimos'])}\nTotal: ${this.money(row['totalCentimos'])}</p><p>${escape(row['condiciones'])}\n${empresa['iban']?'IBAN: '+escape(empresa['iban']):''}</p><button onclick="window.print()">Imprimir / guardar PDF</button></body></html>`);popup.document.close();popup.opener=null;
   }
 }

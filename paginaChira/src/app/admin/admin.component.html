@@ -38,10 +38,8 @@
         </button>
         <div class="group-links" id="admin-group-gestion">
       <a class="nav-link" routerLink="/admin/clientes" routerLinkActive="active" ariaCurrentWhenActive="page" pTooltip="Clientes" [tooltipDisabled]="!barraMinimizada" tooltipPosition="right" tooltipEvent="both" appendTo="body" tooltipStyleClass="chira-tooltip" aria-label="Clientes"><i class="pi pi-users" aria-hidden="true"></i> <span class="nav-caption">Clientes</span></a>
-      <a class="nav-link" routerLink="/admin/presupuestos" routerLinkActive="active" ariaCurrentWhenActive="page" pTooltip="Presupuestos" [tooltipDisabled]="!barraMinimizada" tooltipPosition="right" tooltipEvent="both" appendTo="body" tooltipStyleClass="chira-tooltip" aria-label="Presupuestos"><i class="pi pi-file-edit" aria-hidden="true"></i> <span class="nav-caption">Presupuestos</span></a>
       <a class="nav-link" routerLink="/admin/trabajos" routerLinkActive="active" ariaCurrentWhenActive="page" pTooltip="Trabajos" [tooltipDisabled]="!barraMinimizada" tooltipPosition="right" tooltipEvent="both" appendTo="body" tooltipStyleClass="chira-tooltip" aria-label="Trabajos"><i class="pi pi-briefcase" aria-hidden="true"></i> <span class="nav-caption">Trabajos</span></a>
       <a class="nav-link" routerLink="/admin/facturas" routerLinkActive="active" ariaCurrentWhenActive="page" pTooltip="Facturas" [tooltipDisabled]="!barraMinimizada" tooltipPosition="right" tooltipEvent="both" appendTo="body" tooltipStyleClass="chira-tooltip" aria-label="Facturas"><i class="pi pi-receipt" aria-hidden="true"></i> <span class="nav-caption">Facturas</span></a>
-      <a class="nav-link" routerLink="/admin/equipo" routerLinkActive="active" ariaCurrentWhenActive="page" pTooltip="Equipo" [tooltipDisabled]="!barraMinimizada" tooltipPosition="right" tooltipEvent="both" appendTo="body" tooltipStyleClass="chira-tooltip" aria-label="Equipo"><i class="pi pi-id-card" aria-hidden="true"></i> <span class="nav-caption">Equipo</span></a>
         </div>
       </div>
       <div class="nav-group" [class.group-open]="grupoAbierto === 'empresa'">
@@ -83,7 +81,7 @@
     </div>
 
     <div class="summary-toolbar">
-<p aria-live="polite">{{ cargando ? 'Actualizando…' : ultimaActualizacion ? 'Última actualización: ' + ultimaActualizacion : 'Sin actualizar' }}</p>
+<p aria-live="polite">{{ cargando ? 'Actualizando…' : ultimaActualizacion ? 'Actualización automática · ' + ultimaActualizacion : 'Sin actualizar' }}</p>
 <button type="button" class="refresh" [disabled]="cargando" (click)="actualizar()">
 <i class="pi pi-refresh" aria-hidden="true">
 </i> Actualizar</button>
