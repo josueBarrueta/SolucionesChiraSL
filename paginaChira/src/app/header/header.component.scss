@@ -577,3 +577,26 @@ nav .services-submenu a.active  {
     color: #c6e49f;
   }
 }
+
+/* En móvil, los servicios se despliegan debajo de su opción principal. */
+nav .services-submenu-mobile {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  nav > .services-submenu {
+    display: none;
+  }
+
+  nav .services-submenu-mobile:not([hidden]) {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 3px;
+    width: auto;
+    margin: 4px 0 8px 16px;
+    padding: 8px;
+    border: none;
+    animation: none;
+  }
+}
