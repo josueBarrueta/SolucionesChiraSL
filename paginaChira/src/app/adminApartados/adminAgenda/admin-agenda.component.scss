@@ -100,3 +100,5 @@ a:focus-visible, button:focus-visible, input:focus-visible { outline: 3px solid 
   .work-heading { flex-wrap: wrap; }
   .work-link { width: 100%; }
 }
+
+.day-modal{border:0;border-radius:24px;background:#f7f8f4;box-shadow:0 28px 90px #15211645}.day-modal::backdrop{background:#101c16a8;backdrop-filter:blur(5px)}.modal-heading{border-color:#dce4d8;padding:24px 28px}.modal-heading h2{font-size:24px;line-height:1.3}.modal-heading .icon{border-radius:50%;background:#f2f5ee}.modal-body{padding:24px 28px}.daily-work{border-radius:16px;box-shadow:0 3px 10px #253c1c05}@media(max-width:600px){.modal-heading,.modal-body{padding:18px}.modal-heading h2{font-size:21px}}

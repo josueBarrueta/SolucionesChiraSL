@@ -2,8 +2,8 @@ import { ObjectId } from 'mongodb';
 
 export class ManagementError extends Error { constructor(status, message) { super(message); this.status = status; } }
 const fail = message => { throw new ManagementError(400, message); };
-const resources = ['clientes', 'equipo', 'trabajos', 'gastos', 'presupuestos', 'facturas'];
-const states = { trabajos: ['Pendiente', 'En curso', 'Finalizado', 'Cancelado'], presupuestos: ['Borrador', 'Enviado', 'Aceptado', 'Rechazado'], facturas: ['Borrador', 'Registrada'] };
+const resources = ['clientes', 'trabajos', 'gastos', 'facturas'];
+const states = { trabajos: ['Pendiente', 'En curso', 'Finalizado', 'Cancelado'], facturas: ['Borrador', 'Registrada'] };
 const date = value => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(value)) && new Date(value).toISOString().slice(0, 10) === value;
 const txt = (body, key, max = 250, required = false) => { const value = body[key] ?? ''; if (typeof value !== 'string' || value.trim().length > max || (required && !value.trim())) fail(`Revisa ${key}.`); return value.trim(); };
 const num = (value, label, max = 100000000, positive = false) => { if (typeof value !== 'number' || !Number.isFinite(value) || value < 0 || value > max || (positive && value === 0)) fail(`Revisa ${label}.`); return value; };
@@ -26,22 +26,20 @@ export function validateManagement(resource, body) {
   if (!body || typeof body !== 'object' || Array.isArray(body)) fail('Datos no válidos.');
   if (body.archivada !== undefined && typeof body.archivada !== 'boolean') fail('Archivo no válido.');
   const data = { notas: txt(body, 'notas', 3000), archivada: body.archivada ?? false };
-  if (['clientes', 'equipo'].includes(resource)) {
+  if (resource === 'clientes') {
     Object.assign(data, { nombre: txt(body, 'nombre', 200, true), email: txt(body, 'email', 254), telefono: txt(body, 'telefono', 40) });
     if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) fail('Correo no válido.');
     if (resource === 'clientes') Object.assign(data, { nif: txt(body, 'nif', 40), direccion: txt(body, 'direccion', 500), localidad: txt(body, 'localidad'), codigoPostal: txt(body, 'codigoPostal', 20) });
-    else Object.assign(data, { funcion: txt(body, 'funcion', 150), disponibilidad: txt(body, 'disponibilidad', 500) });
   } else if (resource === 'trabajos') {
     if (!states.trabajos.includes(body.estado)) fail('Estado de trabajo no válido.');
-    if (!Array.isArray(body.equipoIds) || body.equipoIds.length > 50) fail('Equipo no válido.');
-    Object.assign(data, { titulo: txt(body, 'titulo', 200, true), clienteId: reference(body.clienteId), encuestaId: reference(body.encuestaId), presupuestoId: reference(body.presupuestoId), fecha: optionalDate(body, 'fecha'), estado: body.estado, direccion: txt(body, 'direccion', 500), descripcion: txt(body, 'descripcion', 3000), tareas: txt(body, 'tareas', 3000), equipoIds: [...new Set(body.equipoIds.map(reference))] });
+    Object.assign(data, { titulo: txt(body, 'titulo', 200, true), clienteId: reference(body.clienteId), encuestaId: reference(body.encuestaId), fecha: optionalDate(body, 'fecha'), estado: body.estado, direccion: txt(body, 'direccion', 500), descripcion: txt(body, 'descripcion', 3000), tareas: txt(body, 'tareas', 3000) });
   } else if (resource === 'gastos') {
     Object.assign(data, { concepto: txt(body, 'concepto', 200, true), fecha: optionalDate(body, 'fecha', true), categoria: txt(body, 'categoria', 100, true), trabajoId: reference(body.trabajoId), importeCentimos: positiveMoney(body.importe, 'el importe', 1000000), justificante: txt(body, 'justificante', 500) });
-  } else if (['presupuestos', 'facturas'].includes(resource)) {
+  } else if (resource === 'facturas') {
     if (!states[resource].includes(body.estado)) fail('Estado de documento no válido.');
     if (!Array.isArray(body.lineas) || !body.lineas.length || body.lineas.length > 50) fail('Añade entre 1 y 50 conceptos.');
     const lineas = body.lineas.map(line => { if (!line || typeof line !== 'object') fail('Concepto no válido.'); return { concepto: txt(line, 'concepto', 300, true), cantidad: num(line.cantidad, 'la cantidad', 100000, true), precio: num(line.precio, 'el precio', 1000000), iva: num(line.iva, 'el IVA', 100) }; });
-    Object.assign(data, { clienteId: reference(body.clienteId), trabajoId: reference(body.trabajoId), presupuestoId: reference(body.presupuestoId), fecha: optionalDate(body, 'fecha', true), vencimiento: optionalDate(body, 'vencimiento'), estado: body.estado, lineas, ...totals(lineas), moneda: 'EUR' });
+    Object.assign(data, { clienteId: reference(body.clienteId), trabajoId: reference(body.trabajoId), fecha: optionalDate(body, 'fecha', true), vencimiento: optionalDate(body, 'vencimiento'), estado: body.estado, lineas, ...totals(lineas), moneda: 'EUR' });
     if (!data.clienteId) fail('Selecciona un cliente.');
     if (data.vencimiento && data.vencimiento < data.fecha) fail('El vencimiento no puede ser anterior a la fecha.');
     data.numeroExterno = txt(body, 'numeroExterno', 100);
@@ -65,10 +63,9 @@ export function createManagement(db) {
   const collection = name => db.collection(name);
   const find = async (name, id) => { const row = await collection(name).findOne({ _id: new ObjectId(reference(id)) }); if (!row) throw new ManagementError(404, 'No se encontró el registro relacionado.'); return row; };
   async function relations(data) {
-    for (const [key, name] of [['clienteId', 'clientes'], ['trabajoId', 'trabajos'], ['presupuestoId', 'presupuestos'], ['encuestaId', 'encuestas']]) if (data[key]) { const row = await find(name, data[key]); if (key === 'clienteId' && row.archivada) fail('El cliente está archivado.'); if (['trabajoId','presupuestoId'].includes(key) && data.clienteId && row.clienteId !== data.clienteId) fail('El documento o trabajo pertenece a otro cliente.'); }
-    for (const id of data.equipoIds ?? []) { const member = await find('equipo', id); if (member.archivada) fail('Hay una persona archivada en el equipo.'); }
+    for (const [key, name] of [['clienteId', 'clientes'], ['trabajoId', 'trabajos'], ['encuestaId', 'encuestas']]) if (data[key]) { const row = await find(name, data[key]); if (key === 'clienteId' && row.archivada) fail('El cliente está archivado.'); if (key === 'trabajoId' && data.clienteId && row.clienteId !== data.clienteId) fail('El documento o trabajo pertenece a otro cliente.'); }
   }
-  async function number(resource) { const year = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Madrid' }).format(new Date()).slice(0,4); const count = await collection('contadores').findOneAndUpdate({ _id: `${resource}-${year}` }, { $inc: { value: 1 } }, { upsert: true, returnDocument: 'after' }); return `${resource === 'facturas' ? 'FAC' : 'PRE'}-${year}-${String(count.value).padStart(6, '0')}`; }
+  async function number(resource) { const year = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Madrid' }).format(new Date()).slice(0,4); const count = await collection('contadores').findOneAndUpdate({ _id: `${resource}-${year}` }, { $inc: { value: 1 } }, { upsert: true, returnDocument: 'after' }); return `FAC-${year}-${String(count.value).padStart(6, '0')}`; }
   async function clientFromSurvey(survey) {
     const key = survey.email.toLowerCase();
     const previous = await collection('clientes').findOne({ origenEmail: key });
@@ -99,7 +96,7 @@ export function createManagement(db) {
       updates.origen.estadoTrabajo = ['Finalizada', 'Atendida'].includes(survey.estado) ? 'Finalizado' : 'Pendiente';
       return collection('trabajos').findOneAndUpdate({ _id: previous._id }, { $set: updates }, { returnDocument: 'after' });
     }
-    return collection('trabajos').findOneAndUpdate({ encuestaId }, { $setOnInsert: { clienteId, titulo: survey.servicios.join(', '), presupuestoId: '', fecha: survey.fechaTrabajo ?? '', estado: ['Finalizada', 'Atendida'].includes(survey.estado) ? 'Finalizado' : 'Pendiente', direccion: surveyAddress(survey, true), descripcion: survey.mensaje, tareas: survey.questionnaireVersion === 2 ? 'Consulta los objetos, zonas y direcciones en las respuestas de la encuesta vinculada.' : (survey.respuestas ?? []).map(r => `${r.pregunta}: ${r.respuesta}`).join('\n'), equipoIds: [], origen: { fecha: survey.fechaTrabajo ?? '', estado: survey.estado, estadoTrabajo: ['Finalizada','Atendida'].includes(survey.estado) ? 'Finalizado' : 'Pendiente', notas: survey.notas ?? '' }, notas: survey.notas ?? '', archivada: false, createdAt: new Date(), updatedAt: new Date() } }, { upsert: true, returnDocument: 'after' });
+    return collection('trabajos').findOneAndUpdate({ encuestaId }, { $setOnInsert: { clienteId, titulo: survey.servicios.join(', '), fecha: survey.fechaTrabajo ?? '', estado: ['Finalizada', 'Atendida'].includes(survey.estado) ? 'Finalizado' : 'Pendiente', direccion: surveyAddress(survey, true), descripcion: survey.mensaje, tareas: survey.questionnaireVersion === 2 ? 'Consulta los objetos, zonas y direcciones en las respuestas de la encuesta vinculada.' : (survey.respuestas ?? []).map(r => `${r.pregunta}: ${r.respuesta}`).join('\n'), origen: { fecha: survey.fechaTrabajo ?? '', estado: survey.estado, estadoTrabajo: ['Finalizada','Atendida'].includes(survey.estado) ? 'Finalizado' : 'Pendiente', notas: survey.notas ?? '' }, notas: survey.notas ?? '', archivada: false, createdAt: new Date(), updatedAt: new Date() } }, { upsert: true, returnDocument: 'after' });
   }
   let backfill = null;
   async function ensureImported() {
@@ -147,7 +144,7 @@ export function createManagement(db) {
       if (previous?.estado === 'Registrada' && resource === 'facturas') fail('Una factura registrada no se puede modificar.');
       const data = validateManagement(resource, body); await relations(data); data.updatedAt = new Date();
       if (!id) {
-        data.createdAt = new Date(); if (resource === 'presupuestos') data.referencia = await number(resource); if (resource === 'facturas') { data.pagadoCentimos = 0; data.pagos = []; }
+        data.createdAt = new Date(); if (resource === 'facturas') { data.pagadoCentimos = 0; data.pagos = []; }
         const result = await collection(resource).insertOne(data); return { status: 201, body: { registro: { ...data, id: result.insertedId.toString() } } };
       }
       const query = { _id: new ObjectId(id), ...(resource === 'facturas' ? { estado: 'Borrador' } : {}) };

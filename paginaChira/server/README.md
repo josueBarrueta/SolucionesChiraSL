@@ -105,7 +105,7 @@ Documentación: https://render.com/docs/deploy-node-express-app y https://render
 
 ## Gestión del panel
 
-Clientes, equipo, trabajos, gastos, presupuestos, facturas internas y configuración se guardan
+Clientes, trabajos, gastos, facturas internas y configuración se guardan
 mediante rutas privadas `/api/gestion/*`. La API existente de encuestas se mantiene.
 Las colecciones se crean al guardar el primer registro; `server/index.mjs` crea sus índices.
 No hay borrado definitivo: se archivan y restauran registros. Las facturas confirmadas son inmutables.

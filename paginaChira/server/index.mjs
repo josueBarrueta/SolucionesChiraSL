@@ -23,7 +23,7 @@ try {
   await db.collection('sesiones').createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 });
   await db.collection('clientes').createIndex({ origenEmail: 1 }, { unique: true, partialFilterExpression: { origenEmail: { $type: 'string' } } });
   await db.collection('trabajos').createIndex({ encuestaId: 1 }, { unique: true, partialFilterExpression: { encuestaId: { $type: 'string', $gt: '' } } });
-  for (const name of ['clientes', 'trabajos', 'equipo', 'gastos', 'presupuestos', 'facturas']) await db.collection(name).createIndex({ createdAt: -1 });
+  for (const name of ['clientes', 'trabajos', 'gastos', 'facturas']) await db.collection(name).createIndex({ createdAt: -1 });
   const app = createApp({ db, passwordHash, origins, secureCookies: production,
     webDirectory: process.env.WEB_DIRECTORY || null,
     adminEmail: process.env.ADMIN_EMAIL ?? 'admin@chira.local' });

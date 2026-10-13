@@ -166,15 +166,15 @@ test('gestión: importación sin duplicados, relaciones, importes, emisión inmu
   assert.equal((await call('/api/gestion/trabajos/'+currentJob.id,'PATCH',currentJob)).status,200);
   await call('/api/encuestas/'+survey._id,'PATCH',{...changedSurvey,fechaTrabajo:'2026-10-27'});
   assert.equal((await call('/api/gestion/trabajos')).body.registros[0].fecha,'2026-10-26');
-  const member=await call('/api/gestion/equipo','POST',{nombre:'Persona de prueba',funcion:'Montaje',disponibilidad:'Lunes a viernes'});
-  assert.equal(member.status,201);
-  const manual=await call('/api/gestion/trabajos','POST',{titulo:'Trabajo manual',clienteId:clients[0].id,estado:'Pendiente',fecha:'2026-10-28',equipoIds:[member.body.registro.id]});
+  for(const name of ['equipo','presupuestos']) {
+    assert.equal((await call('/api/gestion/'+name)).status,404);
+    assert.equal((await call('/api/gestion/'+name,'POST',{nombre:'Apartado retirado'})).status,404);
+  }
+  const manual=await call('/api/gestion/trabajos','POST',{titulo:'Trabajo manual',clienteId:clients[0].id,estado:'Pendiente',fecha:'2026-10-28'});
   assert.equal(manual.status,201);
-  const archived=await call('/api/gestion/equipo/'+member.body.registro.id,'PATCH',{...member.body.registro,archivada:true});assert.equal(archived.status,200);
-  assert.equal((await call('/api/gestion/trabajos','POST',{titulo:'Asignación inválida',estado:'Pendiente',equipoIds:[member.body.registro.id]})).status,400);
   const client={...clients[0],nif:'TEST-NIF',direccion:'Dirección de prueba'};
   assert.equal((await call('/api/gestion/clientes/'+client.id,'PATCH',client)).status,200);
-  assert.equal((await call('/api/gestion/trabajos','POST',{titulo:'Prueba',estado:'Pendiente',clienteId:new ObjectId().toString(),equipoIds:[]})).status,404);
+  assert.equal((await call('/api/gestion/trabajos','POST',{titulo:'Prueba',estado:'Pendiente',clienteId:new ObjectId().toString()})).status,404);
   const expense=await call('/api/gestion/gastos','POST',{concepto:'Material',fecha:'2026-10-12',categoria:'Materiales',importe:12.34,trabajoId:jobs[0].id});assert.equal(expense.status,201);assert.equal(expense.body.registro.importeCentimos,1234);
   assert.equal((await call('/api/gestion/gastos','POST',{concepto:'Material',fecha:'2026-02-30',categoria:'Materiales',importe:12})).status,400);
   const draft={clienteId:client.id,trabajoId:jobs[0].id,fecha:'2026-10-12',vencimiento:'2026-10-30',estado:'Borrador',lineas:[{concepto:'Trabajo',cantidad:2,precio:10.25,iva:21}],notas:'Condiciones'};
