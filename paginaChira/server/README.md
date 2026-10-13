@@ -145,3 +145,24 @@ Las pruebas HTTP usan una base temporal en memoria. No insertan datos de prueba 
 La revisión local incluye alta de cliente en navegador y compilación del frontend.
 Si la caché nativa de Angular falla en este Mac, `CI=1 NG_BUILD_MAX_WORKERS=1 NG_BUILD_PARALLEL_TS=0 npm run build`
 permite compilar sin esa caché; no es necesario cambiar la configuración del alojamiento.
+
+## Flujo desde la encuesta
+
+Cada envío crea automáticamente un cliente (reutilizado por correo) y un trabajo pendiente
+vinculado a la encuesta. Los reintentos no duplican el trabajo. Las encuestas activas
+anteriores se importan la primera vez que se consultan clientes o trabajos tras arrancar.
+Las respuestas específicas se incluyen en la ficha; los campos completados manualmente
+no se sobrescriben al sincronizar.
+
+En Clientes y Trabajos se puede abrir WhatsApp o correo. La empresa completa los datos
+faltantes y asigna la fecha; la Agenda utiliza esa fecha. Finalizar un trabajo actualiza
+también la encuesta y permite abrir «Preparar / ver factura», que reutiliza una factura
+activa vinculada o prepara un borrador con cliente y concepto. Precio e IVA se completan
+antes de guardar. La ficha de trabajo y el registro interno de factura se pueden imprimir
+o guardar como PDF desde el navegador. Se mantiene el alcance de facturación interna
+existente; esta modificación no implementa un sistema de emisión fiscal.
+
+Presupuestos y Equipo salen del menú principal; sus datos y rutas existentes se conservan.
+Gastos sigue siendo manual e Informes resume solicitudes, trabajos, facturas y gastos.
+Resumen, Encuestas y las listas de gestión se refrescan cada 30 segundos mientras están
+visibles; la actualización no interrumpe una ficha abierta.

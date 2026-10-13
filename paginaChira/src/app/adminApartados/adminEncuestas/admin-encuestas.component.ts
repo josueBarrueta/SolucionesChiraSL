@@ -26,6 +26,7 @@ export class AdminEncuestasComponent implements OnDestroy {
   cargando = true;
   guardando = false;
   errorCarga = '';
+  private refreshTimer?: ReturnType<typeof setInterval>;
   private previousOverflow: string | null = null;
 
   cerrarModal(): void {
@@ -53,6 +54,7 @@ export class AdminEncuestasComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
+    clearInterval(this.refreshTimer);
     this.restaurarScroll();
   }
 
@@ -115,7 +117,14 @@ export class AdminEncuestasComponent implements OnDestroy {
     if (!await this.guardar()) encuesta.archivada = !encuesta.archivada;
   }
 
-  constructor() { void this.cargar(); }
+  constructor() { void this.cargar(); this.refreshTimer = setInterval(() => { if(!this.cargando && !this.guardando && !this.seleccionada && this.document.visibilityState === 'visible') void this.refrescar(); }, 30000); }
+
+  private async refrescar(): Promise<void> {
+    this.cargando = true;
+    try { this.encuestas = (await this.api.listar()).encuestas; this.errorCarga = ''; }
+    catch(error) { this.errorCarga = error instanceof Error ? error.message : 'No se pudieron actualizar las encuestas.'; }
+    finally { this.cargando = false; }
+  }
 
   async cargar(): Promise<void> {
     this.cargando = true;
