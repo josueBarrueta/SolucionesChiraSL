@@ -453,21 +453,44 @@ button:focus-visible  {
   transform: rotate(180deg);
 }
 
-nav .services-submenu  {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  z-index: 20;
+/* Los servicios forman una segunda fila dentro del header. */
+@media (min-width: 901px) {
+  .header-container {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 0 28px;
+  }
+
+  nav {
+    display: contents;
+  }
+
+  nav > ul:first-child {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .header-actions {
+    grid-column: 3;
+    grid-row: 1;
+  }
+}
+
+nav .services-submenu {
+  grid-column: 1 / -1;
+  grid-row: 2;
   display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 3px;
-  width: 240px;
-  padding: 8px;
-  border: none;
-  border-radius: 12px;
-  background: #20271e;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, .2);
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  width: 100%;
+  margin: 14px 0 0;
+  padding: 12px 0 0;
+  border-top: 1px solid rgba(180, 211, 136, .18);
+  list-style: none;
+  animation: menu-aparecer 180ms ease-out;
 }
 
 nav .services-submenu[hidden]  {
@@ -499,11 +522,8 @@ nav .services-submenu a.active  {
   }
 
   nav .services-submenu  {
-    position: static;
-    width: auto;
-    margin: 4px 0 8px 16px;
-    background: transparent;
-    box-shadow: none;
+    gap: 4px 8px;
+    margin-top: 12px;
   }
 
   nav .services-submenu a  {
@@ -515,6 +535,10 @@ nav .services-submenu a.active  {
 @media (prefers-reduced-motion: reduce)  {
   .services-toggle svg  {
     transition: none;
+  }
+
+  nav .services-submenu {
+    animation: none;
   }
 
 }

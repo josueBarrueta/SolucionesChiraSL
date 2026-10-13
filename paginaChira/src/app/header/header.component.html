@@ -1,4 +1,4 @@
-<header class="header" (keydown.escape)="cerrarConEscape($event)">
+<header class="header" (keydown.escape)="cerrarConEscape($event)" (focusout)="cerrarAlSalir($event)">
   <div class="header-container">
     <a
       class="brand"
@@ -65,7 +65,7 @@
           </a>
         </li>
 
-        <li class="services-nav" (focusout)="cerrarAlSalir($event)">
+        <li class="services-nav">
           <div class="services-control">
             <a
               routerLink="/servicios"
@@ -103,24 +103,7 @@
             </button>
           </div>
 
-          <ul
-            id="services-submenu"
-            class="services-submenu"
-            [hidden]="!serviciosAbiertos()"
-          >
-            @for (service of services; track service.slug) {
-              <li>
-                <a
-                  [routerLink]="['/servicios', service.slug]"
-                  routerLinkActive="active"
-                  ariaCurrentWhenActive="page"
-                  (click)="cerrarMenu()"
-                >
-                  {{ service.name }}
-                </a>
-              </li>
-            }
-          </ul>
+
         </li>
 
         <li>
@@ -145,6 +128,24 @@
           </a>
         </li>
       </ul>
+          <ul
+            id="services-submenu"
+            class="services-submenu"
+            [hidden]="!serviciosAbiertos()"
+          >
+            @for (service of services; track service.slug) {
+              <li>
+                <a
+                  [routerLink]="['/servicios', service.slug]"
+                  routerLinkActive="active"
+                  ariaCurrentWhenActive="page"
+                  (click)="cerrarMenu()"
+                >
+                  {{ service.name }}
+                </a>
+              </li>
+            }
+          </ul>
     </nav>
 
     <div class="header-actions" role="group" aria-label="Contactar con Soluciones Chira">
