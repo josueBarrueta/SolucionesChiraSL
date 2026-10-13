@@ -15,7 +15,8 @@ import {
 import { ActivatedRoute } from '@angular/router';
 import { ChiraApiService } from '../shared/chira-api.service';
 import { AddressFeature, addressSuggestion } from './formulario.address';
-import { SERVICE_QUESTIONS } from './formulario.questions';
+import { DOCUMENT } from '@angular/common';
+import { MAX_SERVICE_ITEMS, SERVICE_QUESTIONS, ServiceQuestions, ServiceQuestion, ServiceAddress, serviceUsesItems } from './formulario.questions';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   AsYouType,
@@ -37,6 +38,8 @@ type FormStatus = 'idle' | 'sending' | 'success' | 'error';
   styleUrls: ['./formulario.component.scss']
 })
 export class FormularioComponent implements OnDestroy {
+  private readonly document = inject(DOCUMENT);
+  readonly maxItems = MAX_SERVICE_ITEMS;
   private readonly fb = inject(FormBuilder);
   private readonly route = inject(ActivatedRoute);
   private readonly api = inject(ChiraApiService);
@@ -219,13 +222,17 @@ export class FormularioComponent implements OnDestroy {
 
   constructor() {
     for (const block of this.serviceQuestions) {
-      for (const field of block.fields) {
+      for (const field of this.blockFields(block)) {
         this.details.addControl(
           field.name,
-          this.fb.nonNullable.control('', Validators.maxLength(300))
+          this.fb.nonNullable.control({value: '', disabled: true}, this.questionValidators(field))
         );
       }
     }
+
+    this.form.controls.services.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => this.syncQuestions());
+    this.details.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => this.syncQuestions());
+    this.syncQuestions();
 
     this.form.controls.location.valueChanges
       .pipe(takeUntilDestroyed())
@@ -276,6 +283,84 @@ export class FormularioComponent implements OnDestroy {
       .subscribe(() => {
         this.formatPhoneOnBlur();
       });
+  }
+
+  blockFields(block: ServiceQuestions): ServiceQuestion[] {
+    return [...block.fields, ...block.addresses.flatMap(a => a.fields)];
+  }
+
+  private questionValidators(field: ServiceQuestion) {
+    const validators = [Validators.maxLength(field.maxLength ?? 300)];
+    if(field.required) validators.push(Validators.required, Validators.pattern(/\S/));
+    if(field.pattern) validators.push(Validators.pattern(field.pattern));
+    if(field.type === 'number') validators.push(Validators.pattern(/^\d+(?:[.,]\d{1,2})?$/), Validators.max(100000));
+    if(field.name.endsWith('_boxes') || field.name.endsWith('_rooms')) validators.push(Validators.pattern(/^\d+$/));
+    return validators;
+  }
+
+  usesItems(block: ServiceQuestions): boolean { return serviceUsesItems(block, this.details.getRawValue()); }
+  itemCount(block: ServiceQuestions): number { return Number(this.details.controls[block.slug + '_count']?.value) || 1; }
+  itemIndexes(block: ServiceQuestions): number[] { return Array.from({length: this.itemCount(block)}, (_, i) => i + 1); }
+
+  changeCount(block: ServiceQuestions, requested: number): void {
+    const old = this.itemCount(block);
+    if(!Number.isInteger(requested) || requested < 1 || requested > this.maxItems) return;
+    if(requested < old) {
+      const filled = this.itemIndexes(block).filter(i => i > requested).some(i =>
+        ['name','extra'].some(key => this.details.controls[`${block.slug}_item_${i}_${key}`]?.value.trim()));
+      if(filled && !this.document.defaultView?.confirm('Se eliminarán los datos de los últimos objetos o zonas. ¿Quieres reducir la cantidad?')) return;
+      for(let i = requested + 1; i <= old; i++) {
+        this.details.removeControl(`${block.slug}_item_${i}_name`, {emitEvent: false});
+        this.details.removeControl(`${block.slug}_item_${i}_extra`, {emitEvent: false});
+      }
+    }
+    this.details.controls[block.slug + '_count'].setValue(String(requested), {emitEvent: false});
+    this.syncQuestions();
+  }
+
+  setCount(block: ServiceQuestions, event: Event): void {
+    this.changeCount(block, Number((event.target as HTMLInputElement).value));
+    (event.target as HTMLInputElement).value = String(this.itemCount(block));
+  }
+
+  private syncQuestions(): void {
+    for(const block of this.serviceQuestions) {
+      const selected = this.isSelected(block.service);
+      for(const field of this.blockFields(block)) {
+        const control = this.details.controls[field.name];
+        selected ? control.enable({emitEvent:false}) : control.disable({emitEvent:false});
+      }
+      const key = block.slug + '_count';
+      if(!this.details.controls[key]) this.details.addControl(key, this.fb.nonNullable.control('1', [Validators.required, Validators.pattern(/^\d+$/), Validators.min(1), Validators.max(this.maxItems)]), {emitEvent:false});
+      const active = selected && this.usesItems(block);
+      active ? this.details.controls[key].enable({emitEvent:false}) : this.details.controls[key].disable({emitEvent:false});
+      for(const index of this.itemIndexes(block)) {
+        for(const suffix of ['name', ...(block.items.extraLabel ? ['extra'] : [])]) {
+          const name = `${block.slug}_item_${index}_${suffix}`;
+          if(!this.details.controls[name]) this.details.addControl(name, this.fb.nonNullable.control('', suffix === 'name' ? [Validators.required, Validators.pattern(/\S/), Validators.maxLength(300)] : [Validators.maxLength(300)]), {emitEvent:false});
+          active ? this.details.controls[name].enable({emitEvent:false}) : this.details.controls[name].disable({emitEvent:false});
+        }
+      }
+    }
+    const fallback = this.selectedQuestions.length === 0;
+    for(const name of ['location', 'street', 'postalCode', 'floor', 'door', 'staircase'] as const) {
+      fallback ? this.form.controls[name].enable({emitEvent:false}) : this.form.controls[name].disable({emitEvent:false});
+    }
+  }
+
+  copyableAddresses(current: ServiceAddress): ServiceAddress[] {
+    const all = this.selectedQuestions.flatMap(block => block.addresses);
+    return all.slice(0, all.findIndex(a => a.prefix === current.prefix));
+  }
+  copyAddress(target: ServiceAddress, event: Event): void {
+    const prefix = (event.target as HTMLSelectElement).value;
+    if(!prefix) return;
+    for(const field of target.fields) {
+      const suffix = field.name.slice(target.prefix.length);
+      this.details.controls[field.name].setValue(this.details.controls[prefix + suffix]?.value ?? '', {emitEvent:false});
+    }
+    this.details.updateValueAndValidity();
+    (event.target as HTMLSelectElement).value = '';
   }
 
   searchAddress(): void {
@@ -448,13 +533,6 @@ export class FormularioComponent implements OnDestroy {
     control.markAsDirty();
     control.markAsTouched();
 
-    if (!checked) {
-      const block = this.serviceQuestions.find((item) => item.service === service);
-
-      for (const field of block?.fields ?? []) {
-        this.details.controls[field.name].reset();
-      }
-    }
   }
 
   formatPhone(event: Event): void {
@@ -576,7 +654,10 @@ export class FormularioComponent implements OnDestroy {
     this.status.set('sending');
 
     try {
-      const payload = { ...values, phone: phone.number };
+      const details = this.details.value;
+      const prefix = this.selectedQuestions[0]?.addresses[0].prefix;
+      const payload = { ...values, phone: phone.number, questionnaireVersion: 2, details,
+        ...(prefix ? {location: details[prefix + '_locality'], street: `${details[prefix + '_street']}, ${details[prefix + '_number']}`, postalCode: details[prefix + '_postcode'], floor: details[prefix + '_floor'], door: details[prefix + '_door'], staircase: details[prefix + '_staircase']} : {}) };
       const signature = JSON.stringify(payload);
       if (!this.submissionKey || signature !== this.submissionPayload) {
         this.submissionKey = crypto.randomUUID();
@@ -588,6 +669,12 @@ export class FormularioComponent implements OnDestroy {
 
       if (!this.destroyed) {
         this.form.reset();
+        for(const block of this.serviceQuestions) {
+          const prefix = block.slug + '_item_';
+          for(const key of Object.keys(this.details.controls).filter(key => key.startsWith(prefix))) this.details.removeControl(key, {emitEvent:false});
+          this.details.controls[block.slug + '_count'].setValue('1', {emitEvent:false});
+        }
+        this.syncQuestions();
         clearTimeout(this.addressTimer);
         this.addressController?.abort();
         this.addressSearchVersion++;

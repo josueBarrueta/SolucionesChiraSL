@@ -29,12 +29,12 @@ export function validateManagement(resource, body) {
   if (['clientes', 'equipo'].includes(resource)) {
     Object.assign(data, { nombre: txt(body, 'nombre', 200, true), email: txt(body, 'email', 254), telefono: txt(body, 'telefono', 40) });
     if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) fail('Correo no válido.');
-    if (resource === 'clientes') Object.assign(data, { nif: txt(body, 'nif', 40), direccion: txt(body, 'direccion'), localidad: txt(body, 'localidad'), codigoPostal: txt(body, 'codigoPostal', 20) });
+    if (resource === 'clientes') Object.assign(data, { nif: txt(body, 'nif', 40), direccion: txt(body, 'direccion', 500), localidad: txt(body, 'localidad'), codigoPostal: txt(body, 'codigoPostal', 20) });
     else Object.assign(data, { funcion: txt(body, 'funcion', 150), disponibilidad: txt(body, 'disponibilidad', 500) });
   } else if (resource === 'trabajos') {
     if (!states.trabajos.includes(body.estado)) fail('Estado de trabajo no válido.');
     if (!Array.isArray(body.equipoIds) || body.equipoIds.length > 50) fail('Equipo no válido.');
-    Object.assign(data, { titulo: txt(body, 'titulo', 200, true), clienteId: reference(body.clienteId), encuestaId: reference(body.encuestaId), presupuestoId: reference(body.presupuestoId), fecha: optionalDate(body, 'fecha'), estado: body.estado, direccion: txt(body, 'direccion'), descripcion: txt(body, 'descripcion', 3000), tareas: txt(body, 'tareas', 3000), equipoIds: [...new Set(body.equipoIds.map(reference))] });
+    Object.assign(data, { titulo: txt(body, 'titulo', 200, true), clienteId: reference(body.clienteId), encuestaId: reference(body.encuestaId), presupuestoId: reference(body.presupuestoId), fecha: optionalDate(body, 'fecha'), estado: body.estado, direccion: txt(body, 'direccion', 500), descripcion: txt(body, 'descripcion', 3000), tareas: txt(body, 'tareas', 3000), equipoIds: [...new Set(body.equipoIds.map(reference))] });
   } else if (resource === 'gastos') {
     Object.assign(data, { concepto: txt(body, 'concepto', 200, true), fecha: optionalDate(body, 'fecha', true), categoria: txt(body, 'categoria', 100, true), trabajoId: reference(body.trabajoId), importeCentimos: positiveMoney(body.importe, 'el importe', 1000000), justificante: txt(body, 'justificante', 500) });
   } else if (['presupuestos', 'facturas'].includes(resource)) {
@@ -56,6 +56,11 @@ export function validateSettings(body) {
   if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) fail('Correo no válido.');
   return data;
 }
+function surveyAddress(survey, includeLocality = false) {
+  if (survey.questionnaireVersion !== 2) return includeLocality ? `${survey.direccion} · ${survey.localidad}` : (survey.direccion === 'No indicada' ? '' : survey.direccion);
+  const meaningful = value => value && !['No indicado', 'No indicada'].includes(value);
+  return [survey.direccion, meaningful(survey.piso) ? `Planta: ${survey.piso}` : '', meaningful(survey.puerta) ? `Puerta: ${survey.puerta}` : '', meaningful(survey.escalera) ? `Escalera: ${survey.escalera}` : '', includeLocality ? `${survey.codigoPostal} ${survey.localidad}` : ''].filter(Boolean).join(' · ');
+}
 export function createManagement(db) {
   const collection = name => db.collection(name);
   const find = async (name, id) => { const row = await collection(name).findOne({ _id: new ObjectId(reference(id)) }); if (!row) throw new ManagementError(404, 'No se encontró el registro relacionado.'); return row; };
@@ -70,7 +75,7 @@ export function createManagement(db) {
     if (previous) return previous._id.toString();
     const existing = await collection('clientes').findOne({ email: key });
     if (existing) return existing._id.toString();
-    const row = await collection('clientes').findOneAndUpdate({ origenEmail: key }, { $setOnInsert: { nombre: survey.nombre, email: key, telefono: survey.telefono, nif: '', direccion: survey.direccion === 'No indicada' ? '' : survey.direccion, localidad: survey.localidad, codigoPostal: survey.codigoPostal === 'No indicado' ? '' : survey.codigoPostal, notas: '', archivada: false, createdAt: new Date(), updatedAt: new Date() } }, { upsert: true, returnDocument: 'after' });
+    const row = await collection('clientes').findOneAndUpdate({ origenEmail: key }, { $setOnInsert: { nombre: survey.nombre, email: key, telefono: survey.telefono, nif: '', direccion: surveyAddress(survey), localidad: survey.localidad, codigoPostal: survey.codigoPostal === 'No indicado' ? '' : survey.codigoPostal, notas: '', archivada: false, createdAt: new Date(), updatedAt: new Date() } }, { upsert: true, returnDocument: 'after' });
     return row._id.toString();
   }
   let syncQueue = Promise.resolve();
@@ -94,7 +99,7 @@ export function createManagement(db) {
       updates.origen.estadoTrabajo = ['Finalizada', 'Atendida'].includes(survey.estado) ? 'Finalizado' : 'Pendiente';
       return collection('trabajos').findOneAndUpdate({ _id: previous._id }, { $set: updates }, { returnDocument: 'after' });
     }
-    return collection('trabajos').findOneAndUpdate({ encuestaId }, { $setOnInsert: { clienteId, titulo: survey.servicios.join(', '), presupuestoId: '', fecha: survey.fechaTrabajo ?? '', estado: ['Finalizada', 'Atendida'].includes(survey.estado) ? 'Finalizado' : 'Pendiente', direccion: `${survey.direccion} · ${survey.localidad}`, descripcion: survey.mensaje, tareas: (survey.respuestas ?? []).map(r => `${r.pregunta}: ${r.respuesta}`).join('\n'), equipoIds: [], origen: { fecha: survey.fechaTrabajo ?? '', estado: survey.estado, estadoTrabajo: ['Finalizada','Atendida'].includes(survey.estado) ? 'Finalizado' : 'Pendiente', notas: survey.notas ?? '' }, notas: survey.notas ?? '', archivada: false, createdAt: new Date(), updatedAt: new Date() } }, { upsert: true, returnDocument: 'after' });
+    return collection('trabajos').findOneAndUpdate({ encuestaId }, { $setOnInsert: { clienteId, titulo: survey.servicios.join(', '), presupuestoId: '', fecha: survey.fechaTrabajo ?? '', estado: ['Finalizada', 'Atendida'].includes(survey.estado) ? 'Finalizado' : 'Pendiente', direccion: surveyAddress(survey, true), descripcion: survey.mensaje, tareas: survey.questionnaireVersion === 2 ? 'Consulta los objetos, zonas y direcciones en las respuestas de la encuesta vinculada.' : (survey.respuestas ?? []).map(r => `${r.pregunta}: ${r.respuesta}`).join('\n'), equipoIds: [], origen: { fecha: survey.fechaTrabajo ?? '', estado: survey.estado, estadoTrabajo: ['Finalizada','Atendida'].includes(survey.estado) ? 'Finalizado' : 'Pendiente', notas: survey.notas ?? '' }, notas: survey.notas ?? '', archivada: false, createdAt: new Date(), updatedAt: new Date() } }, { upsert: true, returnDocument: 'after' });
   }
   let backfill = null;
   async function ensureImported() {

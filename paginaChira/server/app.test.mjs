@@ -254,3 +254,76 @@ test('finalizar trabajo actualiza la encuesta y mantiene el vínculo para factur
   assert.equal(source.estado, 'Finalizada');
   assert.equal(source.fechaTrabajo, '2026-10-20');
 });
+
+async function modernSubmission(services = ['Portes']) {
+  const { SERVICE_QUESTIONS } = await import('../src/app/formulario/formulario.questions.ts');
+  const details = {};
+  for (const block of SERVICE_QUESTIONS.filter(b => services.includes(b.service))) {
+    for (const field of block.fields) details[field.name] = field.required ? field.options?.[0] ?? 'Prueba' : '';
+    details[`${block.slug}_count`] = '2';
+    details[`${block.slug}_item_1_name`] = 'Sofá';
+    details[`${block.slug}_item_2_name`] = 'Mesa';
+    for (const [index, address] of block.addresses.entries()) {
+      const values = {locality: 'Valencia', street: index ? 'Calle Destino' : 'Calle Origen', number: '24', postcode:'46001', floor:'3', door:'B', staircase:'2', lift:'Sí', access:''};
+      for (const [key, value] of Object.entries(values)) details[`${address.prefix}_${key}`] = value;
+    }
+  }
+  return {...submission, services, questionnaireVersion:2, details};
+}
+
+test('nueva encuesta: direcciones distintas, objetos y campos obligatorios', async () => {
+  const body = await modernSubmission();
+  const data = validateSubmission({...body, location:'Dirección manipulada'});
+  assert.equal(data.localidad, 'Valencia');
+  assert.equal(data.direccion, 'Calle Origen, 24');
+  assert.equal(data.detalles.portes_destination_street, 'Calle Destino');
+  assert.ok(data.respuestas.some(r => r.pregunta.includes('Objeto 2') && r.respuesta === 'Mesa'));
+  assert.ok(data.respuestas.some(r => r.pregunta.includes('Dirección de entrega: Calle') && r.respuesta === 'Calle Destino'));
+  for (const [key, value] of [['portes_count','0'],['portes_count','101'],['portes_count','1.5'],['portes_item_2_name',' '],['portes_origin_postcode','4600'],['portes_origin_floor','']]) {
+    assert.throws(() => validateSubmission({...body,details:{...body.details,[key]:value}}), key);
+  }
+  const reduced = validateSubmission({...body,details:{...body.details,portes_count:'1',pintura_item_1_name:'Dato ajeno'}});
+  assert.equal(reduced.detalles.portes_item_2_name, undefined);
+  assert.equal(reduced.detalles.pintura_item_1_name, undefined);
+});
+
+test('los seis servicios conservan sus datos y vaciado completo no exige lista', async () => {
+  const services = ['Portes','Montaje de muebles','Mudanzas','Vaciados','Limpieza','Pintura'];
+  const body = await modernSubmission(services);
+  const data = validateSubmission(body);
+  assert.equal(data.servicios.length,6);
+  assert.equal(data.detalles.pintura_item_2_name,'Mesa');
+  const whole = await modernSubmission(['Vaciados']);
+  whole.details.vaciados_mode = 'Todo el espacio';
+  whole.details.vaciados_count = '0';
+  whole.details.vaciados_item_1_name = '';
+  const validated = validateSubmission(whole);
+  assert.equal(validated.detalles.vaciados_count,undefined);
+  assert.equal(validated.detalles.vaciados_item_2_name,undefined);
+});
+
+test('encuesta ampliada crea trabajo editable, cliente y conserva todos los objetos sin duplicados', async () => {
+  const body = await modernSubmission();
+  body.details.portes_count = '100';
+  for(let i=1;i<=100;i++) body.details[`portes_item_${i}_name`] = `Objeto ${i} ${'x'.repeat(270)}`;
+  const survey = {...validateSubmission(body),_id:new ObjectId(),referencia:'CHI-NUEVA'};
+  const db = memoryDb();
+  await db.collection('encuestas').insertOne(survey);
+  const management = createManagement(db);
+  await management.syncSurvey(survey);
+  await management.syncSurvey(survey);
+  const jobs = await db.collection('trabajos').find().toArray();
+  const clients = await db.collection('clientes').find().toArray();
+  assert.equal(jobs.length,1);assert.equal(clients.length,1);
+  assert.match(jobs[0].direccion,/Planta: 3.*Puerta: B.*46001 Valencia/);
+  assert.match(clients[0].direccion,/Puerta: B/);
+  assert.ok(jobs[0].tareas.length < 3000);
+  assert.equal(survey.detalles.portes_item_100_name,body.details.portes_item_100_name);
+  assert.equal(jobs[0].encuestaId,survey._id.toString());
+  const changed = await management.handle(`/api/gestion/trabajos/${jobs[0]._id}`, 'PATCH', async () => ({...jobs[0],estado:'Finalizado',notas:'Revisado manualmente'}));
+  assert.equal(changed.status,200);
+  await management.syncSurvey(survey);
+  const saved = await db.collection('trabajos').findOne({_id:jobs[0]._id});
+  assert.equal(saved.notas,'Revisado manualmente');
+  assert.equal(saved.estado,'Finalizado');
+});

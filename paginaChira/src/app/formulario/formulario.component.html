@@ -98,39 +98,86 @@
               <fieldset [disabled]="status() === 'sending'">
                 <legend class="section-title">Sobre tu servicio</legend>
 
-                <p class="section-help">
-                  Estos datos nos ayudan a preparar el presupuesto.
-                  Son opcionales: completa lo que sepas.
-                </p>
-
+                <p class="section-help">Completa los objetos o zonas y las direcciones exactas. Los campos con * son obligatorios.</p>
                 <div formGroupName="details" class="service-details">
                   @for (block of selectedQuestions; track block.slug) {
                     <section class="service-detail" [attr.aria-labelledby]="'details-' + block.slug">
                       <h3 [id]="'details-' + block.slug">{{ block.service }}</h3>
-
                       <div class="fields-grid">
                         @for (field of block.fields; track field.name) {
                           <div class="field">
-                            <label [for]="field.name">{{ field.label }}</label>
-
+                            <label [for]="field.name">{{ field.label }}{{ field.required ? ' *' : ' (opcional)' }}</label>
                             @if (field.type === 'select') {
-                              <select [id]="field.name" [formControlName]="field.name">
-                                <option value="">No lo sé todavía</option>
-                                <option value="Sí">Sí</option>
-                                <option value="No">No</option>
+                              <select [id]="field.name" [formControlName]="field.name" [attr.aria-invalid]="invalid('details.' + field.name)">
+                                <option value="">Selecciona una opción</option>
+                                @for (option of field.options; track option) { <option [value]="option">{{ option }}</option> }
                               </select>
                             } @else {
-                              <input
-                                [id]="field.name"
-                                type="text"
-                                [formControlName]="field.name"
-                                [placeholder]="field.placeholder"
-                                maxlength="300"
-                              />
+                              <input [id]="field.name" type="text" [attr.inputmode]="field.type === 'number' ? 'decimal' : null" [formControlName]="field.name" [placeholder]="field.placeholder" maxlength="300" [attr.aria-invalid]="invalid('details.' + field.name)" />
                             }
+                            @if (invalid('details.' + field.name)) { <p class="field-error">Revisa este campo{{ field.type === 'number' ? ': introduce un número válido' : '' }}.</p> }
                           </div>
                         }
                       </div>
+                      @if (usesItems(block)) {
+                        <div class="item-counter field">
+                          <label [for]="block.slug + '-count'">{{ block.items.label }} *</label>
+                          <div class="counter-controls">
+                            <button type="button" [disabled]="itemCount(block) <= 1" (click)="changeCount(block, itemCount(block) - 1)" [attr.aria-label]="'Reducir ' + block.items.label">−</button>
+                            <input [id]="block.slug + '-count'" type="number" min="1" [max]="maxItems" step="1" [value]="itemCount(block)" (change)="setCount(block, $event)" />
+                            <button type="button" [disabled]="itemCount(block) >= maxItems" (click)="changeCount(block, itemCount(block) + 1)" [attr.aria-label]="'Aumentar ' + block.items.label">+</button>
+                          </div>
+                          <p class="field-help">De 1 a {{ maxItems }}. Cada objeto o zona tiene su propio campo.</p>
+                        </div>
+                        <div class="item-list" aria-live="polite">
+                          @for (index of itemIndexes(block); track index) {
+                            <div class="fields-grid item-entry">
+                              <div class="field">
+                                <label [for]="block.slug + '-item-' + index">{{ block.items.singular }} {{ index }} *</label>
+                                <input [id]="block.slug + '-item-' + index" [formControlName]="block.slug + '_item_' + index + '_name'" [placeholder]="block.items.placeholder" maxlength="300" [attr.aria-invalid]="invalid('details.' + block.slug + '_item_' + index + '_name')" />
+                                @if (invalid('details.' + block.slug + '_item_' + index + '_name')) { <p class="field-error">Indica qué objeto o zona es.</p> }
+                              </div>
+                              @if (block.items.extraLabel) {
+                                <div class="field">
+                                  <label [for]="block.slug + '-extra-' + index">{{ block.items.extraLabel }}</label>
+                                  <input [id]="block.slug + '-extra-' + index" [formControlName]="block.slug + '_item_' + index + '_extra'" maxlength="300" />
+                                </div>
+                              }
+                            </div>
+                          }
+                        </div>
+                      } @else { <p class="field-help">Describe el contenido del espacio en «Los detalles». No necesitas enumerar cada objeto.</p> }
+                      @for (address of block.addresses; track address.prefix) {
+                        <section class="service-address" [attr.aria-labelledby]="address.prefix + '-title'">
+                          <h4 [id]="address.prefix + '-title'">{{ address.label }}</h4>
+                          @if (copyableAddresses(address).length) {
+                            <div class="field full-width">
+                              <label [for]="address.prefix + '-copy'">Copiar una dirección ya escrita (opcional)</label>
+                              <select [id]="address.prefix + '-copy'" (change)="copyAddress(address, $event)">
+                                <option value="">Escribir otra dirección</option>
+                                @for (source of copyableAddresses(address); track source.prefix) { <option [value]="source.prefix">{{ source.label }} · {{ source.prefix.split('_')[0] }}</option> }
+                              </select>
+                              <p class="field-help">Se copian los datos actuales. Después puedes ajustarlos para este servicio.</p>
+                            </div>
+                          }
+                          <div class="fields-grid">
+                            @for (field of address.fields; track field.name) {
+                              <div class="field">
+                                <label [for]="field.name">{{ field.label }}{{ field.required ? ' *' : ' (opcional)' }}</label>
+                                @if (field.type === 'select') {
+                                  <select [id]="field.name" [formControlName]="field.name" [attr.aria-invalid]="invalid('details.' + field.name)">
+                                    <option value="">Selecciona una opción</option>
+                                    @for (option of field.options; track option) { <option [value]="option">{{ option }}</option> }
+                                  </select>
+                                } @else {
+                                  <input [id]="field.name" [formControlName]="field.name" [placeholder]="field.placeholder" [attr.inputmode]="field.pattern ? 'numeric' : null" [attr.maxlength]="field.maxLength ?? 300" [attr.aria-invalid]="invalid('details.' + field.name)" />
+                                }
+                                @if (invalid('details.' + field.name)) { <p class="field-error">{{ field.pattern ? 'Introduce un código postal de 5 dígitos.' : 'Completa este campo.' }}</p> }
+                              </div>
+                            }
+                          </div>
+                        </section>
+                      }
                     </section>
                   }
                 </div>
@@ -223,6 +270,7 @@
               </div>
             </fieldset>
 
+            @if (!selectedQuestions.length) {
             <!-- DIRECCIÓN -->
             <fieldset [disabled]="status() === 'sending'">
               <legend class="section-title">
@@ -392,6 +440,7 @@
               </div>
             </fieldset>
 
+            }
             <!-- DESCRIPCIÓN -->
             <fieldset [disabled]="status() === 'sending'">
               <legend class="section-title">
@@ -431,7 +480,7 @@
             <p class="data-note">
               Utilizaremos estos datos para responder a tu consulta.
               La solicitud se guarda para que Soluciones Chira pueda gestionarla.
-              La búsqueda de direcciones consulta Photon con la calle y la localidad.
+              @if (!selectedQuestions.length) { La búsqueda de direcciones consulta Photon con la calle y la localidad. }
               No incluyas información sensible.
             </p>
 

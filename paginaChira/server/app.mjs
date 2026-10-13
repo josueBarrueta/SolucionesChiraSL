@@ -2,7 +2,7 @@ import { createServer } from 'node:http';
 import { randomBytes } from 'node:crypto';
 import { ObjectId } from 'mongodb';
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
-import { SERVICE_QUESTIONS } from '../src/app/formulario/formulario.questions.ts';
+import { LEGACY_SERVICE_QUESTIONS, MAX_SERVICE_ITEMS, SERVICE_QUESTIONS, serviceUsesItems } from '../src/app/formulario/formulario.questions.ts';
 import { verifyPassword, tokenHash, hashPassword } from './security.mjs';
 import { createManagement, ManagementError } from './management.mjs';
 import { serveWeb } from './web.mjs';
@@ -41,26 +41,67 @@ export function validateSubmission(body) {
   if (!phone?.isPossible()) invalid('Revisa el teléfono.');
   const details = body.details;
   if (!details || typeof details !== 'object' || Array.isArray(details)) invalid('Revisa los detalles.');
+  if (body.questionnaireVersion !== undefined && body.questionnaireVersion !== 2) invalid('Versión de encuesta no válida.');
+  const modern = body.questionnaireVersion === 2;
   const respuestas = [];
-  for (const block of SERVICE_QUESTIONS.filter(b => services.includes(b.service))) {
+  const normalizedDetails = {};
+  const selectedBlocks = SERVICE_QUESTIONS.filter(block => services.includes(block.service));
+  if (modern) {
+    const readField = field => {
+      const value = text(details[field.name], field.label, field.maxLength ?? 300, field.required ? 1 : 0);
+      if (field.type === 'select' && value && !field.options.includes(value)) invalid(`Revisa ${field.label}.`);
+      if (field.pattern && value && !new RegExp(field.pattern).test(value)) invalid(`Revisa ${field.label}.`);
+      if (field.type === 'number' && value && (!/^\d+(?:[.,]\d{1,2})?$/.test(value) || Number(value.replace(',', '.')) > 100000)) invalid(`Revisa ${field.label}.`);
+      if ((field.name.endsWith('_boxes') || field.name.endsWith('_rooms')) && value && !/^\d+$/.test(value)) invalid(`Revisa ${field.label}.`);
+      normalizedDetails[field.name] = value;
+      return value;
+    };
+    for (const block of selectedBlocks) {
+      for (const field of block.fields) respuestas.push({pregunta: `${block.service} — ${field.label}`, respuesta: readField(field) || 'No indicado'});
+      if (serviceUsesItems(block, normalizedDetails)) {
+        const countText = text(details[block.slug + '_count'], block.items.label, 3, 1);
+        const count = Number(countText);
+        if (!/^\d+$/.test(countText) || count < 1 || count > MAX_SERVICE_ITEMS) invalid(`Revisa ${block.items.label}.`);
+        normalizedDetails[block.slug + '_count'] = String(count);
+        respuestas.push({pregunta: `${block.service} — ${block.items.label}`, respuesta: String(count)});
+        for (let i = 1; i <= count; i++) {
+          const key = `${block.slug}_item_${i}_name`;
+          const name = text(details[key], `${block.items.singular} ${i}`, 300, 1);
+          normalizedDetails[key] = name;
+          respuestas.push({pregunta: `${block.service} — ${block.items.singular} ${i}`, respuesta: name});
+          if (block.items.extraLabel) {
+            const extraKey = `${block.slug}_item_${i}_extra`;
+            const extra = text(details[extraKey], block.items.extraLabel, 300);
+            normalizedDetails[extraKey] = extra;
+            if(extra) respuestas.push({pregunta: `${block.service} — ${block.items.singular} ${i}: ${block.items.extraLabel}`, respuesta: extra});
+          }
+        }
+      }
+      for (const address of block.addresses) for (const field of address.fields) respuestas.push({pregunta: `${block.service} — ${address.label}: ${field.label}`, respuesta: readField(field) || 'No indicado'});
+    }
+  }
+  for (const block of (modern ? [] : LEGACY_SERVICE_QUESTIONS).filter(b => services.includes(b.service))) {
     for (const field of block.fields) {
       const value = text(details[field.name], field.label, 300);
       if (field.type === 'select' && value && !['Sí', 'No'].includes(value)) invalid(`Revisa ${field.label}.`);
       respuestas.push({ pregunta: `${block.service} — ${field.label}`, respuesta: value || 'No indicado' });
     }
   }
-  const codigoPostal = text(body.postalCode, 'el código postal', 5);
+  const prefix = modern ? selectedBlocks[0]?.addresses[0].prefix : undefined;
+  const primary = prefix ? {location: normalizedDetails[prefix + '_locality'], street: `${normalizedDetails[prefix + '_street']}, ${normalizedDetails[prefix + '_number']}`, postalCode: normalizedDetails[prefix + '_postcode'], floor: normalizedDetails[prefix + '_floor'], door: normalizedDetails[prefix + '_door'], staircase: normalizedDetails[prefix + '_staircase']} : body;
+  const codigoPostal = text(primary.postalCode, 'el código postal', 5);
   if (codigoPostal && !/^\d{5}$/.test(codigoPostal)) invalid('Revisa el código postal.');
   return {
     nombre: `${firstName} ${lastName}`, email, telefono: phone.formatInternational(),
     telefonoInternacional: phone.number, servicios: services,
-    localidad: text(body.location, 'la localidad', 120, 2),
-    direccion: text(body.street, 'la dirección', 180) || 'No indicada',
+    localidad: text(primary.location, 'la localidad', 120, 2),
+    direccion: text(primary.street, 'la dirección', 180) || 'No indicada',
     codigoPostal: codigoPostal || 'No indicado',
-    piso: text(body.floor, 'el piso', 30) || 'No indicado',
-    puerta: text(body.door, 'la puerta', 30) || 'No indicada',
-    escalera: text(body.staircase, 'la escalera', 40) || 'No indicada',
+    piso: text(primary.floor, 'el piso', 30) || 'No indicado',
+    puerta: text(primary.door, 'la puerta', 30) || 'No indicada',
+    escalera: text(primary.staircase, 'la escalera', 40) || 'No indicada',
     mensaje: text(body.message, 'la descripción', 3000, 20), respuestas,
+    ...(modern ? {questionnaireVersion: 2, detalles: normalizedDetails} : {}),
     estado: 'Nueva', notas: '', fechaTrabajo: '', archivada: false
   };
 }
@@ -74,7 +115,7 @@ async function readJson(req) {
   let size = 0;
   for await (const chunk of req) {
     size += chunk.length;
-    if (size > 32768) throw new ApiError(413, 'La solicitud es demasiado grande.');
+    if (size > 524288) throw new ApiError(413, 'La solicitud es demasiado grande.');
     chunks.push(chunk);
   }
   try { return JSON.parse(Buffer.concat(chunks).toString()); }
