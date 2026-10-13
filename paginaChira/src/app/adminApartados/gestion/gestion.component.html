@@ -12,17 +12,48 @@
 </section>
 <dialog #editor class="editor" aria-labelledby="editor-title" (cancel)="$event.preventDefault();close()">
   <div class="editor-heading"><div><p class="eyebrow">SOLUCIONES CHIRA · {{ title }}</p><h2 id="editor-title">{{ selected ? label(draft) : 'Nuevo registro' }}</h2><p class="subtitle">{{ issued ? 'Documento registrado · Consulta los importes y los pagos' : 'Revisa los datos y guarda los cambios' }}</p></div><button class="button icon" type="button" aria-label="Cerrar" [disabled]="saving" (click)="close()"><i class="pi pi-times" aria-hidden="true"></i></button></div>
-  @if(resource==='trabajos' && solicitud; as encuesta){<div class="history"><h3>Respuestas de la encuesta</h3>@for(respuesta of encuesta.respuestas;track $index){<p><strong>{{ respuesta.pregunta }}</strong><br />{{ respuesta.respuesta }}</p>}</div>}
+  @if(resource==='trabajos'){
+    <section class="job-overview" aria-label="Resumen del trabajo">
+      <div class="job-overview-top"><span class="summary-label">Resumen del trabajo</span><span class="badge">{{ draft['estado'] }}</span></div>
+      <h3>{{ draft['titulo'] || 'Nuevo trabajo' }}</h3>
+      <p><i class="pi pi-user" aria-hidden="true"></i> {{ clientName(draft['clienteId']) }} <span>· {{ draft['fecha'] ? jobDate(draft) : 'Sin fecha prevista' }}</span></p>
+      @if(draft['direccion']){<p><i class="pi pi-map-marker" aria-hidden="true"></i> {{ draft['direccion'] }}</p>}
+      @if(solicitud; as encuesta){<small>Solicitud {{ encuesta.referencia }}</small>}
+    </section>
+    @if(solicitud){<section class="survey-summary" aria-label="Detalles de la solicitud"><h3 class="form-section-title">Detalles de la solicitud</h3>
+      @for(group of surveyGroups;track group.title){<article class="survey-card"><h4><i [class]="group.address ? 'pi pi-map-marker' : 'pi pi-list'" aria-hidden="true"></i> {{ group.title }}</h4><dl [class.address-grid]="group.address">
+        @for(answer of group.answers;track $index){<div><dt>{{ answer.label }}</dt><dd [class.missing]="answer.missing">{{ answer.value }}</dd></div>}
+      </dl></article>}
+    </section>}
+  }
   <form (ngSubmit)="save()">
     @if(editorError){<p class="notice error" role="alert">{{ editorError }}</p>}
     <fieldset [disabled]="saving || issued"><h3 class="form-section-title"><i class="pi pi-id-card" aria-hidden="true"></i> Datos del registro</h3><div class="form-grid">
-      @for(field of fields;track field.key){<label [class.wide]="field.type==='textarea'">{{ field.label }}{{ field.required?' *':'' }}
-        @if(field.source){<select [name]="field.key" [(ngModel)]="draft[field.key]" [required]="!!field.required"><option value="">Sin seleccionar</option>@for(option of options(field.source,draft[field.key]);track option['id']){<option [value]="option['id']">{{ label(option) }}</option>}</select>}
+      @for(field of fields;track field.key){
+        @if(resource==='facturas' && field.key==='trabajoId'){
+          <div class="job-selector wide">
+            <span class="field-label" id="invoice-job-label">Trabajo vinculado (opcional)</span>
+            <p class="hint">{{ draft['clienteId'] ? 'Selecciona el trabajo por su referencia, fecha y dirección.' : 'Selecciona primero el cliente para ver sus trabajos.' }}</p>
+            <button class="button job-picker-trigger" type="button" aria-labelledby="invoice-job-label invoice-job-value" [disabled]="!draft['clienteId']" [attr.aria-expanded]="jobPickerOpen" aria-controls="invoice-job-options" (click)="jobPickerOpen=!jobPickerOpen">
+              <span id="invoice-job-value">{{ selectedJob ? selectedJob['titulo'] + ' · ' + jobReference(selectedJob) : 'Sin trabajo vinculado' }}</span><i class="pi pi-chevron-down" aria-hidden="true"></i>
+            </button>
+            @if(jobPickerOpen){<div class="job-picker" id="invoice-job-options">
+              <label>Buscar trabajo<input type="search" name="jobSearch" [(ngModel)]="jobSearch" placeholder="Referencia, servicio, fecha o dirección…" /></label>
+              <div class="job-options"><button class="job-option" type="button" (click)="selectJob()">Sin trabajo vinculado<small>Crear la factura sin asociarla a un trabajo</small></button>
+                @for(job of invoiceJobs;track job['id']){<button class="job-option" type="button" [class.chosen]="draft['trabajoId']===job['id']" [attr.aria-pressed]="draft['trabajoId']===job['id']" (click)="selectJob(job)">
+                  <strong>{{ job['titulo'] }}</strong><span class="job-reference">{{ jobReference(job) }}</span><small>{{ clientName(job['clienteId']) }} · {{ jobDate(job) }}</small><small>{{ job['direccion'] || 'Dirección sin especificar' }}</small><span class="job-tags"><span class="badge">{{ job['estado'] }}</span>@if(jobInvoice(job)){<span class="badge invoice-tag">{{ jobInvoice(job) }}</span>}</span>
+                </button>}@empty{<p class="hint">No hay trabajos de este cliente que coincidan con la búsqueda.</p>}
+              </div>
+            </div>}
+            @if(selectedJob; as job){<div class="selected-job" role="status"><strong>Trabajo seleccionado: {{ job['titulo'] }}</strong><span>{{ jobReference(job) }} · {{ jobDate(job) }}</span><span>{{ clientName(job['clienteId']) }} · {{ job['direccion'] || 'Dirección sin especificar' }}</span>@if(jobInvoice(job)){<p class="invoice-warning">{{ jobInvoice(job) }}. Revisa la factura vinculada antes de crear otra.</p>}</div>}
+          </div>
+        } @else {<label [class.wide]="field.type==='textarea'">{{ field.label }}{{ field.required?' *':'' }}
+        @if(field.source){<select [name]="field.key" [(ngModel)]="draft[field.key]" (ngModelChange)="field.key==='clienteId' && clientChanged()" [required]="!!field.required"><option value="">Sin seleccionar</option>@for(option of options(field.source,draft[field.key]);track option['id']){<option [value]="option['id']">{{ label(option) }}</option>}</select>}
         @else if(field.options){<select [name]="field.key" [(ngModel)]="draft[field.key]" [required]="!!field.required">@for(option of field.options;track option){<option [value]="option">{{ option }}</option>}</select>}
         @else if(field.type==='textarea'){<textarea [name]="field.key" [(ngModel)]="draft[field.key]" rows="4" maxlength="3000"></textarea>}
         @else if(field.type==='number'){<input type="number" [name]="field.key" [(ngModel)]="draft[field.key]" min="0.01" max="1000000" step="0.01" [required]="!!field.required" />}
         @else {<input [type]="field.type || 'text'" [name]="field.key" [(ngModel)]="draft[field.key]" [required]="!!field.required" [attr.maxlength]="field.type==='date'?null:250" />}
-      </label>}
+      </label>}}
     </div>
     @if(documents){<h3 class="form-section-title"><i class="pi pi-list" aria-hidden="true"></i> Conceptos del documento</h3>@for(line of draft['lineas'];track $index;let i=$index){<div class="line"><label class="concept">Concepto<input [name]="'concepto'+i" [(ngModel)]="line['concepto']" required maxlength="300" /></label><label>Cantidad<input type="number" [name]="'cantidad'+i" [(ngModel)]="line['cantidad']" min="0.01" max="100000" step="0.01" required /></label><label>Precio (€)<input type="number" [name]="'precio'+i" [(ngModel)]="line['precio']" min="0" max="1000000" step="0.01" required /></label><label>IVA (%)<input type="number" [name]="'iva'+i" [(ngModel)]="line['iva']" min="0" max="100" step="0.01" required /></label><button class="button icon" type="button" aria-label="Eliminar concepto" [disabled]="draft['lineas'].length===1" (click)="draft['lineas'].splice(i,1)"><i class="pi pi-trash" aria-hidden="true"></i></button></div>}<button class="button" type="button" [disabled]="draft['lineas']?.length>=50" (click)="addLine()">Añadir concepto</button><div class="total"><span>Total del documento</span><strong>{{ money(draftTotal) }}</strong><small>IVA incluido</small></div>}
     <label class="notes">Notas internas<textarea name="notas" [(ngModel)]="draft['notas']" rows="4" maxlength="3000"></textarea></label>

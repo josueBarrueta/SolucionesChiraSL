@@ -33,6 +33,8 @@ export class GestionComponent implements OnInit, OnDestroy {
   editorError = '';
   message = '';
   search = '';
+  jobSearch = '';
+  jobPickerOpen = false;
   showArchived = false;
   status = '';
   selected: Row | null = null;
@@ -56,6 +58,45 @@ export class GestionComponent implements OnInit, OnDestroy {
   clientName(id:string): string { return this.data.clientes.find(r=>r['id']===id)?.['nombre'] ?? 'Sin cliente'; }
   label(row:Row): string { return row['nombre']??row['titulo']??row['concepto']??row['referencia']??'Factura en borrador'; }
   options(source:Resource|'encuestas', current?:string): Row[] { return source==='encuestas' ? this.encuestas.map(e=>({id:e.id,nombre:`${e.referencia} · ${e.nombre}`})) : this.data[source].filter(r=>!r['archivada'] || r['id']===current); }
+  jobReference(job: Row): string {
+    return this.encuestas.find(e => e.id === job['encuestaId'])?.referencia || job['referencia'] || `Trabajo · ${job['id']}`;
+  }
+  jobDate(job: Row): string {
+    const value = String(job['fecha'] || '');
+    return /^\d{4}-\d{2}-\d{2}$/.test(value) ? value.split('-').reverse().join('/') : 'Sin fecha prevista';
+  }
+  jobInvoice(job: Row): string {
+    const invoices = this.data.facturas.filter(r => r['trabajoId'] === job['id'] && !r['archivada'] && r['id'] !== this.draft['id']);
+    return invoices.some(r => r['estado'] === 'Registrada') ? 'Ya facturado' : invoices.length ? 'Factura en borrador' : '';
+  }
+  get selectedJob(): Row | undefined { return this.data.trabajos.find(r => r['id'] === this.draft['trabajoId']); }
+  get invoiceJobs(): Row[] {
+    if (!this.draft['clienteId']) return [];
+    const query = this.jobSearch.trim().toLocaleLowerCase('es');
+    return this.options('trabajos', this.draft['trabajoId']).filter(job => job['clienteId'] === this.draft['clienteId'] &&
+      [job['titulo'], this.jobReference(job), job['direccion'], this.jobDate(job), job['estado']].join(' ').toLocaleLowerCase('es').includes(query));
+  }
+  clientChanged(): void {
+    if (this.resource !== 'facturas') return;
+    if (this.selectedJob?.['clienteId'] !== this.draft['clienteId']) this.draft['trabajoId'] = '';
+    this.jobSearch = ''; this.jobPickerOpen = false;
+  }
+  selectJob(job?: Row): void { this.draft['trabajoId'] = job?.['id'] || ''; this.jobPickerOpen = false; this.jobSearch = ''; }
+  get surveyGroups(): { title: string; address: boolean; answers: { label: string; value: string; missing: boolean }[] }[] {
+    const groups = new Map<string, { title: string; address: boolean; answers: { label: string; value: string; missing: boolean }[] }>();
+    for (const answer of this.solicitud?.respuestas || []) {
+      const split = answer.pregunta.indexOf(' — ');
+      const service = split >= 0 ? answer.pregunta.slice(0, split) : 'Solicitud';
+      const question = split >= 0 ? answer.pregunta.slice(split + 3) : answer.pregunta;
+      const address = /^Dirección[^:]*:/i.test(question);
+      const colon = question.indexOf(':');
+      const title = address ? `${service} · ${question.slice(0, colon)}` : service;
+      if (!groups.has(title)) groups.set(title, { title, address, answers: [] });
+      const missing = !answer.respuesta?.trim() || /^No indicad[oa]$|^Sin especificar$/i.test(answer.respuesta.trim());
+      groups.get(title)!.answers.push({ label: address ? question.slice(colon + 1).trim() : question, value: missing ? 'Sin especificar' : answer.respuesta, missing });
+    }
+    return [...groups.values()];
+  }
   async load(): Promise<void> {
     this.loading=true; this.error='';
     try { const names=Object.keys(this.data) as Resource[]; const [records,surveys,settings]=await Promise.all([Promise.all(names.map(name=>this.api.request<{registros:Row[]}>(`/gestion/${name}`))),this.api.listar(),this.api.request<{configuracion:Row}>('/gestion/configuracion')]); names.forEach((name,i)=>this.data[name]=records[i].registros); this.encuestas=surveys.encuestas;this.empresa=settings.configuracion;
@@ -76,7 +117,7 @@ export class GestionComponent implements OnInit, OnDestroy {
     finally {this.loading=false;}
   }
   open(row?:Row): void {
-    this.selected=row??null; this.editorError='';
+    this.selected=row??null; this.editorError=''; this.jobSearch=''; this.jobPickerOpen=false;
     this.draft=row?structuredClone(row):{nombre:'',titulo:'',concepto:'',email:'',telefono:'',nif:'',direccion:'',localidad:'',codigoPostal:'',funcion:'',disponibilidad:'',clienteId:'',trabajoId:'',encuestaId:'',estado:this.resource==='trabajos'?'Pendiente':'Borrador',fecha:this.today,vencimiento:'',categoria:'Otros',importe:0,descripcion:'',tareas:'',notas:'',condiciones:this.empresa['condiciones']??'',archivada:false,lineas:[{concepto:'',cantidad:1,precio:0,iva:this.empresa['ivaPredeterminado']}]};
     if(this.resource==='gastos' && row) this.draft['importe']=row['importeCentimos']/100;
     this.payment={importe:0,fecha:this.today,metodo:'Transferencia'};
@@ -87,6 +128,7 @@ export class GestionComponent implements OnInit, OnDestroy {
   async save(): Promise<void> {
     if(this.saving || this.issued)return;this.editorError='';
     if(this.resource==='gastos' && !this.validAmount(this.draft['importe'])) {this.editorError='Introduce un importe de al menos 0,01 € y como máximo dos decimales.';return;}
+    if (this.resource==='facturas' && this.draft['trabajoId'] && (!this.selectedJob || this.selectedJob['clienteId']!==this.draft['clienteId'])) {this.editorError='Selecciona un trabajo del cliente de esta factura.';return;}
     this.saving=true;
     try {await this.api.request(`/gestion/${this.resource}${this.draft['id']?'/'+this.draft['id']:''}`,this.draft['id']?'PATCH':'POST',this.draft);this.message='Registro guardado.';this.saving=false;this.close();await this.load();}
     catch(e){this.editorError=e instanceof Error?e.message:'No se pudo guardar.';}finally{this.saving=false;}
