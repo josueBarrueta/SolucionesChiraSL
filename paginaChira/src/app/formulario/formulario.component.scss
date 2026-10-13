@@ -655,7 +655,9 @@ button:focus-visible {
 .service-address h4 { margin: 0 0 14px; font-size: 16px; }
 .item-counter { margin: 20px 0; }
 .counter-controls { display: flex; gap: 10px; align-items: center; }
-.counter-controls input { width: 90px; text-align: center; }
+.counter-controls input { width: 90px; text-align: center; appearance: textfield; -moz-appearance: textfield; }
+.counter-controls input::-webkit-inner-spin-button,
+.counter-controls input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 .counter-controls button { width: 44px; min-height: 44px; border: 1px solid #42612e; border-radius: 8px; background: #edf3e6; color: #253c1c; font-size: 22px; cursor: pointer; }
 .counter-controls button:disabled { opacity: .45; cursor: default; }
 .counter-controls button:focus-visible { outline: 2px solid #42612e; outline-offset: 2px; }
