@@ -1,3 +1,4 @@
+import { ServiceSceneComponent } from '../shared/service-scene/service-scene.component';
 import {
   Component,
   ElementRef,
@@ -26,7 +27,7 @@ interface Service {
 @Component({
   selector: 'app-servicios',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, ServiceSceneComponent],
   templateUrl: './servicios.component.html',
   styleUrls: ['./servicios.component.scss']
 })

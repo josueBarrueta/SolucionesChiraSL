@@ -1,5 +1,6 @@
 <div class="detail-page">
-  <section class="hero">
+  <section class="hero" [attr.data-service]="service.slug">
+    <app-service-scene class="hero-backdrop" [kind]="service.slug" [ambient]="true" [borderless]="true" [panoramic]="true" />
     <div class="container">
       <div class="hero-grid">
         <div>

@@ -1,3 +1,4 @@
+import { ServiceFilmComponent } from '../shared/service-film/service-film.component';
 import {
   Component,
   ElementRef,
@@ -24,7 +25,7 @@ interface Fotografia {
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, ServiceFilmComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
@@ -191,7 +192,7 @@ export class HomeComponent implements OnDestroy {
             0.65
           );
 
-        root.querySelectorAll('.reveal').forEach((item: Element) => {
+        root.querySelectorAll('.reveal, .collage-foto').forEach((item: Element) => {
           gsap.from(item, {
             y: 28,
             opacity: 0,

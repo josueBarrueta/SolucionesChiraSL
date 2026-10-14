@@ -852,3 +852,7 @@ h2 {
     figcaption { font-size: 11px; padding: 34px 10px 10px; }
   }
 }
+
+
+.visual-services{padding:80px 0;background:#edf1e7}.visual-services-heading{display:grid;grid-template-columns:1.2fr 1fr;gap:48px;align-items:end;margin-bottom:36px}.visual-services-heading>p{max-width:390px;color:var(--muted);line-height:1.8}.hero{background:radial-gradient(ellipse at 80% 30%,#e4ecd9 0,transparent 60%),#f6f7f2}.hero-photo{box-shadow:0 24px 70px #253c1c1c}.collage-foto img{transition:transform .7s}.collage-foto:hover img{transform:scale(1.04)}
+@media(max-width:600px){.visual-services{padding:48px 0}.visual-services-heading{grid-template-columns:1fr;gap:18px}}@media(prefers-reduced-motion:reduce){.collage-foto img{transition:none}.collage-foto:hover img{transform:none}}

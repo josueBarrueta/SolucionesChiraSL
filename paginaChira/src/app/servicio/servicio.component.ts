@@ -1,4 +1,6 @@
-import { Component, DestroyRef, inject } from '@angular/core';
+import { animatePage } from '../shared/page-motion';
+import { ServiceSceneComponent } from '../shared/service-scene/service-scene.component';
+import { Component, DestroyRef, ElementRef, NgZone, afterNextRender, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Meta, Title } from '@angular/platform-browser';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -7,7 +9,7 @@ import { SERVICIOS } from './servicios.data';
 @Component({
   selector: 'app-servicio',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, ServiceSceneComponent],
   templateUrl: './servicio.component.html',
   styleUrls: ['./servicio.component.scss']
 })
@@ -20,7 +22,14 @@ export class ServicioComponent {
   private readonly meta = inject(Meta);
   private readonly destroyRef = inject(DestroyRef);
 
+  private readonly element = inject(ElementRef<HTMLElement>);
+  private readonly zone = inject(NgZone);
+
   constructor() {
+    afterNextRender(() => this.zone.runOutsideAngular(() => {
+      const cleanup = animatePage(this.element.nativeElement, '.hero-grid > div, .preparation .two-columns > *, .steps > li, .faq .two-columns > *, .contact');
+      this.destroyRef.onDestroy(cleanup);
+    }));
     this.route.data
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((data) => {

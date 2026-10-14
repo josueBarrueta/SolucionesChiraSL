@@ -115,15 +115,6 @@ h1 {
   padding: 0;
 }
 
-.container.service-list {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  max-width: none;
-  margin: 0;
-  gap: 0;
-}
-
 .service-card,
 .service-card.dark-card {
   --card-accent: #42612e;
@@ -731,3 +722,13 @@ h1 {
     transition: none;
   }
 }
+.page-intro{background:radial-gradient(ellipse at 85% 20%,#e4ecd9,transparent 65%),#fff}.service-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}.service-card{min-width:0;overflow:hidden;border-radius:24px}.service-visual-link{display:block;padding:14px;text-decoration:none}.service-toggle{display:flex;flex-wrap:wrap;gap:16px;padding:24px;width:100%;text-align:left}.service-number{font-size:13px}.service-title{flex:1;font-size:clamp(20px,2.5vw,30px)}.category{display:none}.expand-icon{flex-shrink:0}.service-body{display:block;padding:0 24px 28px}.service-body p{margin-bottom:20px}.service-body ul{margin-bottom:24px}.service-link{display:inline-flex;min-height:44px;align-items:center}.process-grid>li{border:1px solid #dce5d3;border-radius:20px;padding:26px;background:#fff}
+@media(max-width:700px){.service-list{grid-template-columns:1fr;gap:18px}.service-toggle{padding:18px;gap:12px}.service-title{font-size:23px}.service-body{padding:0 18px 24px}}
+.service-card,.service-card.dark-card{border:1px solid #dce5d3;border-radius:24px;background:#fff}.service-list.container{width:min(1200px,calc(100% - 48px));margin:0 auto}.service-number{letter-spacing:0}.service-toggle{min-height:88px}@media(max-width:700px){.service-list.container{width:calc(100% - 32px)}}
+
+/* Compact service library; scenes sit directly on the page background. */
+.service-list{grid-template-columns:repeat(3,minmax(0,1fr));gap:28px 32px;align-items:start}
+.service-card,.service-card.dark-card,.service-card:hover,.service-card.dark-card:hover,.service-card.is-open,.service-card.dark-card.is-open{border:0;border-radius:0;background:transparent;box-shadow:none}
+.service-visual-link{padding:0 12px}.service-toggle{padding:18px 8px 12px;min-height:70px;gap:10px}.service-title{font-size:22px}.service-number{font-size:11px}.expand-icon{width:32px;height:32px}.service-body{padding:0 8px 20px}.service-body p{font-size:14px}.catalog{padding-top:40px;padding-bottom:48px}
+@media(max-width:950px){.service-list{grid-template-columns:repeat(2,minmax(0,1fr));gap:28px 22px}}
+@media(max-width:600px){.service-list{grid-template-columns:minmax(0,1fr);gap:26px}.service-visual-link{max-width:320px;margin:auto}.service-toggle{padding:14px 8px 10px}.service-title{font-size:23px}.catalog{padding-top:28px}}

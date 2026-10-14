@@ -1,0 +1,26 @@
+<div class="service-film">
+  <div class="film-stage" aria-hidden="true">
+    <span class="film-kicker">UN MISMO EQUIPO · SEIS FORMAS DE AYUDARTE</span>
+    <svg viewBox="0 0 440 290" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="220" cy="141" r="115" fill="#dce7cc"/>
+      <circle cx="220" cy="141" r="136" stroke="#d0ddc1" stroke-dasharray="3 10"/>
+      <path d="M35 237H405M54 214V91L91 61L128 91V120" stroke="#a6b897" stroke-width="2" stroke-linecap="round"/>
+      @for (piece of [0,1,2,3,4,5,6,7]; track piece) {<rect class="film-piece" rx="3" />}
+      <circle class="film-wheel" cx="133" cy="231" r="18" fill="#25352a" stroke="#eaf0e3" stroke-width="5"/>
+      <circle class="film-wheel" cx="304" cy="231" r="18" fill="#25352a" stroke="#eaf0e3" stroke-width="5"/>
+      <circle cx="363" cy="57" r="22" fill="#b4d388"/><path d="M353 57L360 64L373 49" stroke="#253c1c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+  <div class="film-copy">
+    <span class="film-cue">{{ services[active()].cue }}</span>
+    <h3>{{ services[active()].title }}</h3>
+    <p>{{ services[active()].description }}</p>
+    <a [routerLink]="['/servicios', services[active()].id]">Descubrir {{ services[active()].title.toLowerCase() }} <span aria-hidden="true">↗</span></a>
+  </div>
+  <div class="film-controls" aria-label="Controles de la presentación de servicios">
+    <div class="film-tabs" role="group" aria-label="Elegir servicio">
+      @for (service of services; track service.id; let i=$index) {<button type="button" [class.active]="active()===i" [attr.aria-pressed]="active()===i" (click)="select(i)">{{ service.title }}</button>}
+    </div>
+    <button class="film-pause" type="button" [attr.aria-label]="paused() ? 'Reanudar animación' : 'Pausar animación'" (click)="togglePlayback()">{{ paused() ? 'Reanudar' : 'Pausar' }}</button>
+  </div>
+</div>

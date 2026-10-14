@@ -1,0 +1,154 @@
+<div class="scene" [class.borderless]="borderless()" [class.panoramic]="panoramic()" [attr.data-service]="kind()" aria-hidden="true">
+  <svg [attr.viewBox]="panoramic() ? '-90 0 580 228.5' : '0 0 400 270'" preserveAspectRatio="xMidYMax meet" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle class="scene-backdrop halo" cx="205" cy="132" r="106" />
+    <path class="scene-backdrop route" [attr.d]="panoramic() ? 'M45 215V78L98 40L151 78V215M62 95H80M112 95H130M62 124H80M112 124H130' : 'M25 225H375M45 215V78L98 40L151 78V215M62 95H80M112 95H130M62 124H80M112 124H130'" />
+    @switch (kind()) {
+      @case ('portes') {
+        @if (panoramic()) {
+          <g class="truck-trip">
+            <g class="truck-body"><path class="solid" d="M83 124H236V207H83Z"/><path class="light" d="M236 149H284L322 183V207H236Z"/><path class="glass" d="M249 159H279L301 182H249Z"/><circle class="wheel" cx="120" cy="208" r="18"/><circle class="wheel" cx="281" cy="208" r="18"/><path class="detail" d="M108 148H183M108 164H155"/></g>
+            <g class="truck-cargo"><path class="box" d="M91 84H135V124H91Z"/><path class="detail" d="M113 84V97"/></g>
+            <g class="truck-cargo"><path class="box" d="M140 77H185V124H140Z"/><path class="detail" d="M162 77V92"/></g>
+            <g class="truck-cargo"><path class="box" d="M190 89H234V124H190Z"/><path class="detail" d="M212 89V100"/></g>
+          </g>
+        } @else {
+          <g class="scene-move"><path class="solid" d="M83 124H236V207H83Z"/><path class="light" d="M236 149H284L322 183V207H236Z"/><path class="glass" d="M249 159H279L301 182H249Z"/><circle class="wheel" cx="120" cy="208" r="18"/><circle class="wheel" cx="281" cy="208" r="18"/><path class="detail" d="M108 148H183M108 164H155"/></g>
+          <g class="scene-piece"><path class="box" d="M186 81H242V124H186Z"/><path class="detail" d="M214 82V98M200 110H221"/></g>
+        }
+      }
+      @case ('mudanzas') {
+        @if (panoramic()) {
+          <g class="move-origin-house"><path fill="#94ac7e" d="M266 112L331 62L396 112V228.5H266Z"/><path class="light" d="M280 123H309V154H280Z M353 123H382V154H353Z"/><path fill="#253c1c" d="M318 175H344V228.5H318Z"/></g>
+          <g class="move-destination-house"><path class="solid" d="M266 112L331 62L396 112V228.5H266Z"/><path class="glass" d="M280 123H309V154H280Z M353 123H382V154H353Z"/><path fill="#253c1c" d="M318 175H344V228.5H318Z"/></g>
+          <g class="move-landscape"><path d="M55 228.5V166M40 194L55 167L70 194Z" fill="#9eb888" stroke="#78945f" stroke-width="2"/></g>
+          <g transform="translate(-50 0)"><g class="move-truck"><path class="solid" d="M83 124H236V207H83Z"/><path class="light" d="M236 149H284L322 183V207H236Z"/><path class="glass" d="M249 159H279L301 182H249Z"/><circle class="wheel" cx="120" cy="208" r="18"/><circle class="wheel" cx="281" cy="208" r="18"/><path class="detail" d="M108 148H183M108 164H155"/></g></g>
+          <g transform="translate(-50 0)">
+            <g class="move-cargo"><path class="box" d="M91 84H135V124H91Z"/><path class="detail" d="M113 84V97"/></g>
+            <g class="move-cargo"><path class="box" d="M140 77H185V124H140Z"/><path class="detail" d="M162 77V92"/></g>
+            <g class="move-cargo"><path class="box" d="M190 89H234V124H190Z"/><path class="detail" d="M212 89V100"/></g>
+          </g>
+        } @else {
+        <g class="scene-piece"><path class="solid" d="M179 103L257 45L335 103V214H179Z"/><path class="light" d="M207 116H244V151H207Z M271 116H308V151H271Z M245 175H272V214H245Z"/></g>
+        <g class="scene-move"><path class="box" d="M70 158H148V214H70Z"/><path class="detail" d="M109 158V180M87 197H108"/><path class="box" d="M94 116H145V158H94Z"/></g>
+        <path class="scene-finish detail" d="M151 90C165 62 183 50 207 50M193 40L208 50L196 65"/>
+        }
+      }
+      @case ('montaje') {
+        @if (panoramic()) {
+          <g class="assembled-furniture" data-furniture="armario">
+          <g class="assembly-part" data-from-x="-172" data-from-y="46"><rect class="light" x="205" y="73" width="103" height="151"/></g>
+          <g class="assembly-part" data-from-x="-172" data-from-y="-28"><rect class="solid" x="198" y="218.5" width="117" height="10"/></g>
+          <g class="assembly-part" data-from-x="-117" data-from-y="48"><rect class="solid" x="198" y="68" width="10" height="151"/></g>
+          <g class="assembly-part" data-from-x="-222" data-from-y="48"><rect class="solid" x="305" y="68" width="10" height="151"/></g>
+          <g class="assembly-part" data-from-x="-172" data-from-y="122"><rect class="solid" x="198" y="65" width="117" height="10"/></g>
+          <g class="assembly-part" data-from-x="-172" data-from-y="48"><rect class="solid" x="208" y="143" width="97" height="8"/></g>
+          <g class="assembly-part" data-from-x="-148" data-from-y="48"><rect fill="#94ac7e" x="211" y="79" width="44" height="137" rx="2"/><path class="detail" d="M247 140V154"/></g>
+          <g class="assembly-part" data-from-x="-195" data-from-y="48"><rect fill="#78945f" x="259" y="79" width="43" height="137" rx="2"/><path class="detail" d="M267 140V154"/></g>
+          </g>
+          <g class="assembled-furniture" data-furniture="sofa">
+            <g class="assembly-part" data-from-x="-174" data-from-y="-28"><rect fill="#253c1c" x="187" y="214.5" width="14" height="14" rx="2"/><rect fill="#253c1c" x="309" y="214.5" width="14" height="14" rx="2"/></g>
+            <g class="assembly-part" data-from-x="-170" data-from-y="8"><rect class="solid" x="179" y="170" width="151" height="47" rx="10"/></g>
+            <g class="assembly-part" data-from-x="-170" data-from-y="36"><rect fill="#78945f" x="186" y="134" width="137" height="54" rx="12"/></g>
+            <g class="assembly-part" data-from-x="-103" data-from-y="-4"><rect class="solid" x="177" y="181" width="22" height="34" rx="7"/></g>
+            <g class="assembly-part" data-from-x="-235" data-from-y="-4"><rect class="solid" x="309" y="181" width="22" height="34" rx="7"/></g>
+            <g class="assembly-part" data-from-x="-137" data-from-y="-4"><rect class="light" x="201" y="184" width="47" height="29" rx="7"/></g>
+            <g class="assembly-part" data-from-x="-190" data-from-y="-4"><rect class="light" x="255" y="184" width="47" height="29" rx="7"/></g>
+          </g>
+          <g class="assembled-furniture" data-furniture="mesa">
+            <g class="assembly-part" data-from-x="-103" data-from-y="1"><rect fill="#805f3e" x="181" y="158" width="14" height="70.5" rx="2"/></g>
+            <g class="assembly-part" data-from-x="-225" data-from-y="1"><rect fill="#805f3e" x="303" y="158" width="14" height="70.5" rx="2"/></g>
+            <g class="assembly-part" data-from-x="-164" data-from-y="29"><rect fill="#a77d51" x="181" y="161" width="136" height="10" rx="2"/></g>
+            <g class="assembly-part" data-from-x="-164" data-from-y="41"><rect class="box" x="169" y="146" width="160" height="15" rx="5"/></g>
+          </g>
+          <g class="assembly-package-front">
+            <rect x="35" y="167" width="100" height="61.5" rx="3" fill="#d1ab7f" stroke="#805f3e" stroke-width="1.5"/>
+            <path d="M85 169V183" stroke="#805f3e" stroke-width="2" stroke-linecap="round"/>
+          </g>
+        } @else {
+        <path class="scene-backdrop detail" d="M121 55V214M281 55V214"/>
+        <g class="scene-piece"><path class="solid" d="M116 56H286V71H116Z"/><path class="solid" d="M116 122H286V137H116Z"/><path class="solid" d="M116 199H286V214H116Z"/><path class="light" d="M144 87H180V121H144Z M213 155H256V198H213Z"/></g>
+        <g class="scene-move"><path class="box" d="M145 161H184V198H145Z"/><path class="detail" d="M164 162V174"/></g>
+        <path class="scene-finish detail" d="M295 103L304 112L324 89"/>
+        }
+      }
+      @case ('vaciados') {
+        @if (panoramic()) {
+<g class="fixed-room"><path class="solid" d="M134 63H302V228.5H288V78H148V228.5H134Z"/><path class="detail" d="M162 88H274"/></g>
+          <g class="packing-item" data-pack-x="-135" data-pack-y="92">
+            <path d="M173 104L180 98L187 104" stroke="#805f3e" stroke-width="1.5" fill="none"/>
+            <rect fill="#cfa77b" x="160" y="104" width="40" height="32" rx="2"/>
+            <rect fill="#eef3e7" x="165" y="109" width="30" height="22"/>
+            <path fill="#9eb888" d="M165 129L176 117L182 123L187 118L195 129Z"/>
+          </g>
+          <g class="packing-item" data-pack-x="-142" data-pack-y="54">
+            <rect fill="#253c1c" x="202" y="145" width="49" height="31" rx="3"/>
+            <rect class="glass" x="206" y="149" width="41" height="23" rx="1"/>
+            <path d="M226 176V181M218 181H234" stroke="#253c1c" stroke-width="3" stroke-linecap="round"/>
+          </g>
+          <g class="packing-item" data-pack-x="-151" data-pack-y="11">
+            <path class="solid" d="M272 213V190C251 191 254 177 265 183L272 194C273 171 285 173 283 185L274 201Z"/>
+            <path fill="#cfa77b" d="M261 209H283L280 228.5H264Z"/>
+          </g>
+          <g class="packing-item" data-pack-x="-124" data-pack-y="11">
+            <rect fill="#94ac7e" x="153" y="172" width="27" height="34" rx="4"/>
+            <rect class="solid" x="151" y="205" width="34" height="8" rx="2"/>
+            <path class="solid" d="M155 213H160V228.5H155Z M176 213H181V228.5H176Z"/>
+          </g>
+          <g class="packing-item" data-pack-x="-143" data-pack-y="9">
+            <rect fill="#cfa77b" x="193" y="181" width="68" height="8" rx="2"/>
+            <path fill="#805f3e" d="M198 189H204V228.5H198Z M250 189H256V228.5H250Z"/>
+          </g>
+          @for (box of [0,1,2]; track box) {<g [attr.transform]="'translate(' + (30 + box * 38) + ',198.5)'"><g class="moving-out-box"><rect class="box" width="28" height="30" rx="2"/><path class="detail" d="M14 1V10M6 22H21"/></g></g>}
+        } @else {
+        <g class="scene-piece"><path class="solid" d="M125 62H294V214H125Z"/><path class="light" d="M147 84H272V214H147Z"/><path class="detail" d="M160 202H255"/></g>
+        <g class="scene-move"><path class="box" d="M44 166H108V214H44Z"/><path class="box" d="M60 130H106V166H60Z"/><path class="detail" d="M138 145H205M151 132L138 145L151 158"/></g>
+        <path class="scene-finish detail" d="M222 116L231 125L253 100"/>
+        }
+      }
+      @case ('limpieza') {
+        @if (panoramic()) {
+          <g class="cleaning-room">
+            <path class="solid" d="M132 63H300V228.5H291V72H141V228.5H132Z"/>
+            <rect fill="#78945f" x="155" y="86" width="126" height="96" rx="4"/>
+            <rect class="glass" x="163" y="94" width="110" height="80" rx="1"/>
+            @for (row of [0,1,2]; track row) {<rect class="window-dirt" x="163" [attr.y]="94 + row * (80 / 3)" width="110" [attr.height]="80 / 3" fill="#bcb09c" opacity=".72"/>}
+            <path stroke="#42612e" stroke-width="3" d="M218 94V174M163 134H273"/>
+            <rect class="mop-trail" x="141" y="218" width="0" height="10.5" fill="#edf3e5"/>
+            @for (foot of [0,1,2,3,4]; track foot) {<g class="floor-footprint"><ellipse [attr.cx]="164 + foot * 24" cy="218" rx="5" ry="3" fill="#a9a18e"/><ellipse [attr.cx]="169 + foot * 24" cy="225" rx="5" ry="2.5" fill="#a9a18e"/></g>}
+            <g class="window-squeegee"><rect fill="#42612e" x="161" y="91" width="114" height="6" rx="2"/><path stroke="#805f3e" stroke-width="4" stroke-linecap="round" d="M218 97V117"/></g>
+            <g class="floor-mop"><path stroke="#805f3e" stroke-width="4" stroke-linecap="round" d="M145 219L174 159"/><rect fill="#9eb888" x="126" y="218" width="34" height="10.5" rx="3"/><path stroke="#42612e" stroke-width="1.5" d="M133 221V226M140 221V226M147 221V226M154 221V226"/></g>
+            <g class="cleaning-sparkle"><path class="detail" d="M179 111V127M171 119H187"/></g>
+            <g class="cleaning-sparkle"><path class="detail" d="M248 148V164M240 156H256"/></g>
+            <g class="cleaning-sparkle"><path class="detail" d="M230 207V219M224 213H236"/></g>
+          </g>
+        } @else {
+        <g [attr.transform]="panoramic() ? 'translate(0 10.5)' : null">
+        <g class="scene-piece"><path class="solid" d="M122 72H280V214H122Z"/><path class="glass" d="M138 89H264V178H138Z"/><path class="light" d="M198 89H205V178H198Z M138 130H264V137H138Z"/></g>
+        <g class="scene-move"><path class="detail" d="M300 80L262 210"/><path class="box" d="M243 193L274 202L268 218H236Z"/></g>
+        <g class="scene-finish detail"><path d="M168 101V120M159 110H177M233 148V169M223 158H243M304 126V144M295 135H313"/></g>
+        </g>        }
+      }
+      @case ('pintura') {
+        @if (panoramic()) {
+          <defs><clipPath id="chira-paint-wall"><rect x="105" y="55" width="210" height="173.5" rx="3"/></clipPath></defs>
+          <g class="paint-wall">
+            <rect class="light" x="105" y="55" width="210" height="173.5" rx="3"/>
+            <g clip-path="url(#chira-paint-wall)">
+              @for (strip of [0,1,2,3]; track strip) {<rect class="paint-vertical" [attr.x]="105 + strip * 35" y="55" width="35" height="173.5" fill="#789c61"/>}
+              @for (band of [0,1,2]; track band) {<rect class="paint-horizontal" x="245" [attr.y]="55 + band * (173.5 / 3)" width="70" [attr.height]="173.5 / 3" fill="#789c61"/>}
+            </g>
+            @for (roller of [0,1,2]; track roller) {
+              <g [attr.transform]="'translate(' + (109 + roller * 70) + ',61)'"><g class="painting-roller"><g [attr.transform]="roller === 2 ? 'rotate(90 28.9167 5.5)' : null"><rect class="box" [attr.width]="roller === 2 ? 173.5 / 3 : 35" height="11" rx="4"/><path class="detail" [attr.d]="roller === 2 ? 'M58 5H64V20H29V33' : 'M35 5H41V20H18V33'"/><rect class="solid" [attr.x]="roller === 2 ? 25 : 14" y="27" width="8" height="15" rx="3"/></g></g></g>
+            }
+          </g>
+        } @else {
+        <g class="scene-piece"><path class="light" d="M105 64H289V213H105Z"/><path class="solid" d="M105 64H232V213H105Z"/></g>
+        <g class="scene-move"><rect class="box" x="197" y="88" width="99" height="29" rx="8"/><path class="detail" d="M296 102H310V142H250V205"/><path class="solid" d="M243 175H258V215H243Z"/></g>
+        <path class="scene-finish detail" d="M140 105L151 116L176 91"/>
+        }
+      }
+    }
+    <g class="scene-finish"><circle class="accent" cx="341" cy="56" r="21"/><path class="check" d="M332 56L339 63L351 49"/></g>
+  </svg>
+  <span class="scene-caption">{{ kind() === 'montaje' ? 'Cada pieza, en su sitio.' : kind() === 'pintura' ? 'Un espacio. Un nuevo aire.' : kind() === 'limpieza' ? 'Listo para disfrutar.' : kind() === 'vaciados' ? 'Espacio para lo que viene.' : 'De aquí, a tu siguiente etapa.' }}</span>
+</div>

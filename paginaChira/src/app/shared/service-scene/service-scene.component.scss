@@ -1,0 +1,16 @@
+:host{display:block;min-width:0}.scene{position:relative;overflow:hidden;background:#eaf0e3;border-radius:24px;padding:12px 14px 22px;color:#253c1c}.scene svg{display:block;width:100%;height:auto;max-height:330px}.halo{fill:#dce7cc}.route{stroke:#a6b897;stroke-width:2;stroke-linecap:round}.solid{fill:#42612e}.light{fill:#cedbbd}.glass{fill:#b4d0c7}.box{fill:#cfa77b;stroke:#805f3e;stroke-width:2}.wheel{fill:#25352a;stroke:#eaf0e3;stroke-width:5}.detail{stroke:#253c1c;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}.accent{fill:#b4d388}.check{stroke:#253c1c;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.scene-caption{display:block;text-align:center;font-size:12px;letter-spacing:.3px;font-weight:600}.scene[data-service=pintura]{background:#f0e9df}.scene[data-service=limpieza]{background:#e6efed}@media(max-width:600px){.scene{border-radius:18px}.scene svg{max-height:240px}}
+
+.scene.borderless{background:transparent;border-radius:0;padding:0}.scene.borderless svg{max-height:220px}.scene.borderless .scene-caption{font-size:11px;color:#596352}
+
+.scene.panoramic{background:transparent;padding:0;overflow:visible}.scene.panoramic svg{max-height:none}.scene.panoramic .scene-caption{display:none}
+.scene.panoramic{height:100%}.scene.panoramic svg{width:100%;height:100%}
+.scene.panoramic svg{height:clamp(320px,36vw,640px)}
+@media(max-width:550px){.scene.panoramic svg{height:460px}}
+
+.scene.panoramic[data-service="portes"] svg{height:100%}
+
+.scene.panoramic svg{height:100%}
+
+.scene.panoramic[data-service="mudanzas"] .route{display:none}
+
+.scene.panoramic[data-service="limpieza"] .route{display:none}

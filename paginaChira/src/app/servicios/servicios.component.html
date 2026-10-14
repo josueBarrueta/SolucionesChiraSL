@@ -31,6 +31,7 @@
           [class.dark-card]="index % 2 !== 0"
           [class.is-open]="isOpen(service.id)"
         >
+          <a class="service-visual-link" [routerLink]="['/servicios', service.id]" [attr.aria-label]="'Ver servicio de ' + service.title"><app-service-scene [kind]="service.id" [ambient]="true" [borderless]="true" /></a>
           <h2 class="service-heading">
             <button
               #trigger

@@ -1,11 +1,13 @@
-import { Component, DestroyRef, afterNextRender, inject, signal } from '@angular/core';
+import { animatePage } from '../shared/page-motion';
+import { ServiceSceneComponent } from '../shared/service-scene/service-scene.component';
+import { Component, DestroyRef, ElementRef, NgZone, afterNextRender, inject, signal } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-nosotros',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, ServiceSceneComponent],
   templateUrl: './nosotros.component.html',
   styleUrls: ['./nosotros.component.scss'],
 })
@@ -25,11 +27,19 @@ export class NosotrosComponent {
   ];
   private readonly destroyRef = inject(DestroyRef);
 
+  private readonly element = inject(ElementRef<HTMLElement>);
+  private readonly zone = inject(NgZone);
+
   constructor() {
     afterNextRender(() => {
+      this.zone.runOutsideAngular(() => {
+        const cleanup = animatePage(this.element.nativeElement, '.nosotros-intro, .datos, .team-story-heading, .historia-texto, .valor, .nosotros-cta');
+        this.destroyRef.onDestroy(cleanup);
+      });
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       const temporizador = window.setInterval(() => {
         this.fotoActiva.update(indice => (indice + 1) % this.fotosEquipo.length);
-      }, 2500);
+      }, 5000);
       this.destroyRef.onDestroy(() => window.clearInterval(temporizador));
     });
     this.title.setTitle(
