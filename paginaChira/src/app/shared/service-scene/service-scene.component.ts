@@ -39,7 +39,9 @@ export class ServiceSceneComponent {
           const movers = root.querySelectorAll('.scene-move');
           const pieces = root.querySelectorAll('.scene-piece');
           const finishes = root.querySelectorAll('.scene-finish');
-          if (this.panoramic()) {
+          if (this.kind() === 'derribos') {
+            this.demolitionSequence(root, loop);
+          } else if (this.panoramic()) {
             switch (this.kind()) {
               case 'portes':
                 const truck = root.querySelector('.truck-trip');
@@ -59,21 +61,18 @@ export class ServiceSceneComponent {
                 const allParts = root.querySelectorAll('.assembly-part');
                 gsap.set(allParts, {opacity:0});
                 loop.set(allParts, {opacity:0});
-                for (const item of furniture) {
+                furniture.forEach((item, index) => {
                   const parts = Array.from(item.querySelectorAll<SVGElement>('.assembly-part'));
-                  loop.set(item, {x:0});
-                  for (const part of parts) {
-                    const fromX=Number(part.dataset['fromX']);
-                    const fromY=Number(part.dataset['fromY']);
-                    loop.set(part, {x:fromX,y:fromY,scale:.12,opacity:0,transformOrigin:'50% 50%'})
-                      .to(part, {y:fromY-55,scale:.5,opacity:1,duration:.35,ease:'power2.out'})
-                      .to(part, {x:0,y:0,scale:1,duration:.6,ease:'power3.inOut'});
-                  }
-                  loop.to({}, {duration:1.2})
-                    .to(item, {x:650,duration:2.4,ease:'power2.in'})
-                    .set(parts, {opacity:0})
-                    .set(item, {x:0});
-                }
+                  const start = index * 2.6;
+                  loop!.set(item, {x:0},start);
+                  parts.forEach((part, i) => {
+                    const x = Number(part.dataset['fromX']) * .35;
+                    const y = Number(part.dataset['fromY']) * .35;
+                    loop!.fromTo(part, {x,y,opacity:0}, {x:0,y:0,opacity:1,duration:.7,ease:'sine.inOut',immediateRender:false},start+i*.1);
+                  });
+                  loop!.to(item, {x:650,duration:.8,ease:'power2.in'},start+1.75)
+                    .set(parts, {opacity:0},start+2.55);
+                });
                 break;
               }
               case 'mudanzas': {
@@ -82,34 +81,23 @@ export class ServiceSceneComponent {
                 const truck = root.querySelector('.move-truck');
                 const scenery = root.querySelector('.move-landscape');
                 const cargo = Array.from(root.querySelectorAll('.move-cargo'));
-                const pickupOffsets = [244,245,245];
-                const deliveryOffsets = [268,218.5,169];
                 gsap.set(truck, {x:-620});
-                gsap.set(destination, {x:620});
-                gsap.set(scenery, {x:620});
-                cargo.forEach((box,i) => gsap.set(box, {x:pickupOffsets[i],y:104,scale:1}));
+                gsap.set([destination,scenery], {x:620});
+                cargo.forEach(box => gsap.set(box, {x:245,y:104}));
                 loop.set(origin, {x:0,opacity:1})
                   .set(destination, {x:620,opacity:1})
                   .set(truck, {x:-620})
-                  .set(scenery, {x:620});
-                cargo.forEach((box,i) => loop!.set(box, {x:pickupOffsets[i],y:104,scale:1,opacity:1}));
-                loop.to(truck, {x:0,duration:2.4,ease:'power2.out'});
-                for (const box of cargo) {
-                  loop.to(box, {y:8,duration:.6,ease:'power2.out'})
-                    .to(box, {x:0,y:0,duration:.7,ease:'power2.inOut'});
-                }
-                const travelAt=loop.duration()+.6;
-                loop.to(origin, {x:-620,duration:3.5,ease:'sine.inOut'},travelAt)
-                  .to(destination, {x:0,duration:3.5,ease:'sine.inOut'},travelAt)
-                  .to(scenery, {x:-250,duration:3.5,ease:'none'},travelAt);
-                loop.to({}, {duration:.6});
-                for (let i=cargo.length-1;i>=0;i--) {
-                  loop.to(cargo[i], {x:deliveryOffsets[i],y:104,scale:.55,transformOrigin:'50% 50%',duration:1,ease:'power2.inOut'})
-                    .to(cargo[i], {opacity:0,duration:.25});
-                }
-                loop.to({}, {duration:.8})
-                  .to(truck, {x:650,duration:2,ease:'power2.in'})
-                  .to(destination, {opacity:0,duration:.5});
+                  .set(scenery, {x:620})
+                  .set(cargo, {x:245,y:104,scale:1,opacity:1})
+                  .to(truck, {x:0,duration:1.6,ease:'power2.out'})
+                  .to(cargo, {x:0,y:0,duration:1,stagger:.18,ease:'sine.inOut'},1.7)
+                  .to(origin, {x:-620,duration:2,ease:'sine.inOut'},3.2)
+                  .to(destination, {x:0,duration:2,ease:'sine.inOut'},3.2)
+                  .to(scenery, {x:-250,duration:2,ease:'none'},3.2);
+                cargo.forEach((box,i) => loop!.to(box, {x:268-i*49.5,y:104,scale:.55,transformOrigin:'50% 50%',duration:.9,ease:'sine.inOut'},5.4+i*.2)
+                  .to(box,{opacity:0,duration:.25},6.5+i*.2));
+                loop.to(truck, {x:650,duration:1.4,ease:'power2.in'},7)
+                  .to(destination, {opacity:0,duration:.4},8.2);
                 break;
               }
               case 'vaciados': {
@@ -118,21 +106,13 @@ export class ServiceSceneComponent {
                 gsap.set(boxes, {opacity:0});
                 loop.set(boxes, {x:0,opacity:0})
                   .set(items, {x:0,y:0,scale:1,opacity:0,transformOrigin:'50% 50%'})
-                  .to(items, {opacity:1,stagger:.1,duration:.45})
-                  .to({}, {duration:1.2})
-                  .to(boxes, {opacity:1,stagger:.15,duration:.4});
-                for (const item of items) {
-                  loop.to(item, {
-                    x:Number(item.dataset['packX']),y:Number(item.dataset['packY']),
-                    scale:.2,duration:.75,ease:'power2.inOut'
-                  }).set(item, {opacity:0});
-                }
-                loop.to({}, {duration:.5});
-                // Leave in order, with all objects already packed and the room empty.
-                for (const box of boxes) {
-                  loop.to(box, {x:-430,duration:1.8,ease:'power2.inOut'});
-                }
-                loop.to({}, {duration:1});
+                  .to(items, {opacity:1,stagger:.1,duration:.5,ease:'sine.out'})
+                  .to(boxes, {opacity:1,stagger:.15,duration:.5},1.4);
+                items.forEach((item,i) => loop!.to(item, {
+                  x:Number(item.dataset['packX']),y:Number(item.dataset['packY']),scale:.2,duration:1,ease:'sine.inOut'
+                },2+i*.3).to(item,{opacity:0,duration:.2},2.8+i*.3));
+                loop.to(boxes, {x:-520,duration:1.8,stagger:.35,ease:'power2.inOut'},4.6)
+                  .to({}, {duration:.8});
                 break;
               }
               case 'limpieza': {
@@ -173,8 +153,6 @@ export class ServiceSceneComponent {
                 }},2.35);
                 loop.to([squeegee,mop],{opacity:0,duration:.4},6.65)
                   .to(sparkles,{opacity:1,scale:1,stagger:.15,duration:.5,ease:'power2.out'},7.05)
-                  .to(sparkles,{opacity:.45,stagger:.1,duration:.45},7.75)
-                  .to(sparkles,{opacity:1,stagger:.1,duration:.45},8.2)
                   .to(room,{x:650,duration:2.1,ease:'power2.inOut'},9.1);
                 break;
               }
@@ -255,13 +233,19 @@ export class ServiceSceneComponent {
                 .to(movers, {y:0,duration:1.2,ease:'sine.inOut'});
               break;
           }
-          loop.to(finishes, {opacity:.5,duration:.5,stagger:.1},0)
+          if (this.panoramic()) {
+            // Scale the whole narrative together so overlapping movements keep their rhythm.
+            loop.repeatDelay(.35);
+            loop.timeScale((loop.duration() + loop.repeatDelay()) / 8.5);
+          }
+          if (!this.panoramic()) loop.to(finishes, {opacity:.5,duration:.5,stagger:.1},0)
             .to(finishes, {opacity:1,duration:.6,stagger:.1},.7);
         }
+        gsap.set(root.querySelector('.scene'), {autoAlpha:1});
         const timeline = gsap.timeline({onComplete: () => {entered = true; sync();}, scrollTrigger: {trigger: root, start: 'top 90%', once: true}, defaults: {duration: .85, ease: 'power3.out'}});
         timeline.from(root.querySelectorAll('.scene-backdrop'), {opacity: 0, scale: .9, transformOrigin: '50% 50%'})
           .from(root.querySelectorAll('.scene-piece'), {opacity: 0, y: 22, stagger: .12}, .15)
-          .from(root.querySelectorAll('.scene-move'), {x: -55, opacity: 0, duration: 1.2}, .35)
+          .from(root.querySelectorAll('.scene-move:not(.demolition-machine)'), {x: -55, opacity: 0, duration: 1.2}, .35)
           .from(root.querySelectorAll('.scene-finish'), {scale: 0, opacity: 0, transformOrigin: '50% 50%', stagger: .14, ease: 'back.out(1.5)'}, .75);
       }, root);
       this.destroyRef.onDestroy(() => {
@@ -271,4 +255,46 @@ export class ServiceSceneComponent {
       });
     }));
   }
+
+  private demolitionSequence(root: HTMLElement, loop: gsap.core.Timeline): void {
+    const machine = root.querySelector('.demolition-machine');
+    const arm = root.querySelector('.demolition-arm');
+    const stick = root.querySelector('.demolition-stick');
+    const breaker = root.querySelector('.demolition-breaker');
+    const bricks = Array.from(root.querySelectorAll('.demolition-brick'));
+    const dust = root.querySelector('.demolition-dust');
+    const rubble = root.querySelector('.demolition-rubble');
+    const tread = root.querySelector('.demolition-tread');
+    gsap.set(machine, {x:640});
+    gsap.set(dust, {opacity:0});
+    gsap.set(rubble, {opacity:0});
+    loop.repeatDelay(.8);
+    loop.set(machine, {x:640})
+      .set(bricks, {x:0,y:0,rotation:0,opacity:1})
+      .set(arm, {rotation:-16,svgOrigin:'230 171'})
+      .set(stick, {rotation:18,svgOrigin:'193 77'})
+      .set(breaker, {x:0,y:0})
+      .set(dust, {opacity:0,scale:.5,x:0,y:0,svgOrigin:'85 187'})
+      .set(rubble, {opacity:0})
+      .to(machine, {x:0,duration:2.3,ease:'power2.out'})
+      .fromTo(tread, {strokeDashoffset:0}, {strokeDashoffset:70,duration:2.3,ease:'none'},0)
+      .to(arm, {rotation:0,duration:1,ease:'power2.inOut'},2.6)
+      .to(stick, {rotation:0,duration:1,ease:'power2.inOut'},2.6);
+    // Three controlled strikes, with falling blocks and a small settling dust cloud.
+    for (let strike = 0; strike < 3; strike++) {
+      const at = 3.8 + strike * 1.55;
+      loop.to(breaker, {y:3,duration:.08,repeat:7,yoyo:true,ease:'none'},at)
+        .to(bricks.slice(strike * 2,strike * 2 + 2), {y:90-strike*35,x:(i:number)=>i ? 18 : -12,rotation:(i:number)=>i ? 24 : -18,opacity:0,duration:.8,stagger:.12,ease:'power2.in'},at+.25)
+        .fromTo(dust, {opacity:0,scale:.5,y:0}, {opacity:.5,scale:1.3,y:-8,duration:.35,ease:'power2.out'},at+.25)
+        .to(dust, {opacity:0,scale:1.8,y:-22,duration:.7},at+.6)
+        .to(rubble, {opacity:(strike+1)/3,duration:.5},at+.7);
+    }
+    loop.to(arm, {rotation:-16,duration:.9,ease:'power2.inOut'},8.6)
+      .to(stick, {rotation:18,duration:.9,ease:'power2.inOut'},8.6)
+      .to({}, {duration:.8},9.5)
+      .to(machine, {x:640,duration:2.2,ease:'power2.inOut'},10.3)
+      .fromTo(tread, {strokeDashoffset:70}, {strokeDashoffset:0,duration:2.2,ease:'none'},10.3)
+      .to(rubble, {opacity:0,duration:.4},12.6);
+  }
+
 }

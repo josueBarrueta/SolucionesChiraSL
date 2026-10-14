@@ -34,7 +34,7 @@ export function validateSubmission(body) {
   const lastName = text(body.lastName, 'los apellidos', 150, 1);
   const email = text(body.email, 'el correo', 254, 3);
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) invalid('Revisa el correo.');
-  if (!Array.isArray(body.services) || !body.services.length || body.services.length > 7 ||
+  if (!Array.isArray(body.services) || !body.services.length || body.services.length > SERVICIOS.length ||
       body.services.some(s => !SERVICIOS.includes(s))) invalid('Revisa los servicios.');
   const services = [...new Set(body.services)];
   const phone = parsePhoneNumberFromString(text(body.phone, 'el teléfono', 35, 1));

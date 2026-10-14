@@ -67,16 +67,7 @@ export class FormularioComponent implements OnDestroy {
   readonly status = signal<FormStatus>('idle');
   readonly errorMessage = signal('');
 
-  readonly services = [
-    'Portes',
-    'Montaje de muebles',
-    'Mudanzas',
-    'Vaciados',
-    'Limpieza',
-    'Pintura',
-    'Otra consulta'
-  ];
-
+  readonly services = [...SERVICE_QUESTIONS.map(block => block.service), 'Otra consulta'];
   readonly personalFields = [
     {
       name: 'firstName',

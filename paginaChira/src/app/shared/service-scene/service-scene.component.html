@@ -1,4 +1,4 @@
-<div class="scene" [class.borderless]="borderless()" [class.panoramic]="panoramic()" [attr.data-service]="kind()" aria-hidden="true">
+<div class="scene" [class.borderless]="borderless()" [class.panoramic]="panoramic()" [class.scene-pending]="ambient() && panoramic()" [attr.data-service]="kind()" aria-hidden="true">
   <svg [attr.viewBox]="panoramic() ? '-90 0 580 228.5' : '0 0 400 270'" preserveAspectRatio="xMidYMax meet" fill="none" xmlns="http://www.w3.org/2000/svg">
     <circle class="scene-backdrop halo" cx="205" cy="132" r="106" />
     <path class="scene-backdrop route" [attr.d]="panoramic() ? 'M45 215V78L98 40L151 78V215M62 95H80M112 95H130M62 124H80M112 124H130' : 'M25 225H375M45 215V78L98 40L151 78V215M62 95H80M112 95H130M62 124H80M112 124H130'" />
@@ -128,6 +128,40 @@
         <g class="scene-finish detail"><path d="M168 101V120M159 110H177M233 148V169M223 158H243M304 126V144M295 135H313"/></g>
         </g>        }
       }
+      @case ('derribos') {
+        <g class="demolition-site">
+          <g class="scene-piece demolition-wall">
+            @for (brick of [0,1,2,3,4,5]; track brick) {
+              <rect class="demolition-brick" [attr.x]="60 + (brick % 2) * 35" [attr.y]="112 + (brick - brick % 2) / 2 * 35" width="33" height="33" rx="2" fill="#cedbbd" stroke="#94ac7e" stroke-width="2"/>
+            }
+          </g>
+          <g class="scene-move demolition-machine">
+            <rect x="195" y="197" width="145" height="29" rx="14" fill="#25352a"/>
+            <rect x="203" y="203" width="129" height="17" rx="8" fill="#78945f"/>
+            <path class="demolition-tread" d="M214 211H321" stroke="#cedbbd" stroke-width="9" stroke-dasharray="3 11"/>
+            <path class="solid" d="M203 166H334V199H203Z"/>
+            <path fill="#94ac7e" d="M207 170H252V190H207Z"/>
+            <path class="light" d="M255 115H306L324 166H255Z"/>
+            <path class="glass" d="M264 124H299L311 154H264Z"/>
+            <path class="detail" d="M274 167V187M310 180H325"/>
+            <g class="demolition-arm">
+              <path d="M230 171L193 77" stroke="#42612e" stroke-width="19" stroke-linecap="round"/>
+              <path d="M230 171L195 89" stroke="#cfa77b" stroke-width="5" stroke-linecap="round"/>
+              <g class="demolition-stick">
+                <path d="M193 77L114 124" stroke="#42612e" stroke-width="17" stroke-linecap="round"/>
+                <path d="M184 90L128 124" stroke="#cfa77b" stroke-width="5" stroke-linecap="round"/>
+                <g class="demolition-breaker"><path fill="#25352a" d="M103 117L126 129L103 164L87 157Z"/><path class="detail" d="M96 158L87 178"/></g>
+              </g>
+              <circle class="accent" cx="193" cy="77" r="8"/>
+              <circle class="accent" cx="230" cy="171" r="7"/>
+            </g>
+          </g>
+          <g class="demolition-dust" fill="#cbd4c0">
+            <circle cx="83" cy="173" r="12"/><circle cx="100" cy="187" r="16"/><circle cx="66" cy="192" r="10"/>
+          </g>
+          <g class="demolition-rubble"><path class="box" d="M59 219L77 204L93 221Z M90 221L108 203L127 222Z M125 222L141 208L156 223Z"/></g>
+        </g>
+      }
       @case ('pintura') {
         @if (panoramic()) {
           <defs><clipPath id="chira-paint-wall"><rect x="105" y="55" width="210" height="173.5" rx="3"/></clipPath></defs>
@@ -150,5 +184,5 @@
     }
     <g class="scene-finish"><circle class="accent" cx="341" cy="56" r="21"/><path class="check" d="M332 56L339 63L351 49"/></g>
   </svg>
-  <span class="scene-caption">{{ kind() === 'montaje' ? 'Cada pieza, en su sitio.' : kind() === 'pintura' ? 'Un espacio. Un nuevo aire.' : kind() === 'limpieza' ? 'Listo para disfrutar.' : kind() === 'vaciados' ? 'Espacio para lo que viene.' : 'De aquí, a tu siguiente etapa.' }}</span>
+  <span class="scene-caption">{{ kind() === 'derribos' ? 'Valoramos tu próximo proyecto.' : kind() === 'montaje' ? 'Cada pieza, en su sitio.' : kind() === 'pintura' ? 'Un espacio. Un nuevo aire.' : kind() === 'limpieza' ? 'Listo para disfrutar.' : kind() === 'vaciados' ? 'Espacio para lo que viene.' : 'De aquí, a tu siguiente etapa.' }}</span>
 </div>

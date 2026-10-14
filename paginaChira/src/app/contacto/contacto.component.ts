@@ -21,7 +21,7 @@ export class ContactoComponent {
     this.meta.updateTag({
       name: 'description',
       content:
-        'Contacta con Soluciones Chira SL en Valencia. Solicita presupuesto para portes, mudanzas, montaje de muebles, vaciados, limpieza y pintura.'
+        'Contacta con Soluciones Chira SL en Valencia. Solicita presupuesto para portes, mudanzas, montaje de muebles, vaciados, limpieza, pintura y derribos.'
     });
   }
 }

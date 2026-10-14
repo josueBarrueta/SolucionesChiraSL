@@ -139,7 +139,7 @@ export class HomeComponent implements OnDestroy {
     this.meta.updateTag({
       name: 'description',
       content:
-        'Portes, mudanzas, montaje de muebles, vaciados, limpieza y pintura en Valencia y alrededores. Contacta con Soluciones Chira SL y consulta tu proyecto.'
+        'Portes, mudanzas, montaje de muebles, vaciados, limpieza, pintura y derribos en Valencia y alrededores. Contacta con Soluciones Chira SL y consulta tu proyecto.'
     });
 
     afterNextRender(() => {

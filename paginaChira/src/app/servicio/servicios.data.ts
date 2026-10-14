@@ -178,5 +178,18 @@ export const SERVICIOS = [
         answer: 'Indica tus fechas preferidas al contactar. Revisaremos la disponibilidad y acordaremos la fecha contigo tras aceptar el presupuesto. La consulta no reserva una fecha automáticamente.'
       }
     ]
+  },
+  {
+    slug: 'derribos',
+    name: 'Derribos',
+    headline: 'Prepara el espacio para tu proyecto.',
+    description: 'Cuéntanos qué necesitas derribar y dónde. Revisamos el alcance y las condiciones del espacio antes de confirmar qué trabajo podemos realizar.',
+    features: ['Consulta del alcance del derribo', 'Valoración de las zonas y elementos', 'Revisión de accesos y condiciones del espacio'],
+    information: ['Elementos o zonas que necesitas derribar', 'Ubicación exacta y superficie aproximada', 'Accesos, elementos que deben conservarse y consulta sobre escombros'],
+    faqs: [
+      {question: '¿Se puede confirmar cualquier derribo desde el formulario?', answer: 'No. La solicitud sirve para conocer el proyecto. Debemos revisar las características de los elementos, las condiciones del inmueble y la documentación que corresponda antes de confirmar el alcance y la fecha.'},
+      {question: '¿La retirada de escombros está incluida?', answer: 'Indica si necesitas consultar la retirada de escombros. Su disponibilidad, alcance y coste se acuerdan por separado antes de confirmar el trabajo; no se incluyen automáticamente al enviar la solicitud.'},
+      {question: '¿Cómo se acuerdan el precio y la fecha?', answer: 'Envíanos los detalles del espacio y del trabajo. Tras revisar la solicitud, acordaremos contigo el alcance, el precio y una fecha según disponibilidad. El formulario no reserva el servicio.'}
+    ]
   }
 ];

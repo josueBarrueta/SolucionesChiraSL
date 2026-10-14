@@ -14,3 +14,13 @@
 .scene.panoramic[data-service="mudanzas"] .route{display:none}
 
 .scene.panoramic[data-service="limpieza"] .route{display:none}
+
+.scene[data-service="derribos"] .route{display:none}
+.demolition-dust,.demolition-rubble{opacity:0}
+@media(prefers-reduced-motion:reduce){.demolition-rubble{opacity:1}.demolition-dust{display:none}}
+
+/* Hide the unprepared frame and clip vehicles while they are outside the scene. */
+.scene.panoramic{overflow:hidden}
+.scene.panoramic svg{overflow:hidden}
+.scene.scene-pending{visibility:hidden}
+@media(prefers-reduced-motion:reduce){.scene.scene-pending{visibility:visible}}

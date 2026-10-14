@@ -52,6 +52,11 @@ export const routes: Routes = [
   },
 
   {
+    path: 'servicios/derribos',
+    data: { service: 'derribos' },
+    loadComponent: () => import('./servicio/servicio.component').then(m => m.ServicioComponent)
+  },
+  {
     path: '',
     pathMatch: 'full',
     loadComponent: () =>

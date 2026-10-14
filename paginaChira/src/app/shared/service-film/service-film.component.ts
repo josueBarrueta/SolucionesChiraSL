@@ -19,7 +19,8 @@ export class ServiceFilmComponent {
     {id:'mudanzas', title:'Mudanzas', description:'Te acompañamos en tu próxima etapa.', cue:'Un nuevo destino. La misma tranquilidad.'},
     {id:'vaciados', title:'Vaciados', description:'Recupera espacio para lo que viene.', cue:'Dejamos sitio a un nuevo comienzo.'},
     {id:'limpieza', title:'Limpieza', description:'Un espacio cuidado, listo para disfrutar.', cue:'El cuidado se ve en los detalles.'},
-    {id:'pintura', title:'Pintura', description:'Un nuevo aire para tu hogar o negocio.', cue:'Transformamos tu espacio.'}
+    {id:'pintura', title:'Pintura', description:'Un nuevo aire para tu hogar o negocio.', cue:'Transformamos tu espacio.'},
+    {id:'derribos', title:'Derribos', description:'Valoramos el espacio antes de dar el siguiente paso.', cue:'Un proyecto empieza con una buena valoración.'}
   ];
   // The same pieces are rearranged throughout the film rather than swapping illustrations.
   private readonly layouts: Piece[][] = [
@@ -28,7 +29,8 @@ export class ServiceFilmComponent {
     [[182,96,139,139,green],[202,114,42,43,pale],[260,114,42,43,pale],[239,180,31,55,wood],[77,177,78,58,wood],[99,132,56,45,wood],[180,81,143,17,green],hidden],
     [[148,69,159,166,green],[168,89,119,146,pale],[175,220,104,6,green],[54,177,71,58,wood],[70,133,55,44,wood],hidden,hidden,hidden],
     [[133,75,166,160,green],[150,93,132,112,glass],[212,93,8,112,pale],[150,146,132,8,pale],[332,83,8,126,wood],[310,205,48,20,green],hidden,hidden],
-    [[122,69,188,166,pale],[122,69,125,166,green],[218,109,99,28,wood],[311,123,9,39,green],[271,155,49,8,green],[267,155,9,69,wood],[261,192,21,43,green],hidden]
+    [[122,69,188,166,pale],[122,69,125,166,green],[218,109,99,28,wood],[311,123,9,39,green],[271,155,49,8,green],[267,155,9,69,wood],[261,192,21,43,green],hidden],
+    [[202,210,151,24,'#25352a'],[208,172,139,37,green],[263,116,57,56,pale],[270,124,42,39,glass],[213,218,128,6,pale],[78,132,47,100,pale],[78,157,47,5,green],[78,188,47,5,green]]
   ];
   private readonly root = inject(ElementRef<HTMLElement>);
   private readonly zone = inject(NgZone);
@@ -91,6 +93,11 @@ export class ServiceFilmComponent {
     timeline.to(this.wheels, {opacity:target===0?1:0,duration:.4},start);
     timeline.call(() => this.zone.run(() => this.active.set(target)),[],start+.25);
     timeline.fromTo(this.text!, {opacity:0,y:10},{opacity:1,y:0,duration:.4,immediateRender:false},start+.4);
+    if(target === 6) {
+      const arm = this.root.nativeElement.querySelector('.film-demolition-arm');
+      timeline.fromTo(arm, {rotation:0}, {rotation:-8,svgOrigin:'232 175',duration:.65,ease:'sine.inOut'},start+1.15)
+        .to(arm, {rotation:0,duration:.65,ease:'sine.inOut'});
+    }
     this.syncPlayback();
   }
 

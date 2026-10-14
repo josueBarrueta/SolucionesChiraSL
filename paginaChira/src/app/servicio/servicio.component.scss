@@ -368,3 +368,7 @@ h3 {
 /* All service scenes rest on the same white-to-green section boundary. */
 .hero .hero-backdrop{top:auto;bottom:0;height:clamp(320px,36vw,640px)}
 @media(max-width:550px){.hero .hero-backdrop{top:auto;bottom:0;height:460px}}
+
+/* Leave breathing room above the machinery while retaining the shared 2D backdrop. */
+.hero[data-service="derribos"] .hero-backdrop{height:clamp(260px,30vw,500px);left:8%;width:92%}
+@media(max-width:550px){.hero[data-service="derribos"] .hero-backdrop{height:350px;left:-15%;width:130%;opacity:.6}}

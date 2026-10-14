@@ -124,6 +124,12 @@ export class ServiciosComponent implements OnDestroy {
         'Renovación de hogares y negocios'
       ],
       action: 'Consultar un trabajo de pintura'
+    },
+    {
+      id: 'derribos', number: '07', title: 'Derribos', category: 'Renovación',
+      description: 'Consulta el derribo que necesitas. Revisamos el alcance, la ubicación y las condiciones antes de confirmar el trabajo.',
+      features: ['Valoración de elementos y zonas', 'Revisión de accesos y condiciones', 'Consulta sobre retirada de escombros'],
+      action: 'Consultar un derribo'
     }
   ];
 
@@ -135,7 +141,7 @@ export class ServiciosComponent implements OnDestroy {
     this.meta.updateTag({
       name: 'description',
       content:
-        'Descubre los servicios de Soluciones Chira SL: portes, montaje de muebles, mudanzas, vaciados, limpieza y pintura en Valencia y alrededores.'
+        'Descubre los servicios de Soluciones Chira SL: portes, montaje de muebles, mudanzas, vaciados, limpieza, pintura y derribos en Valencia y alrededores.'
     });
 
     afterNextRender(() => {

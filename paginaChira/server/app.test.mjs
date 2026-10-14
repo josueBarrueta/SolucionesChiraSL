@@ -327,3 +327,50 @@ test('encuesta ampliada crea trabajo editable, cliente y conserva todos los obje
   assert.equal(saved.notas,'Revisado manualmente');
   assert.equal(saved.estado,'Finalizado');
 });
+
+test('Derribos: admite todos los servicios y exige alcance, ubicación y consulta de escombros', async () => {
+  const body = await modernSubmission(['Derribos']);
+  Object.assign(body.details, {derribos_scope:'Valorar dos zonas, conservando la entrada',derribos_item_1_name:'Zona interior',derribos_item_2_name:'Revestimiento',derribos_surface:'12,5',derribos_rubble:'Sí, quiero consultarla'});
+  const data = validateSubmission(body);
+  assert.equal(data.detalles.derribos_surface,'12,5');
+  assert.equal(data.detalles.derribos_rubble,'Sí, quiero consultarla');
+  assert.ok(data.respuestas.some(r => r.pregunta.includes('Elemento o zona 2') && r.respuesta==='Revestimiento'));
+  for (const [key,value] of [['derribos_scope',''],['derribos_location_street',''],['derribos_rubble','Incluida'],['derribos_surface','-1']]) {
+    assert.throws(() => validateSubmission({...body, details:{...body.details,[key]:value}}));
+  }
+  const {SERVICE_QUESTIONS} = await import('../src/app/formulario/formulario.questions.ts');
+  const all = await modernSubmission([...SERVICE_QUESTIONS.map(b=>b.service),'Otra consulta']);
+  assert.equal(validateSubmission(all).servicios.length,8);
+});
+
+test('API Derribos: envío crea cliente/trabajo sin duplicados, respuestas y fecha acordada', async t => {
+  const db=memoryDb();
+  const app=createApp({db,origins:['http://localhost:4200'],adminEmail:'test@example.com',passwordHash:await hashPassword('derribos-test-password')});
+  await new Promise(resolve=>app.listen(0,'127.0.0.1',resolve));
+  t.after(()=>new Promise(resolve=>{app.close(resolve);app.closeAllConnections();}));
+  const base=`http://127.0.0.1:${app.address().port}`;
+  let token='';
+  async function call(path,method='GET',body,extra={}) {
+    const response=await fetch(base+path,{method,headers:{Origin:'http://localhost:4200','Content-Type':'application/json',...(token?{Authorization:`Bearer ${token}`} : {}),...extra},...(body===undefined?{}:{body:JSON.stringify(body)})});
+    return {status:response.status,body:await response.json()};
+  }
+  const body=await modernSubmission(['Derribos']);
+  Object.assign(body.details,{derribos_scope:'Consulta de derribo de una zona interior',derribos_item_1_name:'Zona del local',derribos_item_2_name:'Revestimiento de pared',derribos_surface:'18',derribos_rubble:'No lo sé todavía'});
+  const key='c88a819a-cace-48e9-8f09-c6011492e141';
+  assert.equal((await call('/api/encuestas','POST',body,{'Idempotency-Key':key})).status,201);
+  await call('/api/encuestas','POST',body,{'Idempotency-Key':key});
+  token=(await call('/api/login','POST',{username:'test@example.com',password:'derribos-test-password'})).body.token;
+  const surveys=(await call('/api/encuestas')).body.encuestas;
+  const clients=(await call('/api/gestion/clientes')).body.registros;
+  const jobs=(await call('/api/gestion/trabajos')).body.registros;
+  assert.equal(surveys.length,1);assert.equal(clients.length,1);assert.equal(jobs.length,1);
+  assert.equal(jobs[0].titulo,'Derribos');assert.equal(jobs[0].estado,'Pendiente');assert.equal(jobs[0].fecha,'');
+  assert.equal(jobs[0].clienteId,clients[0].id);assert.equal(jobs[0].encuestaId,surveys[0].id);
+  assert.ok(surveys[0].respuestas.some(r=>r.respuesta==='Revestimiento de pared'));
+  assert.ok(surveys[0].respuestas.some(r=>r.pregunta.includes('escombros') && r.respuesta==='No lo sé todavía'));
+  assert.match(jobs[0].direccion,/Calle Origen.*Puerta: B.*46001 Valencia/);
+  const saved=await call(`/api/gestion/trabajos/${jobs[0].id}`,'PATCH',{...jobs[0],fecha:'2026-11-02',notas:'Fecha acordada con el cliente'});
+  assert.equal(saved.status,200);
+  assert.equal((await call('/api/encuestas')).body.encuestas[0].fechaTrabajo,'2026-11-02');
+  assert.equal((await call('/api/gestion/trabajos')).body.registros.length,1);
+});
