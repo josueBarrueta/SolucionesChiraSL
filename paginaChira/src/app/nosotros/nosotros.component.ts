@@ -1,5 +1,4 @@
 import { animatePage } from '../shared/page-motion';
-import { ServiceSceneComponent } from '../shared/service-scene/service-scene.component';
 import { Component, DestroyRef, ElementRef, NgZone, afterNextRender, inject, signal } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
@@ -7,7 +6,7 @@ import { RouterLink } from '@angular/router';
 @Component({
   selector: 'app-nosotros',
   standalone: true,
-  imports: [RouterLink, ServiceSceneComponent],
+  imports: [RouterLink],
   templateUrl: './nosotros.component.html',
   styleUrls: ['./nosotros.component.scss'],
 })
@@ -33,7 +32,7 @@ export class NosotrosComponent {
   constructor() {
     afterNextRender(() => {
       this.zone.runOutsideAngular(() => {
-        const cleanup = animatePage(this.element.nativeElement, '.nosotros-intro, .datos, .team-story-heading, .historia-texto, .valor, .nosotros-cta');
+        const cleanup = animatePage(this.element.nativeElement, '.nosotros-intro, .datos, .historia-texto, .valor, .nosotros-cta');
         this.destroyRef.onDestroy(cleanup);
       });
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
