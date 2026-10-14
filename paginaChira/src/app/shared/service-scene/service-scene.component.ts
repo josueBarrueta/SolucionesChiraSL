@@ -39,8 +39,12 @@ export class ServiceSceneComponent {
           const movers = root.querySelectorAll('.scene-move');
           const pieces = root.querySelectorAll('.scene-piece');
           const finishes = root.querySelectorAll('.scene-finish');
-          if (this.kind() === 'derribos') {
+          if (this.kind() === 'derribos' && this.panoramic()) {
             this.demolitionSequence(root, loop);
+          } else if (this.kind() === 'derribos') {
+            const arm = root.querySelector('.demolition-arm');
+            loop.to(arm, {rotation:-8,svgOrigin:'230 171',duration:1.6,ease:'sine.inOut'})
+              .to(arm, {rotation:0,duration:1.6,ease:'sine.inOut'});
           } else if (this.panoramic()) {
             switch (this.kind()) {
               case 'portes':
