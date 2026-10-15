@@ -2,7 +2,7 @@
   <div class="viewport" appSwipe (swipe)="move($event === 'left' ? 1 : -1)" (swipeActive)="setTouching($event)">
     <div class="slides" [class.resetting]="resetting()">
       @for (slide of renderedSlides; track $index; let i=$index) {
-        <article class="panel" [class.current]="cursor()===i"
+        <article class="panel" [class.demolition-panel]="slide.id === 'derribos'" [class.current]="cursor()===i"
           [style.--position]="position(i)" [attr.inert]="cursor()!==i ? '' : null" [attr.aria-hidden]="cursor()!==i"
           role="group" aria-roledescription="diapositiva" [attr.aria-label]="(i%slides.length+1)+' de '+slides.length+': '+slide.name">
           <div class="content">
@@ -11,31 +11,19 @@
             <p>{{ slide.description }}</p>
             <div class="actions">
               <a class="cta" [routerLink]="['/servicios',slide.id]">{{ slide.action }}</a>
-              <a class="all" href="#todos-los-servicios">Ver todos los servicios</a>
+              <a class="all" routerLink="/servicios" fragment="catalogo-servicios">Ver todos los servicios</a>
             </div>
             <span class="note">Valencia y alrededores · Atención personalizada</span>
           </div>
-          <div class="visual" aria-hidden="true">
+          <div class="visual" [attr.aria-hidden]="slide.id === 'derribos' || slide.id === 'pintura' ? null : 'true'">
             @if (slide.id==='derribos') {
-          <svg viewBox="0 0 440 300" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="240" cy="146" r="118" fill="#492831"/>
-            <circle cx="240" cy="146" r="139" stroke="#9a6575" stroke-dasharray="3 10"/>
-            <path d="M30 248H410M58 232V100L99 66L140 100V127" stroke="#83666c" stroke-width="2" stroke-linecap="round"/>
-            <rect x="82" y="147" width="48" height="96" rx="4" fill="#ab6d7f"/>
-            <path d="M84 174H128M84 207H128" stroke="#21171b" stroke-width="5" stroke-linecap="round"/>
-            <rect x="210" y="225" width="157" height="24" rx="6" fill="#171315"/>
-            <path d="M224 237H352" stroke="#f0b1bc" stroke-width="6" stroke-linecap="round"/>
-            <rect x="216" y="183" width="145" height="39" rx="4" fill="#f0b1bc"/>
-            <rect x="279" y="126" width="60" height="57" rx="5" fill="#ab6d7f"/>
-            <rect x="287" y="134" width="44" height="40" rx="3" fill="#d5c9ce"/>
-            <path d="M244 184L204 85L124 136" stroke="#f0b1bc" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M244 184L206 99M194 98L139 134" stroke="#cfa77b" stroke-width="5" stroke-linecap="round"/>
-            <circle cx="204" cy="85" r="8" fill="#21171b"/>
-            <path d="M115 128L137 142L113 177L97 167Z" fill="#171315"/>
-            <path d="M106 170L97 190" stroke="#171315" stroke-width="5" stroke-linecap="round"/>
-            <circle cx="365" cy="56" r="22" fill="#f0b1bc"/>
-            <path d="M355 56L362 63L375 48" stroke="#21171b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+              @if (cursor() === i) {
+                <app-demolition-video (mouseenter)="setTouching(true)" (mouseleave)="setTouching(false)" (focusin)="setTouching(true)" (focusout)="setTouching(false)" />
+              }
+            } @else if (slide.id === 'pintura') {
+              @if (cursor() === i) {
+                <app-painting-video (mouseenter)="setTouching(true)" (mouseleave)="setTouching(false)" (focusin)="setTouching(true)" (focusout)="setTouching(false)" />
+              }
             } @else {
 <svg viewBox="0 0 440 300" fill="none" xmlns="http://www.w3.org/2000/svg">
   <circle cx="240" cy="146" r="118" fill="#492831"/><circle cx="240" cy="146" r="139" stroke="#9a6575" stroke-dasharray="3 10"/>
@@ -52,17 +40,12 @@
       <path d="M74 190H144V244H74ZM95 147H145V190H95Z" fill="#cfa77b"/><path d="M109 190V207M120 147V162" stroke="#805f3e" stroke-width="3"/>
       <path d="M275 159H201M219 142L201 159L219 176" stroke="#f0b1bc" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
     }
-    @case ('pintura') {
-      <rect x="100" y="66" width="225" height="178" rx="6" fill="#ab6d7f"/><path d="M100 72Q100 66 106 66H231V244H100Z" fill="#f0b1bc"/>
-      <path d="M233 111H306V148H273V174H244" stroke="#cfa77b" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
-      <rect x="191" y="94" width="93" height="32" rx="8" fill="#cfa77b"/><rect x="182" y="90" width="86" height="35" rx="8" fill="#e5cfd3"/>
-      <rect x="232" y="170" width="22" height="68" rx="7" fill="#171315"/>
-    }
+
   }
   <circle cx="365" cy="56" r="22" fill="#f0b1bc"/><path d="M355 56L362 63L375 48" stroke="#21171b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
             }
-            <span>{{ slide.caption }}</span>
+            @if (slide.id !== 'derribos' && slide.id !== 'pintura') { <span>{{ slide.caption }}</span> }
           </div>
         </article>
       }

@@ -1,3 +1,5 @@
+import { PaintingVideoComponent } from '../shared/painting-video/painting-video.component';
+import { DemolitionVideoComponent } from '../shared/demolition-video/demolition-video.component';
 import { animatePage } from '../shared/page-motion';
 import { ServiceSceneComponent } from '../shared/service-scene/service-scene.component';
 import { Component, DestroyRef, ElementRef, NgZone, afterNextRender, inject } from '@angular/core';
@@ -9,7 +11,7 @@ import { SERVICIOS } from './servicios.data';
 @Component({
   selector: 'app-servicio',
   standalone: true,
-  imports: [RouterLink, ServiceSceneComponent],
+  imports: [RouterLink, ServiceSceneComponent, DemolitionVideoComponent, PaintingVideoComponent],
   templateUrl: './servicio.component.html',
   styleUrls: ['./servicio.component.scss']
 })

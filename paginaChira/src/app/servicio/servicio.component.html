@@ -1,6 +1,8 @@
 <div class="detail-page">
   <section class="hero" [attr.data-service]="service.slug">
-    <app-service-scene class="hero-backdrop" [kind]="service.slug" [ambient]="true" [borderless]="true" [panoramic]="true" />
+    @if (service.slug !== 'derribos' && service.slug !== 'pintura') {
+      <app-service-scene class="hero-backdrop" [kind]="service.slug" [ambient]="true" [borderless]="true" [panoramic]="true" />
+    }
     <div class="container">
       <div class="hero-grid">
         <div>
@@ -21,6 +23,11 @@
           </div>
         </div>
 
+        @if (service.slug === 'derribos') {
+          <app-demolition-video class="demolition-visual" />
+        } @else if (service.slug === 'pintura') {
+          <app-painting-video class="painting-visual" />
+        }
         <aside class="scope">
           <span class="eyebrow">CÓMO PODEMOS AYUDARTE</span>
           <h2>{{ service.name }}</h2>

@@ -372,3 +372,25 @@ h3 {
 /* Leave breathing room above the machinery while retaining the shared 2D backdrop. */
 .hero[data-service="derribos"] .hero-backdrop{height:clamp(260px,30vw,500px);left:8%;width:92%}
 @media(max-width:550px){.hero[data-service="derribos"] .hero-backdrop{height:350px;left:-15%;width:130%;opacity:.6}}
+
+/* Real footage blends into the hero instead of the demolition illustration. */
+.hero[data-service="derribos"] .hero-grid{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);align-items:center;gap:32px 48px}
+.hero[data-service="derribos"] .scope{grid-column:1 / -1}
+.demolition-visual{width:100%;max-width:440px;justify-self:center}
+@media(max-width:800px){.hero[data-service="derribos"] .hero-grid{grid-template-columns:minmax(0,1fr)}.demolition-visual{max-width:420px}}
+
+/* Give the comparison more room on desktop; preserve the mobile layout. */
+@media (min-width:1024px) {
+  .hero[data-service="derribos"] .hero-grid {
+    grid-template-columns:minmax(0,.95fr) minmax(0,1.15fr);
+    column-gap:40px;
+  }
+  .hero[data-service="derribos"] .demolition-visual { max-width:580px; }
+  .hero[data-service="derribos"] h1 { font-size:clamp(44px,4.5vw,64px); }
+}
+
+.hero[data-service="pintura"] .hero-grid{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);align-items:center;gap:32px 48px}
+.hero[data-service="pintura"] .scope{grid-column:1 / -1}
+.painting-visual{display:block;width:100%;justify-self:center}
+@media(max-width:800px){.hero[data-service="pintura"] .hero-grid{grid-template-columns:minmax(0,1fr)}}
+@media(min-width:1024px){.hero[data-service="pintura"] .hero-grid{grid-template-columns:minmax(0,.95fr) minmax(0,1.15fr);column-gap:40px}.hero[data-service="pintura"] h1{font-size:clamp(44px,4.5vw,64px)}}

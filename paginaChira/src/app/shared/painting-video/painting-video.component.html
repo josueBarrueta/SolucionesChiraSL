@@ -1,0 +1,9 @@
+<figure class="painting-video" role="group" aria-label="Trabajo en fachada">
+  <div class="soft-edge"><video src="videos/pintura/fachada.mp4" muted loop playsinline preload="metadata" (loadedmetadata)="sync()" (error)="failed.set(true)" aria-label="Plataforma elevadora junto a la fachada"></video></div>
+  <figcaption><span>Trabajo en fachada</span><button type="button" (click)="toggle()" [attr.aria-label]="paused() ? 'Reproducir vídeo' : 'Pausar vídeo'">
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true" focusable="false">
+      @if (paused()) { <path d="M8 5v14l11-7z" /> } @else { <path d="M6 5h4v14H6zM14 5h4v14h-4z" /> }
+    </svg>
+  </button></figcaption>
+  @if (failed()) { <p role="status">No se ha podido cargar el vídeo.</p> }
+</figure>

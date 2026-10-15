@@ -1,3 +1,5 @@
+import { PaintingVideoComponent } from '../painting-video/painting-video.component';
+import { DemolitionVideoComponent } from '../demolition-video/demolition-video.component';
 import { SwipeDirective } from '../swipe.directive';
 import { Component, DestroyRef, ElementRef, NgZone, afterNextRender, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
@@ -5,7 +7,7 @@ import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-featured-services', standalone: true,
-  imports: [RouterLink, ButtonModule, SwipeDirective],
+  imports: [RouterLink, ButtonModule, SwipeDirective, DemolitionVideoComponent, PaintingVideoComponent],
   templateUrl: './featured-services.component.html',
   styleUrls: ['./featured-services.component.scss']
 })
@@ -82,6 +84,6 @@ export class FeaturedServicesComponent {
   private restart(): void {
     clearInterval(this.timer);
     if(!this.visible || this.touching || this.reduced || document.hidden) return;
-    this.zone.runOutsideAngular(() => {this.timer=setInterval(() => this.zone.run(() => this.move(1)),5000);});
+    this.zone.runOutsideAngular(() => {this.timer=setInterval(() => this.zone.run(() => this.move(1)),this.active() === 0 ? 24000 : this.active() === 3 ? 10000 : 5000);});
   }
 }
