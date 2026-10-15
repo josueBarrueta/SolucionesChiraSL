@@ -4,7 +4,7 @@ import { RouterLink } from '@angular/router';
 import { gsap } from 'gsap';
 
 type Piece = [number, number, number, number, string, number?];
-const brand = '#861b36', pale = '#d8c0c5', wood = '#cfa77b', glass = '#d5c9ce';
+const brand = '#0066b3', pale = '#c0cdd8', wood = '#cfa77b', glass = '#c9d0d5';
 const hidden: Piece = [200, 160, 0, 0, pale, 0];
 
 @Component({
@@ -31,7 +31,7 @@ export class ServiceFilmComponent {
     [[148,69,159,166,brand],[168,89,119,146,pale],[175,220,104,6,brand],[54,177,71,58,wood],[70,133,55,44,wood],hidden,hidden,hidden],
     [[133,75,166,160,brand],[150,93,132,112,glass],[212,93,8,112,pale],[150,146,132,8,pale],[332,83,8,126,wood],[310,205,48,20,brand],hidden,hidden],
     [[122,69,188,166,pale],[122,69,125,166,brand],[218,109,99,28,wood],[311,123,9,39,brand],[271,155,49,8,brand],[267,155,9,69,wood],[261,192,21,43,brand],hidden],
-    [[202,210,151,24,'#191517'],[208,172,139,37,brand],[263,116,57,56,pale],[270,124,42,39,glass],[213,218,128,6,pale],[78,132,47,100,pale],[78,157,47,5,brand],[78,188,47,5,brand]]
+    [[202,210,151,24,'#151719'],[208,172,139,37,brand],[263,116,57,56,pale],[270,124,42,39,glass],[213,218,128,6,pale],[78,132,47,100,pale],[78,157,47,5,brand],[78,188,47,5,brand]]
   ];
   private readonly root = inject(ElementRef<HTMLElement>);
   private readonly zone = inject(NgZone);

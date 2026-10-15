@@ -19,21 +19,21 @@ body {
 }
 /* PrimeNG tooltips are attached to body, outside component styles. */
 .chira-tooltip {
-  --p-tooltip-background: #21171b;
-  --p-tooltip-color: #f6f3f4;
+  --p-tooltip-background: #0b1723;
+  --p-tooltip-color: #f3f5f6;
   --p-tooltip-border-radius: 8px;
   --p-tooltip-padding: 10px 14px;
   --p-tooltip-max-width: 240px;
-  --p-tooltip-shadow: 0 4px 16px #17131533;
+  --p-tooltip-shadow: 0 4px 16px #070f1833;
 }
 .chira-tooltip .p-tooltip-text {
-  background: #21171b;
-  color: #f6f3f4;
+  background: #0b1723;
+  color: #f3f5f6;
   border-radius: 8px;
   padding: 10px 14px;
   font-size: 13px;
   line-height: 1.4;
-  box-shadow: 0 4px 16px #17131533;
+  box-shadow: 0 4px 16px #070f1833;
 }
 @media (max-width: 800px) { .chira-tooltip { display: none; } }
 

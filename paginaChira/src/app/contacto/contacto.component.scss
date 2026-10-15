@@ -1,7 +1,7 @@
 :host {
   display: block;
   font-family: Arial, Helvetica, sans-serif;
-  color: #211b1e;
+  color: #101c28;
 }
 
 .contacto,
@@ -12,7 +12,7 @@
 .contacto {
   min-height: 70vh;
   padding: 80px 40px;
-  background: #f6f3f4;
+  background: #f3f5f6;
 }
 
 .contacto-container {
@@ -27,7 +27,7 @@
 
 .contacto-subtitle {
   margin: 0 0 22px;
-  color: #61373f;
+  color: #374e61;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 2.5px;
@@ -46,7 +46,7 @@
 .contacto-header > p:last-child {
   max-width: 650px;
   margin: 0;
-  color: #5f4d51;
+  color: #4d575f;
   font-size: 17px;
   line-height: 1.8;
 }
@@ -62,7 +62,7 @@
 .contacto-card {
   min-width: 0;
   padding: 36px;
-  border: 1px solid #e1d7d9;
+  border: 1px solid #d7dce1;
   border-radius: 18px;
   box-shadow: 0 8px 28px rgba(33, 27, 30, 0.04);
 }
@@ -74,7 +74,7 @@
 
 .contacto-info {
   grid-area: info;
-  background: #efe8e9;
+  background: #e8ecef;
 }
 
 /* En escritorio, ambas tarjetas comparten la misma fila y altura. */
@@ -102,13 +102,13 @@
   height: 56px;
   margin-bottom: 24px;
   border-radius: 14px;
-  background: #e4d6d9;
-  color: #61373f;
+  background: #d6dee4;
+  color: #374e61;
   font-size: 30px;
 }
 
 .formulario-icono {
-  background: #efe8e9;
+  background: #e8ecef;
 }
 
 .contacto-card h2 {
@@ -120,7 +120,7 @@
 
 .contacto-card p {
   margin: 0 0 22px;
-  color: #5f4d51;
+  color: #4d575f;
   font-size: 16px;
   line-height: 1.8;
 }
@@ -130,7 +130,7 @@
   width: fit-content;
   max-width: 100%;
   margin: 26px 0;
-  color: #61373f;
+  color: #374e61;
   font-size: clamp(26px, 3vw, 36px);
   font-weight: 800;
   line-height: 1.2;
@@ -150,9 +150,9 @@
   gap: 18px;
   min-height: 54px;
   padding: 16px 24px;
-  border: 1px solid #61373f;
+  border: 1px solid #374e61;
   border-radius: 12px;
-  background: #61373f;
+  background: #374e61;
   color: #ffffff;
   font: inherit;
   font-size: 14px;
@@ -164,7 +164,7 @@
 }
 
 .contacto-button:hover {
-  background: #4b2930;
+  background: #293c4b;
 }
 
 .contacto-button span {
@@ -173,7 +173,7 @@
 
 .contacto-button:focus-visible,
 .contacto-phone:focus-visible {
-  outline: 3px solid #964f5d;
+  outline: 3px solid #2381ba;
   outline-offset: 5px;
   border-radius: 6px;
 }
@@ -201,8 +201,8 @@
   width: 38px;
   height: 38px;
   border-radius: 10px;
-  background: #efe8e9;
-  color: #61373f;
+  background: #e8ecef;
+  color: #374e61;
   font-size: 12px;
   font-weight: 700;
 }
@@ -221,7 +221,7 @@
 
 .contacto-card .presupuesto-nota {
   margin: 16px 0 0;
-  color: #6d5a5e;
+  color: #5a646d;
   font-size: 12px;
   line-height: 1.7;
 }
@@ -229,7 +229,7 @@
 .contacto-ayuda {
   margin-top: 32px;
   padding-top: 26px;
-  border-top: 1px solid #d4c1c5;
+  border-top: 1px solid #c1cbd4;
 }
 
 .contacto-ayuda h3 {
@@ -243,7 +243,7 @@
   gap: 12px;
   margin: 0 0 20px;
   padding-left: 22px;
-  color: #5f4d51;
+  color: #4d575f;
   font-size: 15px;
   line-height: 1.7;
 }
@@ -328,3 +328,4 @@
     align-self: start;
   }
 }
+.secondary-phone { margin-top: 12px; }

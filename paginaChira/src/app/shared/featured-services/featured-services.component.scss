@@ -3,31 +3,31 @@
 .featured { padding:0 0 48px; color:#ffffff; }
 .viewport { position:relative; overflow:hidden; padding:0 0 8px; touch-action:pan-y pinch-zoom; }
 .slides { position:relative; width:min(1200px,calc(100% - 112px)); margin:auto; display:grid; }
-.panel { grid-area:1 / 1; display:grid; grid-template-columns:1.15fr 1fr; align-items:center; gap:32px; padding:44px 48px; border-radius:24px; background:#21171b; min-width:0; transform:translateX(calc(var(--position) * (100% + 24px))); transition:transform .65s cubic-bezier(.22,.68,.22,1),opacity .4s; opacity:.55; }
+.panel { grid-area:1 / 1; display:grid; grid-template-columns:1.15fr 1fr; align-items:center; gap:32px; padding:44px 48px; border-radius:24px; background:#0b1723; min-width:0; transform:translateX(calc(var(--position) * (100% + 24px))); transition:transform .65s cubic-bezier(.22,.68,.22,1),opacity .4s; opacity:.55; }
 .panel.current { opacity:1; }
 .slides.resetting .panel { transition:none; }
 .content,.visual { min-width:0; }
-.tag { display:inline-block; padding:8px 12px; border:1px solid #83666c; border-radius:30px; color:#e5cfd3; font-size:10px; font-weight:700; letter-spacing:1.5px; line-height:1.6; }
+.tag { display:inline-block; padding:8px 12px; border:1px solid #667683; border-radius:30px; color:#cfdbe5; font-size:10px; font-weight:700; letter-spacing:1.5px; line-height:1.6; }
 h2 { margin:22px 0 0; font-size:clamp(30px,3.2vw,44px); line-height:1.2; letter-spacing:-1.3px; }
-h2 span { color:#f0b1bc; }
-p { max-width:470px; margin:18px 0 0; color:#dbd2d4; font-size:15px; line-height:1.8; }
+h2 span { color:#79caff; }
+p { max-width:470px; margin:18px 0 0; color:#d2d7db; font-size:15px; line-height:1.8; }
 .actions { display:flex; align-items:center; flex-wrap:wrap; gap:12px 24px; margin-top:26px; }
-.cta { display:inline-flex; align-items:center; justify-content:center; gap:18px; min-height:52px; padding:16px 22px; border-radius:12px; font-size:14px; font-weight:700; text-decoration:none; background:#f0b1bc; color:#25151c; }
-.cta:hover { background:#f8c7cf; }
+.cta { display:inline-flex; align-items:center; justify-content:center; gap:18px; min-height:52px; padding:16px 22px; border-radius:12px; font-size:14px; font-weight:700; text-decoration:none; background:#79caff; color:#082338; }
+.cta:hover { background:#a6ddff; }
 .all { display:inline-flex; align-items:center; gap:10px; min-height:44px; color:#ffffff; font-size:13px; text-decoration:none; }
-.note { display:block; margin-top:22px; color:#cebabe; font-size:11px; line-height:1.7; }
+.note { display:block; margin-top:22px; color:#bac5ce; font-size:11px; line-height:1.7; }
 .visual { text-align:center; }
 .visual svg { display:block; width:100%; height:auto; }
-.visual > span { display:block; color:#cebabe; font-size:8px; letter-spacing:1.4px; line-height:1.8; }
-a:focus-visible,button:focus-visible { outline:3px solid #964f5d; outline-offset:4px; }
-.panel a:focus-visible { outline-color:#f0b1bc; }
-.arrow { width:46px; height:46px; border:0; border-radius:50%; background:transparent; color:#21171b; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; }
-.arrow:hover { background:#e5cfd3; }
-.controls { display:flex; align-items:center; justify-content:center; gap:12px; margin-top:12px; color:#65595e; }
+.visual > span { display:block; color:#bac5ce; font-size:8px; letter-spacing:1.4px; line-height:1.8; }
+a:focus-visible,button:focus-visible { outline:3px solid #2381ba; outline-offset:4px; }
+.panel a:focus-visible { outline-color:#79caff; }
+.arrow { width:46px; height:46px; border:0; border-radius:50%; background:transparent; color:#0b1723; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; }
+.arrow:hover { background:#cfdbe5; }
+.controls { display:flex; align-items:center; justify-content:center; gap:12px; margin-top:12px; color:#596065; }
 .dots { display:flex; }
 .dot { display:grid; place-items:center; width:32px; height:44px; border:0; padding:0; background:transparent; cursor:pointer; }
-.dot span { width:7px; height:7px; border-radius:8px; background:#b59aa0; transition:width .3s,background .3s; }
-.dot.selected span { width:22px; background:#861b36; }
+.dot span { width:7px; height:7px; border-radius:8px; background:#9aa9b5; transition:width .3s,background .3s; }
+.dot.selected span { width:22px; background:#0066b3; }
 @media(max-width:950px) { .panel { padding:32px; gap:20px; } }
 @media(max-width:700px) {
   .featured { padding-bottom:32px; }

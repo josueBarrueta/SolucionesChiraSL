@@ -3,14 +3,14 @@
 }
 
 .footer {
-  --accent: #f0b1bc;
-  --muted: #cabbbe;
+  --accent: #79caff;
+  --muted: #bbc3ca;
 
   position: relative;
   overflow: hidden;
-  color: #f6f3f4;
-  background: linear-gradient(125deg, #211b1e, #171315);
-  border-top: 4px solid #923f50;
+  color: #f3f5f6;
+  background: linear-gradient(125deg, #101c28, #070f18);
+  border-top: 4px solid #087cbd;
   font-family: inherit;
 }
 
@@ -179,9 +179,9 @@
   height: 44px;
   margin: 0;
   padding: 0;
-  border: 1px solid rgba(240, 177, 188, 0.35);
+  border: 1px solid rgba(121, 202, 255, 0.35);
   border-radius: 12px;
-  background: rgba(240, 177, 188, 0.08);
+  background: rgba(121, 202, 255, 0.08);
   color: var(--accent);
   font: inherit;
   text-decoration: none;
@@ -208,9 +208,9 @@
 /* Misma animación para los tres iconos. */
 .icon-button:hover {
   transform: translateY(-3px);
-  background: rgba(240, 177, 188, 0.16);
+  background: rgba(121, 202, 255, 0.16);
   border-color: var(--accent);
-  box-shadow: 0 8px 20px rgba(240, 177, 188, 0.1);
+  box-shadow: 0 8px 20px rgba(121, 202, 255, 0.1);
 }
 
 .location {
@@ -250,7 +250,7 @@
 .slogan-line {
   flex: 1;
   height: 1px;
-  background: rgba(240, 177, 188, 0.25);
+  background: rgba(121, 202, 255, 0.25);
 }
 
 .footer-bottom {
@@ -359,3 +359,7 @@
   font-size: 24px;
   line-height: 1;
 }
+
+.footer { background: #000; }
+.footer-logo { display: inline-block; max-width: 100%; }
+.footer-logo img { display: block; width: 270px; max-width: 100%; height: auto; }

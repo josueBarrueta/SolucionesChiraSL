@@ -1,9 +1,9 @@
 :host {
   display: block;
-  background: #f6f3f4;
-  color: #211b1e;
-  --brand: #861b36;
-  --muted: #65595e;
+  background: #f3f5f6;
+  color: #101c28;
+  --brand: #0066b3;
+  --muted: #596065;
 }
 
 * {
@@ -24,7 +24,7 @@ a {
 }
 
 a:focus-visible, summary:focus-visible {
-  outline: 3px solid #861b36;
+  outline: 3px solid #0066b3;
   outline-offset: 5px;
 }
 
@@ -99,14 +99,14 @@ p {
 
 .secondary {
   background: #ffffff;
-  border: 1px solid #e3d9db;
+  border: 1px solid #d9dee3;
   color: var(--brand);
 }
 
 .scope {
   padding: 36px;
-  background: #efe9ea;
-  border: 1px solid #e3d9db;
+  background: #e9ecef;
+  border: 1px solid #d9dee3;
   border-radius: 18px;
 }
 
@@ -141,7 +141,7 @@ p {
 
 .preparation li {
   padding: 16px 12px;
-  border-bottom: 1px solid #e3d9db;
+  border-bottom: 1px solid #d9dee3;
   line-height: 1.6;
 }
 
@@ -169,7 +169,7 @@ h3 {
 }
 
 .faq details {
-  border-bottom: 1px solid #e3d9db;
+  border-bottom: 1px solid #d9dee3;
 }
 
 .faq summary {
@@ -185,7 +185,7 @@ h3 {
 
 .contact {
   padding: 48px 0;
-  background: #21171b;
+  background: #0b1723;
   color: white;
 }
 
@@ -197,12 +197,12 @@ h3 {
 }
 
 .contact .eyebrow, .contact p {
-  color: #f0b1bc;
+  color: #79caff;
 }
 
 .contact .button {
-  background: #f0b1bc;
-  color: #21171b;
+  background: #79caff;
+  color: #0b1723;
   flex-shrink: 0;
 }
 
@@ -254,7 +254,7 @@ h3 {
 .related  {
   padding-top: 64px;
   padding-bottom: 64px;
-  border-top: 1px solid #e3d9db;
+  border-top: 1px solid #d9dee3;
 }
 
 .related-heading  {
@@ -278,10 +278,10 @@ h3 {
   justify-content: center;
   min-height: 44px;
   padding: 10px 18px;
-  border: 1px solid #e3d9db;
+  border: 1px solid #d9dee3;
   border-radius: 8px;
   background: #ffffff;
-  color: #21171b;
+  color: #0b1723;
   text-align: center;
   text-decoration: none;
   font-size: 14px;
@@ -292,8 +292,8 @@ h3 {
 
 .related-card:hover,
 .related-card:focus-visible  {
-  background: #efe9ea;
-  border-color: #861b36;
+  background: #e9ecef;
+  border-color: #0066b3;
   box-shadow: 0 6px 18px rgba(33, 23, 27, .08);
 }
 
@@ -304,16 +304,16 @@ h3 {
   min-height: 44px;
   margin-top: 20px;
   padding: 10px 16px;
-  border: 1px solid #861b36;
+  border: 1px solid #0066b3;
   border-radius: 8px;
-  color: #861b36;
+  color: #0066b3;
   text-decoration: none;
   font-size: 14px;
   font-weight: 600;
 }
 
 .back:hover  {
-  background: #efe9ea;
+  background: #e9ecef;
 }
 
 @media (max-width: 550px)  {
@@ -340,7 +340,7 @@ h3 {
 
 }
 
-.hero{background:radial-gradient(ellipse at 80% 30%,#ebe2e4,transparent 65%),white}.scope{padding:12px 12px 28px;background:#ffffff;box-shadow:0 20px 60px #21171b0c;border-radius:28px}.scope>.eyebrow,.scope>h2,.scope>p{margin-left:20px;margin-right:20px}.scope>.eyebrow{margin-top:24px}.scope ul{margin-left:20px;margin-right:20px}.steps>li{padding:28px;border:1px solid #e2d6d8;border-radius:20px;background:#f6f3f4}.preparation ol{padding-left:28px}.preparation li::marker{color:#861b36;font-weight:700}@media(max-width:550px){.scope{padding:10px 10px 24px}.steps>li{padding:22px}}
+.hero{background:radial-gradient(ellipse at 80% 30%,#e2e7eb,transparent 65%),white}.scope{padding:12px 12px 28px;background:#ffffff;box-shadow:0 20px 60px #0b17230c;border-radius:28px}.scope>.eyebrow,.scope>h2,.scope>p{margin-left:20px;margin-right:20px}.scope>.eyebrow{margin-top:24px}.scope ul{margin-left:20px;margin-right:20px}.steps>li{padding:28px;border:1px solid #d6dde2;border-radius:20px;background:#f3f5f6}.preparation ol{padding-left:28px}.preparation li::marker{color:#0066b3;font-weight:700}@media(max-width:550px){.scope{padding:10px 10px 24px}.steps>li{padding:22px}}
 
 /* The service scene becomes part of the hero, behind the foreground content. */
 .hero{position:relative;isolation:isolate;overflow:hidden;background:#ffffff;padding:72px 0 56px}
@@ -348,14 +348,14 @@ h3 {
 .hero-grid{grid-template-columns:minmax(0,1fr);gap:44px;align-items:start}
 .hero-grid>div{max-width:780px}.hero .lead{max-width:560px}.hero h1{max-width:760px}
 .scope{padding:0;background:transparent;border:0;border-radius:0;box-shadow:none;max-width:100%}
-.scope>.eyebrow,.scope>h2,.scope>p{margin-left:0;margin-right:0}.scope>.eyebrow{margin-top:0}.scope h2{font-size:24px;margin:10px 0 16px}.scope ul{display:flex;flex-wrap:wrap;gap:14px 30px;list-style:none;padding:0;margin:0 0 18px}.scope li{display:flex;align-items:baseline;gap:10px;padding:0;font-size:14px;color:#21171b}.scope li::before{content:'✓';color:#861b36;font-weight:700}.scope>p{font-size:13px}
+.scope>.eyebrow,.scope>h2,.scope>p{margin-left:0;margin-right:0}.scope>.eyebrow{margin-top:0}.scope h2{font-size:24px;margin:10px 0 16px}.scope ul{display:flex;flex-wrap:wrap;gap:14px 30px;list-style:none;padding:0;margin:0 0 18px}.scope li{display:flex;align-items:baseline;gap:10px;padding:0;font-size:14px;color:#0b1723}.scope li::before{content:'✓';color:#0066b3;font-weight:700}.scope>p{font-size:13px}
 @media(max-width:900px){.hero{padding:48px 0}.hero-backdrop{width:110%;right:-28%;top:50px;opacity:.17}.hero-grid{gap:34px}}
 @media(max-width:550px){.hero{padding:36px 0}.hero-backdrop{width:145%;right:-58%;top:100px;opacity:.12}.scope{padding:0}.scope ul{display:grid;gap:12px}.hero-grid{gap:30px}}
 
 /* Full-width narrative scene, centered behind the headline. */
 .hero-backdrop{width:100%;max-width:none;right:0;left:0;top:0;opacity:1;mask-image:none;-webkit-mask-image:none}
 .hero-grid{position:relative;z-index:1}.hero h1,.hero .lead,.hero .eyebrow,.scope h2,.scope li,.scope>p{text-shadow:0 1px 4px #ffffff,0 0 16px #ffffff,0 0 28px #ffffff}
-.hero-grid>div{padding:12px 0}.hero .lead{color:#433235}.hero .scope{margin-top:12px}
+.hero-grid>div{padding:12px 0}.hero .lead{color:#323b43}.hero .scope{margin-top:12px}
 @media(max-width:900px){.hero-backdrop{width:125%;left:-12.5%;right:auto;top:32px;opacity:1}}
 @media(max-width:550px){.hero-backdrop{width:180%;left:-40%;top:100px;opacity:1}.hero h1{text-shadow:0 1px 4px #ffffff,0 0 18px #ffffff,0 0 30px #ffffff}}
 .hero-backdrop{height:100%;top:0}
