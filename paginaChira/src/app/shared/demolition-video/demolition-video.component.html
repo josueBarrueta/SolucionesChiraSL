@@ -1,18 +1,18 @@
 <div class="comparison" role="group" aria-label="Antes y después de un derribo interior">
+  <div class="pairs">
   @for (zone of zones; track zone.name; let i = $index) {
-    @if (selected() === i) {
-      <div class="pair">
+      <div class="pair" [class.current]="selected() === i" [class.leaving]="leaving() === i" [attr.aria-hidden]="selected() !== i">
         <figure>
           <figcaption>Antes</figcaption>
-          <div class="soft-edge"><video [src]="media + zone.before + '.mp4'" muted playsinline preload="metadata" (loadedmetadata)="sync()" (ended)="advance()" (error)="failed.set(true)" [attr.aria-label]="zone.name + ' antes del derribo'"></video></div>
+          <div class="soft-edge"><video [src]="media + zone.before + '.mp4'" muted playsinline preload="auto" (loadeddata)="ready()" (ended)="advance(i)" (error)="failed.set(true)" [attr.aria-label]="zone.name + ' antes del derribo'"></video></div>
         </figure>
         <figure>
           <figcaption>Después</figcaption>
-          <div class="soft-edge"><video [src]="media + zone.after + '.mp4'" muted playsinline preload="metadata" (loadedmetadata)="sync()" (ended)="advance()" (error)="failed.set(true)" [attr.aria-label]="zone.name + ' después del derribo'"></video></div>
+          <div class="soft-edge"><video [src]="media + zone.after + '.mp4'" muted playsinline preload="auto" (loadeddata)="ready()" (ended)="advance(i)" (error)="failed.set(true)" [attr.aria-label]="zone.name + ' después del derribo'"></video></div>
         </figure>
       </div>
-    }
   }
+  </div>
   <div class="footnote">
     <span>{{ zones[selected()].name }} · Antes y después del derribo interior</span>
     <button class="playback" type="button" (click)="toggle()" [attr.aria-label]="paused() ? 'Reproducir vídeos' : 'Pausar vídeos'"><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true" focusable="false">

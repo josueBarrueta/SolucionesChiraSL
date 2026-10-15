@@ -1,4 +1,4 @@
-import { Component, DestroyRef, ElementRef, Injector, afterNextRender, inject, signal } from '@angular/core';
+import { Component, DestroyRef, ElementRef, afterNextRender, inject, signal } from '@angular/core';
 
 const MEDIA = 'videos/derribos/';
 
@@ -19,7 +19,8 @@ export class DemolitionVideoComponent {
   readonly failed = signal(false);
   readonly media = MEDIA;
   private visible = false;
-  private readonly injector = inject(Injector);
+  readonly leaving = signal<number | null>(null);
+  private transitionTimer?: ReturnType<typeof setTimeout>;
   private readonly root: ElementRef<HTMLElement> = inject(ElementRef);
   private readonly destroy = inject(DestroyRef);
 
@@ -37,6 +38,7 @@ export class DemolitionVideoComponent {
       document.addEventListener('visibilitychange', visibility);
       preference.addEventListener('change', motion);
       this.destroy.onDestroy(() => {
+        clearTimeout(this.transitionTimer);
         observer.disconnect();
         document.removeEventListener('visibilitychange', visibility);
         preference.removeEventListener('change', motion);
@@ -44,13 +46,32 @@ export class DemolitionVideoComponent {
     });
   }
 
-  advance(): void {
-    const videos = Array.from(this.root.nativeElement.querySelectorAll('video'));
-    // Both sides must finish before replacing the comparison.
-    if (videos.length !== 2 || !videos.every(video => video.ended)) return;
-    this.selected.update(index => (index + 1) % this.zones.length);
+  private videos(index: number): HTMLVideoElement[] {
+    const pair = this.root.nativeElement.querySelectorAll('.pair')[index];
+    return pair ? Array.from(pair.querySelectorAll('video')) : [];
+  }
+
+  ready(): void {
+    this.advance(this.selected());
+    this.sync();
+  }
+
+  advance(index: number): void {
+    if (index !== this.selected()) return;
+    const current = this.videos(index);
+    const next = (index + 1) % this.zones.length;
+    // Keep the final frames visible until both incoming videos can display a frame.
+    if (current.length !== 2 || !current.every(video => video.ended) ||
+        !this.videos(next).every(video => video.readyState >= 2)) return;
+    clearTimeout(this.transitionTimer);
+    this.leaving.set(index);
+    this.selected.set(next);
     this.failed.set(false);
-    afterNextRender(() => this.sync(), { injector: this.injector });
+    this.sync();
+    this.transitionTimer = setTimeout(() => {
+      this.leaving.set(null);
+      for (const video of current) video.currentTime = 0;
+    }, 650);
   }
 
   toggle(): void {
@@ -59,9 +80,10 @@ export class DemolitionVideoComponent {
   }
 
   sync(): void {
+    const active = this.videos(this.selected());
     for (const video of this.root.nativeElement.querySelectorAll('video')) {
       video.muted = true;
-      if (this.visible && !document.hidden && !this.paused() && !video.ended) {
+      if (active.includes(video) && this.visible && !document.hidden && !this.paused() && !video.ended) {
         void video.play().catch(() => {
           if (video.isConnected && video.error === null) {
             this.paused.set(true);
