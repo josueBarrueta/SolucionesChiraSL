@@ -1,4 +1,4 @@
-<div class="service-film">
+<div class="service-film" appSwipe (swipe)="swipeService($event)" (swipeActive)="setTouching($event)">
   <div class="film-stage" aria-hidden="true">
     <span class="film-kicker">UN MISMO EQUIPO · SIETE FORMAS DE AYUDARTE</span>
     <svg viewBox="0 0 440 290" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -24,7 +24,7 @@
     <span class="film-cue">{{ services[active()].cue }}</span>
     <h3>{{ services[active()].title }}</h3>
     <p>{{ services[active()].description }}</p>
-    <a [routerLink]="['/servicios', services[active()].id]">Descubrir {{ services[active()].title.toLowerCase() }} <span aria-hidden="true">↗</span></a>
+    <a [routerLink]="['/servicios', services[active()].id]">Descubrir {{ services[active()].title.toLowerCase() }}</a>
   </div>
   <div class="film-controls" aria-label="Controles de la presentación de servicios">
     <div class="film-tabs" role="group" aria-label="Elegir servicio">

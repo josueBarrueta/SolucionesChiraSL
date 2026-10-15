@@ -1,3 +1,4 @@
+import { SwipeDirective } from '../swipe.directive';
 import { Component, DestroyRef, ElementRef, NgZone, afterNextRender, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { gsap } from 'gsap';
@@ -7,7 +8,7 @@ const brand = '#861b36', pale = '#d8c0c5', wood = '#cfa77b', glass = '#d5c9ce';
 const hidden: Piece = [200, 160, 0, 0, pale, 0];
 
 @Component({
-  selector: 'app-service-film', standalone: true, imports: [RouterLink],
+  selector: 'app-service-film', standalone: true, imports: [RouterLink, SwipeDirective],
   templateUrl: './service-film.component.html', styleUrls: ['./service-film.component.scss']
 })
 export class ServiceFilmComponent {
@@ -40,6 +41,7 @@ export class ServiceFilmComponent {
   private visible = false;
   private index = 0;
   private manualTransition = false;
+  private touching = false;
   private pieces: SVGRectElement[] = [];
   private wheels: SVGCircleElement[] = [];
   private text?: HTMLElement;
@@ -115,9 +117,13 @@ export class ServiceFilmComponent {
   }
 
   private syncPlayback(): void {
-    const mayPlay = this.manualTransition || !this.paused();
+    const mayPlay = !this.touching && (this.manualTransition || !this.paused());
     if(this.visible && !document.hidden && mayPlay && !this.reduced) this.timeline?.play();
     else this.timeline?.pause();
+  }
+  setTouching(value:boolean): void {this.touching=value; this.syncPlayback();}
+  swipeService(direction:'left' | 'right'): void {
+    this.select((this.active()+(direction === 'left' ? 1 : -1)+this.services.length)%this.services.length);
   }
   togglePlayback(): void {this.paused.update(value=>!value);this.syncPlayback();}
   select(index:number): void {

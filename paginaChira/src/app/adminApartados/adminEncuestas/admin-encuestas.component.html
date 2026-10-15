@@ -64,7 +64,7 @@
                 <td data-label="Cliente"><strong>{{ encuesta.nombre }}</strong><small class="reference">{{ referencia(encuesta) }} · {{ encuesta.localidad }}</small><small>{{ encuesta.email }}</small></td>
                 <td data-label="Servicio">{{ encuesta.servicios.join(', ') }}</td>
                 <td data-label="Estado"><span class="badge" [class.new]="encuesta.estado === 'Nueva'">{{ encuesta.estado }}</span></td>
-                <td><button type="button" class="view" (click)="abrir(encuesta)" [attr.aria-label]="'Ver respuesta de ' + encuesta.nombre" [attr.aria-controls]="seleccionada ? 'detalle-encuesta' : null">Ver respuesta <i class="pi pi-arrow-right" aria-hidden="true"></i></button></td>
+                <td><button type="button" class="view" (click)="abrir(encuesta)" [attr.aria-label]="'Ver respuesta de ' + encuesta.nombre" [attr.aria-controls]="seleccionada ? 'detalle-encuesta' : null">Ver respuesta</button></td>
               </tr>
             } @empty {
               <tr><td colspan="5" class="empty"><i class="pi pi-search" aria-hidden="true"></i><h3>{{ verArchivadas ? 'No hay solicitudes archivadas con estos filtros' : 'No hay solicitudes con estos filtros' }}</h3><p>{{ encuestas.length ? 'Prueba con otro nombre o cambia los filtros.' : 'Las solicitudes recibidas desde el formulario aparecerán aquí.' }}</p><button class="view" type="button" (click)="limpiarFiltros()">Limpiar filtros</button></td></tr>

@@ -1,5 +1,5 @@
 <section class="featured" aria-label="Servicios destacados" aria-roledescription="carrusel">
-  <div class="viewport" (touchstart)="touchStart($event)" (touchend)="touchEnd($event)" (touchcancel)="touchCancel()">
+  <div class="viewport" appSwipe (swipe)="move($event === 'left' ? 1 : -1)" (swipeActive)="setTouching($event)">
     <div class="slides" [class.resetting]="resetting()">
       @for (slide of renderedSlides; track $index; let i=$index) {
         <article class="panel" [class.current]="cursor()===i"
@@ -10,8 +10,8 @@
             <h2>{{ slide.title }}<br /><span>{{ slide.accent }}</span></h2>
             <p>{{ slide.description }}</p>
             <div class="actions">
-              <a class="cta" [routerLink]="['/servicios',slide.id]">{{ slide.action }} <i class="pi pi-arrow-up-right" aria-hidden="true"></i></a>
-              <a class="all" href="#todos-los-servicios">Ver todos los servicios <i class="pi pi-arrow-down" aria-hidden="true"></i></a>
+              <a class="cta" [routerLink]="['/servicios',slide.id]">{{ slide.action }}</a>
+              <a class="all" href="#todos-los-servicios">Ver todos los servicios</a>
             </div>
             <span class="note">Valencia y alrededores · Atención personalizada</span>
           </div>

@@ -92,8 +92,7 @@
 <h2>¿Qué necesita atención hoy?</h2>
 <p>{{ cargando || error ? 'Consulta y organiza las solicitudes de tu empresa.' : pendientes ? 'Tienes ' + pendientes + ' solicitudes pendientes de revisar.' : 'No hay solicitudes pendientes de revisar.' }}</p>
 </div>
-<a class="welcome-link" routerLink="/admin/encuestas" [queryParams]="{ pendientes: 'true' }">Revisar pendientes <i class="pi pi-arrow-right" aria-hidden="true">
-</i>
+<a class="welcome-link" routerLink="/admin/encuestas" [queryParams]="{ pendientes: 'true' }">Revisar pendientes
 </a>
 </div>
     <div class="stats" aria-label="Resumen de solicitudes">

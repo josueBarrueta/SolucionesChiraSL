@@ -1,3 +1,4 @@
+import { SwipeDirective } from '../../shared/swipe.directive';
 import { DOCUMENT } from '@angular/common';
 import { ChangeDetectorRef, Component, ElementRef, OnDestroy, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -9,7 +10,7 @@ type AgendaTrabajo = Encuesta & { gestionId?: string };
 @Component({
   selector: 'app-admin-agenda',
   standalone: true,
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, SwipeDirective],
   templateUrl: './admin-agenda.component.html',
   styleUrls: ['./admin-agenda.component.scss']
 })

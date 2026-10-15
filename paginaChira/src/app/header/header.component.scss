@@ -600,3 +600,5 @@ nav .services-submenu-mobile {
     animation: none;
   }
 }
+
+nav a::after { display: none; }

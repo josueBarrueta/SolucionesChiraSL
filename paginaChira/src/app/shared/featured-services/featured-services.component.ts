@@ -1,10 +1,11 @@
+import { SwipeDirective } from '../swipe.directive';
 import { Component, DestroyRef, ElementRef, NgZone, afterNextRender, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-featured-services', standalone: true,
-  imports: [RouterLink, ButtonModule],
+  imports: [RouterLink, ButtonModule, SwipeDirective],
   templateUrl: './featured-services.component.html',
   styleUrls: ['./featured-services.component.scss']
 })
@@ -29,7 +30,7 @@ export class FeaturedServicesComponent {
   private visible = false;
   private reduced = false;
   private timer?: ReturnType<typeof setInterval>;
-  private touch?: {x:number; y:number};
+  private touching = false;
 
   constructor() {
     afterNextRender(() => {
@@ -77,15 +78,10 @@ export class FeaturedServicesComponent {
       });
     },this.reduced ? 0 : 680);
   }
-  touchStart(event:TouchEvent): void {this.touch={x:event.changedTouches[0].clientX,y:event.changedTouches[0].clientY}; this.restart();}
-  touchEnd(event:TouchEvent): void {
-    if(this.touch) {const dx=event.changedTouches[0].clientX-this.touch.x, dy=event.changedTouches[0].clientY-this.touch.y; if(Math.abs(dx)>50 && Math.abs(dx)>Math.abs(dy)*1.4) this.move(dx<0?1:-1);}
-    this.touch=undefined; this.restart();
-  }
-  touchCancel(): void {this.touch=undefined; this.restart();}
+  setTouching(value:boolean): void {this.touching=value; this.restart();}
   private restart(): void {
     clearInterval(this.timer);
-    if(!this.visible || !!this.touch || this.reduced || document.hidden) return;
+    if(!this.visible || this.touching || this.reduced || document.hidden) return;
     this.zone.runOutsideAngular(() => {this.timer=setInterval(() => this.zone.run(() => this.move(1)),5000);});
   }
 }
