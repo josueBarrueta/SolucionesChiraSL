@@ -3,7 +3,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Component, DestroyRef, ElementRef, HostListener, inject } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { ChiraApiService, Encuesta } from '../shared/chira-api.service';
+import { ApiError, ChiraApiService, Encuesta } from '../shared/chira-api.service';
 import { AuthService } from '../login/auth.service';
 
 @Component({
@@ -91,7 +91,14 @@ export class AdminComponent {
         return { id: `trabajo-${job['id']}`, gestionId: job['id'], referencia: job['titulo'], nombre: client?.['nombre'] ?? job['titulo'], fecha: job['fecha'] ?? '', servicios:[job['titulo']], telefono:'', telefonoInternacional:'', localidad:'', direccion:job['direccion'] ?? '', codigoPostal:'', piso:'',puerta:'',escalera:'', mensaje:job['descripcion'] ?? '', fechaTrabajo:job['fecha'] ?? '', archivada:job['archivada'], estado: (job['estado'] === 'Finalizado' ? 'Finalizada' : 'Aceptada') as Encuesta['estado'], email:'',respuestas:[],notas:job['notas'] ?? '' };
       }), ...this.encuestas.filter(e => !linked.has(e.id))];
       this.ultimaActualizacion = new Intl.DateTimeFormat('es', { hour: '2-digit', minute: '2-digit' }).format(new Date()); }
-    catch (error) { this.error = error instanceof Error ? error.message : 'No se pudieron cargar las solicitudes.'; }
+    catch (error) {
+      this.error = error instanceof Error ? error.message : 'No se pudieron cargar las solicitudes.';
+      if (error instanceof ApiError && error.status === 401) {
+        this.api.establecerSesion('');
+        this.auth.authenticated.set(false);
+        await this.router.navigate(['/login']);
+      }
+    }
     finally { this.cargando = false; this.refreshing = false; }
   }
 

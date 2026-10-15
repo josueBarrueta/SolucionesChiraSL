@@ -242,7 +242,7 @@ export class ServiceSceneComponent {
             loop.repeatDelay(.35);
             loop.timeScale((loop.duration() + loop.repeatDelay()) / 8.5);
           }
-          if (!this.panoramic()) loop.to(finishes, {opacity:.5,duration:.5,stagger:.1},0)
+          if (!this.panoramic() && finishes.length) loop.to(finishes, {opacity:.5,duration:.5,stagger:.1},0)
             .to(finishes, {opacity:1,duration:.6,stagger:.1},.7);
         }
         gsap.set(root.querySelector('.scene'), {autoAlpha:1});

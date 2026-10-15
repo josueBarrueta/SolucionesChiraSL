@@ -122,7 +122,10 @@ export class AdminEncuestasComponent implements OnDestroy {
   private async refrescar(): Promise<void> {
     this.cargando = true;
     try { this.encuestas = (await this.api.listar()).encuestas; this.errorCarga = ''; }
-    catch(error) { this.errorCarga = error instanceof Error ? error.message : 'No se pudieron actualizar las encuestas.'; }
+    catch(error) {
+      this.errorCarga = error instanceof Error ? error.message : 'No se pudieron actualizar las encuestas.';
+      if (error instanceof ApiError && error.status === 401) await this.router.navigate(['/login']);
+    }
     finally { this.cargando = false; }
   }
 

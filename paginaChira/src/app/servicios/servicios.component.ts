@@ -239,7 +239,8 @@ export class ServiciosComponent implements OnDestroy {
     this.media.add(
       '(prefers-reduced-motion: no-preference)',
       () => {
-        gsap.from('.intro-enter', {
+        const intro = root.querySelectorAll('.intro-enter');
+        if (intro.length) gsap.from(intro, {
           y: 20,
           opacity: 0,
           duration: 0.7,

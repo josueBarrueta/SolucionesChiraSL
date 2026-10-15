@@ -14,6 +14,10 @@ export class AuthService {
 
   async comprobarSesion(): Promise<boolean> {
     try {
+      if (!await this.api.puedeComprobarSesion()) {
+        this.authenticated.set(false);
+        return false;
+      }
       await this.api.request('/session');
       this.authenticated.set(true);
       return true;

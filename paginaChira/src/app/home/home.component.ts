@@ -167,23 +167,25 @@ export class HomeComponent implements OnDestroy {
           }
         });
 
-        intro
-          .from('.hero-enter', {
+        const enter = root.querySelectorAll('.hero-enter');
+        const visual = root.querySelectorAll('.hero-visual');
+        const badge = root.querySelectorAll('.experience-badge');
+        if (enter.length) intro.from(enter, {
             y: 24,
             opacity: 0,
             stagger: 0.12
-          })
-          .from(
-            '.hero-visual',
+          }, 0);
+        if (visual.length) intro.from(
+            visual,
             {
               y: 30,
               opacity: 0,
               duration: 1
             },
             0.15
-          )
-          .from(
-            '.experience-badge',
+          );
+        if (badge.length) intro.from(
+            badge,
             {
               y: 16,
               scale: 0.95,
@@ -213,8 +215,11 @@ export class HomeComponent implements OnDestroy {
     this.media.add(
       '(min-width: 951px) and (prefers-reduced-motion: no-preference)',
       () => {
+        const photos = root.querySelectorAll('.hero-photo img');
+        const hero = root.querySelector('.hero');
+        if (!photos.length || !hero) return;
         gsap.fromTo(
-          '.hero-photo img',
+          photos,
           {
             scale: 1.08,
             yPercent: -2
@@ -224,7 +229,7 @@ export class HomeComponent implements OnDestroy {
             yPercent: 2,
             ease: 'none',
             scrollTrigger: {
-              trigger: root.querySelector('.hero'),
+              trigger: hero,
               start: 'top top',
               end: 'bottom top',
               scrub: 1

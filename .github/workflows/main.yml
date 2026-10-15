@@ -50,7 +50,9 @@ jobs:
 
       - name: Preparar las rutas de Angular
         working-directory: paginaChira
-        run: cp dist/site/browser/index.html dist/site/browser/404.html
+        run: |
+          node --test scripts/prepare-pages.test.mjs
+          node scripts/prepare-pages.mjs
 
       - name: Subir la web compilada
         uses: actions/upload-pages-artifact@v4

@@ -58,6 +58,12 @@ export class ChiraApiService {
     return this.apiUrl;
   }
 
+  async puedeComprobarSesion(): Promise<boolean> {
+    // Same-origin requests can use the HttpOnly cookie; an external API needs a token.
+    const base = await this.baseUrl();
+    return Boolean(this.token) || new URL(base, this.document.baseURI).origin === this.document.location.origin;
+  }
+
   async request<T>(path: string, method = 'GET', body?: unknown, headers: Record<string, string> = {}): Promise<T> {
     const base = await this.baseUrl();
     let response: Response;
