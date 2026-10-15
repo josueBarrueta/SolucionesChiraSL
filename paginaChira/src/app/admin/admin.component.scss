@@ -211,6 +211,6 @@ a:focus-visible, button:focus-visible { outline: 3px solid var(--brand); outline
 .dashboard-logo-compact { display: none; }
 @media (min-width: 801px) {
   .sidebar-collapsed .dashboard-logo { display: none; }
-  .sidebar-collapsed .dashboard-logo-compact { display: block; width: 40px; height: auto; }
-  .sidebar-collapsed .brand { padding-left: 4px; }
+  .sidebar-collapsed .dashboard-logo-compact { display: block; width: 56px; max-width: 100%; height: auto; flex-shrink: 0; }
+  .sidebar-collapsed .brand { padding: 0; width: 56px; min-width: 0; justify-content: center; }
 }
