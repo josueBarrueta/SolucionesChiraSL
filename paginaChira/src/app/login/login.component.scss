@@ -1,8 +1,8 @@
 :host {
-  --green: #42612e;
-  --green-dark: #253c1c;
-  --cream: #f6f7f2;
-  --text: #20271e;
+  --brand: #861b36;
+  --brand-dark: #21171b;
+  --cream: #f6f3f4;
+  --text: #211b1e;
 
   display: block;
 }
@@ -24,10 +24,10 @@
   max-width: 360px;
   padding: 32px;
   box-sizing: border-box;
-  border: 1px solid #e0e4d8;
+  border: 1px solid #e2dadc;
   border-radius: 16px;
-  background: #fff;
-  box-shadow: 0 16px 40px rgba(37, 60, 28, 0.04);
+  background: #ffffff;
+  box-shadow: 0 16px 40px rgba(33, 23, 27, 0.04);
 }
 
 label {
@@ -38,8 +38,8 @@ label {
 input {
   min-width: 0;
   padding: 12px;
-  border: 1px solid #c3cbb9;
-  background: #fff;
+  border: 1px solid #c9bbbe;
+  background: #ffffff;
   color: var(--text);
   border-radius: 8px;
   font: inherit;
@@ -48,7 +48,7 @@ input {
 
 input:focus-visible,
 button:focus-visible {
-  outline: 3px solid var(--green);
+  outline: 3px solid var(--brand);
   outline-offset: 3px;
 }
 
@@ -56,15 +56,15 @@ button {
   padding: 13px;
   border: 0;
   border-radius: 8px;
-  background: var(--green);
-  color: #fff;
+  background: var(--brand);
+  color: #ffffff;
   font: inherit;
   font-weight: 600;
   cursor: pointer;
 }
 
 button:hover {
-  background: var(--green-dark);
+  background: var(--brand-dark);
 }
 
 .login-error {
@@ -95,11 +95,11 @@ button:hover {
   height: 100%;
   padding: 0;
   background: transparent;
-  color: var(--green);
+  color: var(--brand);
 
   &:hover {
-    background: #f6f7f2;
-    color: var(--green-dark);
+    background: #f6f3f4;
+    color: var(--brand-dark);
   }
 
   .pi {

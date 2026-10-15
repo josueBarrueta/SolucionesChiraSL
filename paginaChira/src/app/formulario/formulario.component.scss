@@ -1,6 +1,6 @@
 :host {
   display: block;
-  color: #293025;
+  color: #251f20;
   background: #f4f3ed;
 }
 
@@ -28,13 +28,13 @@ p {
   align-items: center;
   min-height: 44px;
   margin-bottom: 28px;
-  color: #596352;
+  color: #65595e;
   font-size: 13px;
   text-decoration: none;
 }
 
 .eyebrow {
-  color: #42612e;
+  color: #861b36;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 2px;
@@ -53,7 +53,7 @@ p {
 
   p {
     margin-top: 18px;
-    color: #596352;
+    color: #65595e;
     font-size: 15px;
     line-height: 1.8;
   }
@@ -69,11 +69,11 @@ p {
 .information {
   padding: 36px;
   border-radius: 20px;
-  background: linear-gradient(135deg, #253c1c, #162210);
+  background: linear-gradient(135deg, #21171b, #171315);
   color: #ffffff;
 
   .info-label {
-    color: #b4d388;
+    color: #f0b1bc;
     font-size: 10px;
     letter-spacing: 2px;
   }
@@ -87,7 +87,7 @@ p {
 
   p {
     margin-top: 20px;
-    color: #d1dbc9;
+    color: #d8ccce;
     font-size: 14px;
     line-height: 1.9;
   }
@@ -102,36 +102,36 @@ p {
   }
 
   li {
-    color: #d1dbc9;
+    color: #d8ccce;
     font-size: 13px;
     line-height: 1.6;
 
     &::before {
       content: "✓";
       margin-right: 8px;
-      color: #b4d388;
+      color: #f0b1bc;
     }
   }
 
   a:focus-visible {
-    outline-color: #b4d388;
+    outline-color: #f0b1bc;
   }
 }
 
 .direct-contact {
   padding-top: 24px;
-  border-top: 1px solid #415039;
+  border-top: 1px solid #50393e;
 
   span {
     display: block;
-    color: #d1dbc9;
+    color: #d8ccce;
     font-size: 12px;
   }
 
   a {
     display: inline-block;
     margin-top: 12px;
-    color: #b4d388;
+    color: #f0b1bc;
     font-size: 23px;
     font-weight: 700;
     text-decoration: none;
@@ -141,10 +141,10 @@ p {
 .form-card {
   min-width: 0;
   padding: 36px;
-  border: 1px solid #e0e4d8;
+  border: 1px solid #e2dadc;
   border-radius: 20px;
   background: #ffffff;
-  box-shadow: 0 16px 40px rgba(37, 60, 28, 0.04);
+  box-shadow: 0 16px 40px rgba(33, 23, 27, 0.04);
 }
 
 fieldset {
@@ -167,15 +167,15 @@ fieldset {
   span {
     padding: 7px;
     border-radius: 6px;
-    background: #edf3e6;
-    color: #42612e;
+    background: #f1e8ea;
+    color: #861b36;
     font-size: 11px;
   }
 }
 
 .section-help {
   margin-bottom: 14px;
-  color: #68715e;
+  color: #725d61;
   font-size: 12px;
   line-height: 1.7;
 }
@@ -195,9 +195,9 @@ fieldset {
   min-height: 54px;
   margin: 0;
   padding: 12px;
-  border: 1px solid #d7dece;
+  border: 1px solid #dbd1d3;
   border-radius: 10px;
-  background: #fafbf8;
+  background: #faf9f9;
   cursor: pointer;
   transition:
     background-color 0.2s ease,
@@ -216,17 +216,17 @@ fieldset {
     min-height: 0;
     margin: 0;
     padding: 0;
-    accent-color: #42612e;
+    accent-color: #861b36;
   }
 
   &.selected {
-    border-color: #42612e;
-    background: #edf3e6;
-    color: #253c1c;
+    border-color: #861b36;
+    background: #f1e8ea;
+    color: #21171b;
   }
 
   &:focus-within {
-    outline: 2px solid #42612e;
+    outline: 2px solid #861b36;
     outline-offset: 2px;
   }
 
@@ -273,15 +273,15 @@ textarea {
   min-width: 0;
   min-height: 48px;
   padding: 12px 14px;
-  border: 1px solid #d7dece;
+  border: 1px solid #dbd1d3;
   border-radius: 9px;
-  background: #fafbf8;
-  color: #293025;
+  background: #faf9f9;
+  color: #251f20;
   font: inherit;
   font-size: 14px;
 
   &:focus {
-    outline: 2px solid #42612e;
+    outline: 2px solid #861b36;
     outline-offset: 2px;
   }
 
@@ -301,12 +301,12 @@ textarea {
 
 input::placeholder,
 textarea::placeholder {
-  color: #6d7566;
+  color: #786367;
 }
 
 .field-help {
   margin-top: 8px;
-  color: #68715e;
+  color: #725d61;
   font-size: 11px;
   line-height: 1.6;
 }
@@ -325,7 +325,7 @@ textarea::placeholder {
 
 .data-note,
 .required-note {
-  color: #68715e;
+  color: #725d61;
   font-size: 11px;
   line-height: 1.7;
 }
@@ -348,7 +348,7 @@ textarea::placeholder {
   padding: 14px 20px;
   border: 0;
   border-radius: 10px;
-  background: #42612e;
+  background: #861b36;
   color: #ffffff;
   font: inherit;
   font-size: 14px;
@@ -357,7 +357,7 @@ textarea::placeholder {
   transition: background-color 0.2s ease;
 
   &:hover:not(:disabled) {
-    background: #253c1c;
+    background: #21171b;
   }
 
   &:disabled {
@@ -368,7 +368,7 @@ textarea::placeholder {
 
 a:focus-visible,
 button:focus-visible {
-  outline: 3px solid #42612e;
+  outline: 3px solid #861b36;
   outline-offset: 4px;
   border-radius: 6px;
 }
@@ -394,7 +394,7 @@ button:focus-visible {
 
   p {
     margin: 16px 0 28px;
-    color: #596352;
+    color: #65595e;
     font-size: 14px;
     line-height: 1.8;
   }
@@ -407,8 +407,8 @@ button:focus-visible {
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  background: #edf3e6;
-  color: #42612e;
+  background: #f1e8ea;
+  color: #861b36;
   font-size: 30px;
 }
 
@@ -510,10 +510,10 @@ button:focus-visible {
   min-height: 52px;
   margin: 0;
   padding: 0 14px;
-  border: 1px solid #d7dece;
+  border: 1px solid #dbd1d3;
   border-radius: 10px;
-  background-color: #fafbf8;
-  color: #293025;
+  background-color: #faf9f9;
+  color: #251f20;
   font-family: inherit;
   font-size: 16px;
 }
@@ -562,13 +562,13 @@ button:focus-visible {
 
 .service-detail {
   padding: 20px;
-  border: 1px solid #e0e4d8;
+  border: 1px solid #e2dadc;
   border-radius: 12px;
-  background: #fafbf8;
+  background: #faf9f9;
 
   h3 {
     margin: 0 0 20px;
-    color: #42612e;
+    color: #861b36;
     font-size: 16px;
   }
 }
@@ -584,13 +584,13 @@ button:focus-visible {
 
 .address-unit {
   padding: 20px;
-  border: 1px solid #e0e4d8;
+  border: 1px solid #e2dadc;
   border-radius: 12px;
-  background: #fafbf8;
+  background: #faf9f9;
 
   h3 {
     margin: 0 0 16px;
-    color: #42612e;
+    color: #861b36;
     font-size: 15px;
   }
 }
@@ -619,11 +619,11 @@ button:focus-visible {
   overflow-y: auto;
   margin: 8px 0 0;
   padding: 6px;
-  border: 1px solid #d7dece;
+  border: 1px solid #dbd1d3;
   border-radius: 10px;
   background: #ffffff;
   list-style: none;
-  box-shadow: 0 8px 24px rgba(37, 60, 28, 0.08);
+  box-shadow: 0 8px 24px rgba(33, 23, 27, 0.08);
 
   li {
     display: flex;
@@ -635,30 +635,30 @@ button:focus-visible {
 
     &:hover,
     &.is-active {
-      background: #edf3e6;
+      background: #f1e8ea;
     }
   }
 
   strong {
-    color: #253c1c;
+    color: #21171b;
     font-size: 14px;
     line-height: 1.5;
   }
 
   span {
-    color: #68715e;
+    color: #725d61;
     font-size: 12px;
   }
 }
 
-.service-address { margin-top: 24px; padding-top: 18px; border-top: 1px solid #d7dece; }
+.service-address { margin-top: 24px; padding-top: 18px; border-top: 1px solid #dbd1d3; }
 .service-address h4 { margin: 0 0 14px; font-size: 16px; }
 .item-counter { margin: 20px 0; }
 .counter-controls { display: flex; gap: 10px; align-items: center; }
 .counter-controls input { width: 90px; text-align: center; appearance: textfield; -moz-appearance: textfield; }
 .counter-controls input::-webkit-inner-spin-button,
 .counter-controls input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-.counter-controls button { width: 44px; min-height: 44px; border: 1px solid #42612e; border-radius: 8px; background: #edf3e6; color: #253c1c; font-size: 22px; cursor: pointer; }
+.counter-controls button { width: 44px; min-height: 44px; border: 1px solid #861b36; border-radius: 8px; background: #f1e8ea; color: #21171b; font-size: 22px; cursor: pointer; }
 .counter-controls button:disabled { opacity: .45; cursor: default; }
-.counter-controls button:focus-visible { outline: 2px solid #42612e; outline-offset: 2px; }
-.item-entry { padding: 14px; margin-bottom: 10px; background: #fafbf8; border: 1px solid #d7dece; border-radius: 10px; }
+.counter-controls button:focus-visible { outline: 2px solid #861b36; outline-offset: 2px; }
+.item-entry { padding: 14px; margin-bottom: 10px; background: #faf9f9; border: 1px solid #dbd1d3; border-radius: 10px; }

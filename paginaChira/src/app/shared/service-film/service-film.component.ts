@@ -3,7 +3,7 @@ import { RouterLink } from '@angular/router';
 import { gsap } from 'gsap';
 
 type Piece = [number, number, number, number, string, number?];
-const green = '#42612e', pale = '#cedbbd', wood = '#cfa77b', glass = '#b4d0c7';
+const brand = '#861b36', pale = '#d8c0c5', wood = '#cfa77b', glass = '#d5c9ce';
 const hidden: Piece = [200, 160, 0, 0, pale, 0];
 
 @Component({
@@ -24,13 +24,13 @@ export class ServiceFilmComponent {
   ];
   // The same pieces are rearranged throughout the film rather than swapping illustrations.
   private readonly layouts: Piece[][] = [
-    [[93,139,181,92,green],[274,165,67,66,pale],[285,176,39,26,glass],[166,91,62,48,wood],[228,107,46,32,wood],[125,161,87,7,pale],hidden,hidden],
-    [[135,75,18,160,green],[285,75,18,160,green],[135,75,168,16,green],[135,145,168,15,green],[135,219,168,16,green],[166,106,40,39,wood],[230,178,46,41,pale],[166,185,35,34,wood]],
-    [[182,96,139,139,green],[202,114,42,43,pale],[260,114,42,43,pale],[239,180,31,55,wood],[77,177,78,58,wood],[99,132,56,45,wood],[180,81,143,17,green],hidden],
-    [[148,69,159,166,green],[168,89,119,146,pale],[175,220,104,6,green],[54,177,71,58,wood],[70,133,55,44,wood],hidden,hidden,hidden],
-    [[133,75,166,160,green],[150,93,132,112,glass],[212,93,8,112,pale],[150,146,132,8,pale],[332,83,8,126,wood],[310,205,48,20,green],hidden,hidden],
-    [[122,69,188,166,pale],[122,69,125,166,green],[218,109,99,28,wood],[311,123,9,39,green],[271,155,49,8,green],[267,155,9,69,wood],[261,192,21,43,green],hidden],
-    [[202,210,151,24,'#25352a'],[208,172,139,37,green],[263,116,57,56,pale],[270,124,42,39,glass],[213,218,128,6,pale],[78,132,47,100,pale],[78,157,47,5,green],[78,188,47,5,green]]
+    [[93,139,181,92,brand],[274,165,67,66,pale],[285,176,39,26,glass],[166,91,62,48,wood],[228,107,46,32,wood],[125,161,87,7,pale],hidden,hidden],
+    [[135,75,18,160,brand],[285,75,18,160,brand],[135,75,168,16,brand],[135,145,168,15,brand],[135,219,168,16,brand],[166,106,40,39,wood],[230,178,46,41,pale],[166,185,35,34,wood]],
+    [[182,96,139,139,brand],[202,114,42,43,pale],[260,114,42,43,pale],[239,180,31,55,wood],[77,177,78,58,wood],[99,132,56,45,wood],[180,81,143,17,brand],hidden],
+    [[148,69,159,166,brand],[168,89,119,146,pale],[175,220,104,6,brand],[54,177,71,58,wood],[70,133,55,44,wood],hidden,hidden,hidden],
+    [[133,75,166,160,brand],[150,93,132,112,glass],[212,93,8,112,pale],[150,146,132,8,pale],[332,83,8,126,wood],[310,205,48,20,brand],hidden,hidden],
+    [[122,69,188,166,pale],[122,69,125,166,brand],[218,109,99,28,wood],[311,123,9,39,brand],[271,155,49,8,brand],[267,155,9,69,wood],[261,192,21,43,brand],hidden],
+    [[202,210,151,24,'#191517'],[208,172,139,37,brand],[263,116,57,56,pale],[270,124,42,39,glass],[213,218,128,6,pale],[78,132,47,100,pale],[78,157,47,5,brand],[78,188,47,5,brand]]
   ];
   private readonly root = inject(ElementRef<HTMLElement>);
   private readonly zone = inject(NgZone);
@@ -43,6 +43,7 @@ export class ServiceFilmComponent {
   private pieces: SVGRectElement[] = [];
   private wheels: SVGCircleElement[] = [];
   private text?: HTMLElement;
+  private demolition!: SVGGElement;
 
   constructor() {
     afterNextRender(() => this.zone.runOutsideAngular(() => {
@@ -50,6 +51,7 @@ export class ServiceFilmComponent {
       this.pieces = Array.from(root.querySelectorAll<SVGRectElement>('.film-piece'));
       this.wheels = Array.from(root.querySelectorAll<SVGCircleElement>('.film-wheel'));
       this.text = root.querySelector<HTMLElement>('.film-copy')!;
+      this.demolition = root.querySelector<SVGGElement>('.film-demolition')!;
       const preference = window.matchMedia('(prefers-reduced-motion: reduce)');
       this.reduced = preference.matches;
       this.setScene(0);
@@ -60,14 +62,28 @@ export class ServiceFilmComponent {
       const motion = () => {this.reduced = preference.matches; this.index = this.active(); this.setScene(this.index); this.buildFilm();};
       document.addEventListener('visibilitychange', visibility);
       preference.addEventListener('change', motion);
-      this.destroy.onDestroy(() => {observer.disconnect(); document.removeEventListener('visibilitychange', visibility); preference.removeEventListener('change', motion); this.timeline?.kill(); gsap.killTweensOf([...this.pieces,...this.wheels,this.text!]);});
+      this.destroy.onDestroy(() => {observer.disconnect(); document.removeEventListener('visibilitychange', visibility); preference.removeEventListener('change', motion); this.timeline?.kill(); gsap.killTweensOf([...this.pieces,...this.wheels,this.demolition,this.text!]);});
     }));
   }
 
   private attrs(piece: Piece) {return {x:piece[0],y:piece[1],width:piece[2],height:piece[3],fill:piece[4]};}
+  private armPose(index: number) {
+    const extended = this.services[index].id === 'derribos';
+    const base = this.layouts[index][1];
+    // The folded arm travels with the piece that becomes the machine's body.
+    return {
+      opacity:1, svgOrigin:'232 175',
+      x:extended ? 0 : base[0] + base[2] / 2 - 232,
+      y:extended ? 0 : base[1] + base[3] / 2 - 175,
+      scaleX:extended ? 1 : 0, scaleY:extended ? 1 : 0,
+      rotation:extended ? 0 : 65
+    };
+  }
+
   private setScene(index: number): void {
     this.layouts[index].forEach((piece,i) => gsap.set(this.pieces[i], {attr:this.attrs(piece),opacity:piece[5] ?? 1}));
     gsap.set(this.wheels, {opacity:index === 0 ? 1 : 0});
+    gsap.set(this.demolition, this.armPose(index));
     gsap.set(this.text!, {opacity:1,y:0});
   }
 
@@ -91,6 +107,8 @@ export class ServiceFilmComponent {
       attr:this.attrs(piece),opacity:piece[5] ?? 1,duration:.85,ease:'power3.inOut'
     },start+i*.035));
     timeline.to(this.wheels, {opacity:target===0?1:0,duration:.4},start);
+    // Unfold and retract with the body, using the same timing as its transformation.
+    timeline.to(this.demolition, {...this.armPose(target),duration:.85,ease:'power3.inOut'},start+.035);
     timeline.call(() => this.zone.run(() => this.active.set(target)),[],start+.25);
     timeline.fromTo(this.text!, {opacity:0,y:10},{opacity:1,y:0,duration:.4,immediateRender:false},start+.4);
     this.syncPlayback();

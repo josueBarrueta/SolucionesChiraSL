@@ -7,10 +7,10 @@
 }
 
 .header  {
-  --accent: #b4d388;
-  background: linear-gradient(125deg, #20271e, #121810);
-  border-bottom: 3px solid #6c923f;
-  color: #f5f7f2;
+  --accent: #f0b1bc;
+  background: linear-gradient(125deg, #211b1e, #171315);
+  border-bottom: 3px solid #923f50;
+  color: #f6f3f4;
 }
 
 .header-container  {
@@ -86,7 +86,7 @@ nav a  {
   position: relative;
   display: block;
   padding: 12px;
-  color: #e0e6da;
+  color: #e4dcde;
   font-size: 14px;
   font-weight: 500;
   line-height: 1.5;
@@ -138,7 +138,7 @@ nav a  {
   padding: 12px 16px;
   border-radius: 10px;
   background: var(--accent);
-  color: #192312;
+  color: #25151c;
   font-size: 14px;
   font-weight: 700;
   text-decoration: none;
@@ -152,9 +152,9 @@ nav a  {
   }
 
   &:hover  {
-    background: #c6e49f;
+    background: #f8c7cf;
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(180, 211, 136, 0.15);
+    box-shadow: 0 6px 20px rgba(240, 177, 188, 0.15);
   }
 
 }
@@ -168,10 +168,10 @@ nav a  {
   gap: 10px;
   min-height: 44px;
   padding: 10px 12px;
-  border: 1px solid rgba(180, 211, 136, 0.4);
+  border: 1px solid rgba(240, 177, 188, 0.4);
   border-radius: 10px;
   background: transparent;
-  color: #f5f7f2;
+  color: #f6f3f4;
   font: inherit;
   font-size: 14px;
   font-weight: 700;
@@ -179,7 +179,7 @@ nav a  {
 }
 
 .menu-toggle:hover  {
-  background: rgba(180, 211, 136, 0.1);
+  background: rgba(240, 177, 188, 0.1);
 }
 
 .menu-icon  {
@@ -305,7 +305,7 @@ button:focus-visible  {
 
     &:hover,
     &.active  {
-      background: rgba(180, 211, 136, 0.1);
+      background: rgba(240, 177, 188, 0.1);
       color: var(--accent);
     }
 
@@ -436,13 +436,13 @@ button:focus-visible  {
   border: 0;
   border-radius: 6px;
   background: transparent;
-  color: #e0e6da;
+  color: #e4dcde;
   cursor: pointer;
 }
 
 .services-toggle:hover  {
   color: var(--accent);
-  background: rgba(180, 211, 136, .1);
+  background: rgba(240, 177, 188, .1);
 }
 
 .services-toggle svg  {
@@ -488,7 +488,7 @@ nav .services-submenu {
   width: 100%;
   margin: 14px 0 0;
   padding: 12px 0 0;
-  border-top: 1px solid rgba(180, 211, 136, .18);
+  border-top: 1px solid rgba(240, 177, 188, .18);
   list-style: none;
   animation: menu-aparecer 180ms ease-out;
 }
@@ -508,7 +508,7 @@ nav .services-submenu a::after  {
 
 nav .services-submenu a:hover,
 nav .services-submenu a.active  {
-  background: rgba(180, 211, 136, .1);
+  background: rgba(240, 177, 188, .1);
 }
 
 @media (max-width: 900px)  {
@@ -544,13 +544,13 @@ nav .services-submenu a.active  {
 }
 
 .whatsapp-button {
-  border: 1px solid rgba(180, 211, 136, 0.5);
+  border: 1px solid rgba(240, 177, 188, 0.5);
   background: transparent;
   color: var(--accent);
 
   &:hover {
-    background: rgba(180, 211, 136, 0.1);
-    color: #c6e49f;
+    background: rgba(240, 177, 188, 0.1);
+    color: #f8c7cf;
   }
 }
 
@@ -566,15 +566,15 @@ nav .services-submenu a.active  {
 @media (max-width: 900px) {
   .menu-toggle,
   .header-actions .contact-button {
-    border: 1px solid rgba(180, 211, 136, 0.5);
+    border: 1px solid rgba(240, 177, 188, 0.5);
     background: transparent;
     color: var(--accent);
   }
 
   .menu-toggle:hover,
   .header-actions .contact-button:hover {
-    background: rgba(180, 211, 136, 0.1);
-    color: #c6e49f;
+    background: rgba(240, 177, 188, 0.1);
+    color: #f8c7cf;
   }
 }
 

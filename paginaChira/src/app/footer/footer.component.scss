@@ -3,14 +3,14 @@
 }
 
 .footer {
-  --accent: #b4d388;
-  --muted: #c1c9bc;
+  --accent: #f0b1bc;
+  --muted: #cabbbe;
 
   position: relative;
   overflow: hidden;
-  color: #f5f7f2;
-  background: linear-gradient(125deg, #20271e, #121810);
-  border-top: 4px solid #6c923f;
+  color: #f6f3f4;
+  background: linear-gradient(125deg, #211b1e, #171315);
+  border-top: 4px solid #923f50;
   font-family: inherit;
 }
 
@@ -24,7 +24,7 @@
   border-radius: 50%;
   background: radial-gradient(
     circle,
-    rgba(126, 167, 75, 0.14),
+    rgba(158, 84, 99, 0.14),
     transparent 70%
   );
   pointer-events: none;
@@ -166,9 +166,9 @@
   height: 44px;
   margin: 0;
   padding: 0;
-  border: 1px solid rgba(180, 211, 136, 0.35);
+  border: 1px solid rgba(240, 177, 188, 0.35);
   border-radius: 12px;
-  background: rgba(180, 211, 136, 0.08);
+  background: rgba(240, 177, 188, 0.08);
   color: var(--accent);
   font: inherit;
   text-decoration: none;
@@ -195,9 +195,9 @@
 /* Misma animación para los tres iconos. */
 .icon-button:hover {
   transform: translateY(-3px);
-  background: rgba(180, 211, 136, 0.16);
+  background: rgba(240, 177, 188, 0.16);
   border-color: var(--accent);
-  box-shadow: 0 8px 20px rgba(180, 211, 136, 0.1);
+  box-shadow: 0 8px 20px rgba(240, 177, 188, 0.1);
 }
 
 .location {
@@ -237,7 +237,7 @@
 .slogan-line {
   flex: 1;
   height: 1px;
-  background: rgba(180, 211, 136, 0.25);
+  background: rgba(240, 177, 188, 0.25);
 }
 
 .footer-bottom {

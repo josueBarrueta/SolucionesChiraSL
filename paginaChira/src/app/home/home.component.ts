@@ -1,3 +1,4 @@
+import { FeaturedServicesComponent } from '../shared/featured-services/featured-services.component';
 import { ServiceFilmComponent } from '../shared/service-film/service-film.component';
 import {
   Component,
@@ -25,7 +26,7 @@ interface Fotografia {
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [RouterLink, ServiceFilmComponent],
+  imports: [RouterLink, ServiceFilmComponent, FeaturedServicesComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
