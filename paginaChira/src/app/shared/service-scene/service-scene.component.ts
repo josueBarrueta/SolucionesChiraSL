@@ -247,10 +247,15 @@ export class ServiceSceneComponent {
         }
         gsap.set(root.querySelector('.scene'), {autoAlpha:1});
         const timeline = gsap.timeline({onComplete: () => {entered = true; sync();}, scrollTrigger: {trigger: root, start: 'top 90%', once: true}, defaults: {duration: .85, ease: 'power3.out'}});
-        timeline.from(root.querySelectorAll('.scene-backdrop'), {opacity: 0, scale: .9, transformOrigin: '50% 50%'})
-          .from(root.querySelectorAll('.scene-piece'), {opacity: 0, y: 22, stagger: .12}, .15)
-          .from(root.querySelectorAll('.scene-move:not(.demolition-machine)'), {x: -55, opacity: 0, duration: 1.2}, .35)
-          .from(root.querySelectorAll('.scene-finish'), {scale: 0, opacity: 0, transformOrigin: '50% 50%', stagger: .14, ease: 'back.out(1.5)'}, .75);
+        // Each illustration has different parts; only animate groups it actually renders.
+        const backdrops = root.querySelectorAll('.scene-backdrop');
+        const pieces = root.querySelectorAll('.scene-piece');
+        const movers = root.querySelectorAll('.scene-move:not(.demolition-machine)');
+        const finishes = root.querySelectorAll('.scene-finish');
+        if (backdrops.length) timeline.from(backdrops, {opacity: 0, scale: .9, transformOrigin: '50% 50%'}, 0);
+        if (pieces.length) timeline.from(pieces, {opacity: 0, y: 22, stagger: .12}, .15);
+        if (movers.length) timeline.from(movers, {x: -55, opacity: 0, duration: 1.2}, .35);
+        if (finishes.length) timeline.from(finishes, {scale: 0, opacity: 0, transformOrigin: '50% 50%', stagger: .14, ease: 'back.out(1.5)'}, .75);
       }, root);
       this.destroyRef.onDestroy(() => {
         observer.disconnect();
