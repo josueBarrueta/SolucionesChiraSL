@@ -1,25 +1,65 @@
-<section class="login" aria-label="Inicio de sesión">
-  <form class="login-form" (ngSubmit)="acceder()">
-    <label for="username">Usuario</label>
-    <input id="username" name="username" type="text" autocomplete="username"
-      [(ngModel)]="username" required (input)="error = ''" />
+<section class="login" aria-labelledby="login-title">
+  <aside class="login-story" aria-label="Área de gestión Chira">
+    <a class="brand" routerLink="/" aria-label="Soluciones Chira SL, volver a la web">
+      <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 23 24 7l18 16M11 20v21h26V20M20 41V28h8v13"/></svg>
+      <span><small>SOLUCIONES</small><strong>CHIRA <em>SL</em></strong></span>
+    </a>
 
-    <label for="password">Contraseña</label>
-    <div class="password-field">
-      <input id="password" name="password" [type]="showPassword ? 'text' : 'password'"
-        autocomplete="current-password" [(ngModel)]="password" required (input)="error = ''" />
-      <button class="password-toggle" type="button" (click)="showPassword = !showPassword"
-        [attr.aria-label]="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
-        [attr.aria-pressed]="showPassword" aria-controls="password">
-        <i class="pi" [class.pi-eye]="showPassword" [class.pi-eye-slash]="!showPassword"
-          aria-hidden="true"></i>
-      </button>
+    <div class="story-content">
+      <span class="eyebrow">EL ESPACIO DE TU EQUIPO</span>
+      <h2>Cada trabajo cuenta.<br /><span>Cada detalle, también.</span></h2>
+      <p>Todo lo que necesitas para organizar el día a día de Chira, en un solo lugar.</p>
+      <div class="workspace" aria-hidden="true">
+        <div class="workspace-top"><span class="workspace-dot"></span> TU JORNADA, EN ORDEN <i class="pi pi-th-large"></i></div>
+        <div class="workspace-row"><span class="workspace-icon"><i class="pi pi-users"></i></span><div><strong>Clientes y solicitudes</strong><small>El comienzo de cada proyecto</small></div><span class="row-mark"></span></div>
+        <div class="workspace-row"><span class="workspace-icon"><i class="pi pi-calendar"></i></span><div><strong>Trabajos y agenda</strong><small>Cada servicio, en su momento</small></div><span class="row-mark"></span></div>
+        <div class="workspace-row"><span class="workspace-icon"><i class="pi pi-chart-bar"></i></span><div><strong>Gastos e informes</strong><small>Una visión clara de tu actividad</small></div><span class="row-mark"></span></div>
+      </div>
     </div>
+    <div class="story-footer"><span class="footer-line"></span> CERCANÍA EN EL TRATO. ORDEN EN EL TRABAJO.</div>
+  </aside>
 
-    @if (error) {
-      <p class="login-error" role="alert">{{ error }}</p>
-    }
+  <div class="login-access">
+    <a class="back-link" routerLink="/">Volver a la web</a>
+    <div class="access-content">
+      <span class="access-icon" aria-hidden="true"><i class="pi pi-lock"></i></span>
+      <span class="eyebrow">ÁREA PRIVADA</span>
+      <h1 id="login-title">Bienvenido de nuevo.</h1>
+      <p class="intro">Accede a tu panel y continúa donde lo dejaste.</p>
 
-    <button type="submit" [disabled]="loading">{{ loading ? 'Accediendo…' : 'Acceder' }}</button>
-  </form>
+      <form #loginForm="ngForm" class="login-form" (ngSubmit)="loginForm.valid && acceder()" [attr.aria-busy]="loading">
+        <div class="field">
+          <label for="username">Usuario</label>
+          <div class="input-wrap">
+            <i class="pi pi-user field-icon" aria-hidden="true"></i>
+            <input id="username" name="username" type="text" autocomplete="username" autocapitalize="none" [spellcheck]="false"
+              placeholder="Tu usuario de acceso" [(ngModel)]="username" required (input)="error = ''" [readOnly]="loading" />
+          </div>
+        </div>
+        <div class="field">
+          <label for="password">Contraseña</label>
+          <div class="input-wrap password-field">
+            <i class="pi pi-key field-icon" aria-hidden="true"></i>
+            <input id="password" name="password" [type]="showPassword ? 'text' : 'password'" placeholder="Tu contraseña"
+              autocomplete="current-password" [(ngModel)]="password" required (input)="error = ''" [readOnly]="loading"
+              [attr.aria-describedby]="error ? 'login-error' : null" />
+            <button class="password-toggle" type="button" (click)="showPassword = !showPassword"
+              [attr.aria-label]="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'" [disabled]="loading"
+              [attr.aria-pressed]="showPassword" aria-controls="password">
+              <i class="pi" [class.pi-eye]="!showPassword" [class.pi-eye-slash]="showPassword" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+        @if (error) {
+          <p id="login-error" class="login-error" role="alert"><i class="pi pi-exclamation-circle" aria-hidden="true"></i>{{ error }}</p>
+        }
+        <button class="submit" type="submit" [disabled]="loading">
+          @if (loading) { <i class="pi pi-spinner pi-spin" aria-hidden="true"></i> }
+          {{ loading ? 'Accediendo…' : 'Entrar a mi panel' }}
+        </button>
+      </form>
+      <p class="private-note"><i class="pi pi-shield" aria-hidden="true"></i> Acceso exclusivo para el equipo autorizado.</p>
+    </div>
+    <div class="access-footer">Soluciones Chira SL <span>Tu equipo. Tu espacio de trabajo.</span></div>
+  </div>
 </section>
