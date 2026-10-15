@@ -93,11 +93,6 @@ export class ServiceFilmComponent {
     timeline.to(this.wheels, {opacity:target===0?1:0,duration:.4},start);
     timeline.call(() => this.zone.run(() => this.active.set(target)),[],start+.25);
     timeline.fromTo(this.text!, {opacity:0,y:10},{opacity:1,y:0,duration:.4,immediateRender:false},start+.4);
-    if(target === 6) {
-      const arm = this.root.nativeElement.querySelector('.film-demolition-arm');
-      timeline.fromTo(arm, {rotation:0}, {rotation:-8,svgOrigin:'232 175',duration:.65,ease:'sine.inOut'},start+1.15)
-        .to(arm, {rotation:0,duration:.65,ease:'sine.inOut'});
-    }
     this.syncPlayback();
   }
 
