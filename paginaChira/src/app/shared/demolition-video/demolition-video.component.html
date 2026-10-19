@@ -14,8 +14,8 @@
   }
   </div>
   <div class="footnote">
-    <span>{{ zones[selected()].name }} · Antes y después del derribo interior</span>
-    <button class="playback" type="button" (click)="toggle()" [attr.aria-label]="paused() ? 'Reproducir vídeos' : 'Pausar vídeos'"><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true" focusable="false">
+    <span>{{ zones[selected()].name }} · Antes y después</span>
+    <button class="playback" type="button" (click)="toggle()" [attr.aria-label]="paused() ? 'Reproducir vídeos' : 'Pausar vídeos'"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true" focusable="false">
         @if (paused()) { <path d="M8 5v14l11-7z" /> }
         @else { <path d="M6 5h4v14H6zM14 5h4v14h-4z" /> }
       </svg></button>

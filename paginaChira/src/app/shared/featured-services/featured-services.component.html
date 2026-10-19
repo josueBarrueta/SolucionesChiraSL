@@ -1,63 +1,49 @@
-<section class="featured" aria-label="Servicios destacados" aria-roledescription="carrusel">
+<section class="featured" aria-label="Servicios destacados" aria-roledescription="carrusel"
+  (mouseenter)="setHovered(true)" (mouseleave)="setHovered(false)"
+  (focusin)="setFocused(true)" (focusout)="onFocusOut($event)">
+  <div class="section-heading"><h2 class="section-title">Nuestros servicios <span>destacados</span></h2><a routerLink="/servicios">Explora nuestros servicios</a></div>
   <div class="viewport" appSwipe (swipe)="move($event === 'left' ? 1 : -1)" (swipeActive)="setTouching($event)">
     <div class="slides" [class.resetting]="resetting()">
       @for (slide of renderedSlides; track $index; let i=$index) {
-        <article class="panel" [class.demolition-panel]="slide.id === 'derribos'" [class.current]="cursor()===i"
+        <article class="panel" [class.demolition-panel]="slide.id === 'derribos'" [class.video-panel]="slide.id === 'derribos' || slide.id === 'pintura'" [class.current]="cursor()===i"
           [style.--position]="position(i)" [attr.inert]="cursor()!==i ? '' : null" [attr.aria-hidden]="cursor()!==i"
           role="group" aria-roledescription="diapositiva" [attr.aria-label]="(i%slides.length+1)+' de '+slides.length+': '+slide.name">
           <div class="content">
-            <span class="tag">{{ slide.id==='derribos' ? 'SERVICIO DESTACADO' : 'TAMBIÉN TE AYUDAMOS' }} · {{ slide.name.toUpperCase() }}</span>
-            <h2>{{ slide.title }}<br /><span>{{ slide.accent }}</span></h2>
+            <div class="card-heading"><span class="card-number" aria-hidden="true">0{{ i % slides.length + 1 }}</span><span class="tag">{{ slide.name }}</span><span class="featured-badge"><span aria-hidden="true">✦</span> Servicio destacado</span></div>
+            <h2>{{ slide.title }} <span>{{ slide.accent }}</span></h2>
             <p>{{ slide.description }}</p>
             <div class="actions">
-              <a class="cta" [routerLink]="['/servicios',slide.id]">{{ slide.action }}</a>
-              <a class="all" routerLink="/servicios" fragment="catalogo-servicios">Ver todos los servicios</a>
+              <a class="cta" routerLink="/formulario" [queryParams]="{ servicio: slide.id }">Pedir presupuesto</a>
+              <a class="all" [routerLink]="['/servicios',slide.id]">Conocer el servicio</a>
             </div>
-            <span class="note">Valencia y alrededores · Atención personalizada</span>
+            <span class="note"><span aria-hidden="true">✓</span> Presupuesto sin compromiso</span>
           </div>
-          <div class="visual" [attr.aria-hidden]="slide.id === 'derribos' || slide.id === 'pintura' ? null : 'true'">
+          <div class="visual">
             @if (slide.id==='derribos') {
               @if (cursor() === i) {
-                <app-demolition-video (mouseenter)="setTouching(true)" (mouseleave)="setTouching(false)" (focusin)="setTouching(true)" (focusout)="setTouching(false)" />
+                <app-demolition-video class="card-media background-media" />
               }
             } @else if (slide.id === 'pintura') {
               @if (cursor() === i) {
-                <app-painting-video (mouseenter)="setTouching(true)" (mouseleave)="setTouching(false)" (focusin)="setTouching(true)" (focusout)="setTouching(false)" />
+                <app-painting-video class="card-media background-media" companionPhoto="images/trabajos/pintura-fachada.jpeg" />
               }
             } @else {
-<svg viewBox="0 0 440 300" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="240" cy="146" r="118" fill="#283a49"/><circle cx="240" cy="146" r="139" stroke="#65829a" stroke-dasharray="3 10"/>
-  <path d="M30 248H410" stroke="#667683" stroke-width="2" stroke-linecap="round"/>
-  @switch (slide.id) {
-    @case ('mudanzas') {
-      <path d="M245 115L307 63L369 115V242H245Z" fill="#6d8fab"/><path d="M265 128H293V159H265ZM324 128H352V159H324Z" fill="#c9d0d5"/><path d="M301 188H325V242H301Z" fill="#070f18"/>
-      <rect x="62" y="151" width="171" height="75" rx="5" fill="#79caff"/><path d="M233 176H274L308 206V226H233Z" fill="#6d8fab"/><path d="M244 184H269L291 205H244Z" fill="#c9d0d5"/>
-      <circle cx="101" cy="230" r="18" fill="#070f18" stroke="#79caff" stroke-width="5"/><circle cx="270" cy="230" r="18" fill="#070f18" stroke="#79caff" stroke-width="5"/>
-      <path d="M94 113H145V151H94ZM151 102H202V151H151Z" fill="#cfa77b"/><path d="M119 113V126M176 102V117" stroke="#805f3e" stroke-width="3"/>
-    }
-    @case ('vaciados') {
-      <path d="M157 67H330V244H315V82H172V244H157Z" fill="#79caff"/><path d="M188 99H299" stroke="#6d8fab" stroke-width="4"/>
-      <path d="M74 190H144V244H74ZM95 147H145V190H95Z" fill="#cfa77b"/><path d="M109 190V207M120 147V162" stroke="#805f3e" stroke-width="3"/>
-      <path d="M275 159H201M219 142L201 159L219 176" stroke="#79caff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-    }
-
-  }
-  <circle cx="365" cy="56" r="22" fill="#79caff"/><path d="M355 56L362 63L375 48" stroke="#0b1723" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
+<img class="service-photo" [src]="slide.image" [alt]="slide.imageAlt" width="899" height="899" loading="lazy" decoding="async" />
             }
-            @if (slide.id !== 'derribos' && slide.id !== 'pintura') { <span>{{ slide.caption }}</span> }
+
           </div>
         </article>
       }
     </div>
   </div>
   <div class="controls">
-    <button pButton type="button" class="arrow previous" icon="pi pi-chevron-left" aria-label="Servicio anterior" (click)="move(-1)"></button>
-    <div class="dots" role="group" aria-label="Elegir servicio destacado">
+    <div class="service-nav" role="group" aria-label="Elegir servicio destacado">
       @for (slide of slides; track slide.id; let i=$index) {
-        <button type="button" class="dot" [class.selected]="active()===i" [attr.aria-pressed]="active()===i" [attr.aria-label]="'Mostrar '+slide.name" (click)="select(i)"><span></span></button>
+        <button type="button" class="service-tab" [class.selected]="active()===i" [attr.aria-pressed]="active()===i" [attr.aria-label]="'Mostrar '+slide.name" (click)="select(i)">
+          <span class="tab-number" aria-hidden="true">0{{ i + 1 }}</span>{{ slide.name }}
+        </button>
       }
     </div>
-    <button pButton type="button" class="arrow next" icon="pi pi-chevron-right" aria-label="Servicio siguiente" (click)="move(1)"></button>
+
   </div>
 </section>

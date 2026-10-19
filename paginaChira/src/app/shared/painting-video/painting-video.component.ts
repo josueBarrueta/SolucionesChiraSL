@@ -1,4 +1,4 @@
-import { Component, DestroyRef, ElementRef, afterNextRender, inject, signal } from '@angular/core';
+import { Component, DestroyRef, ElementRef, afterNextRender, inject, input, signal } from '@angular/core';
 
 
 @Component({
@@ -8,6 +8,7 @@ import { Component, DestroyRef, ElementRef, afterNextRender, inject, signal } fr
   styleUrl: './painting-video.component.scss'
 })
 export class PaintingVideoComponent {
+  readonly companionPhoto = input<string>();
   readonly paused = signal(false);
   readonly failed = signal(false);
   private visible = false;

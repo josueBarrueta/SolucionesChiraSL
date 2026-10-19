@@ -13,11 +13,12 @@ import { ButtonModule } from 'primeng/button';
 })
 export class FeaturedServicesComponent {
   readonly active = signal(0);
+  private focused = false;
   readonly slides = [
-    {id:'derribos', name:'Derribos', title:'Un nuevo espacio.', accent:'Un buen comienzo.', description:'¿Estás pensando en renovar? Valoramos tu derribo y lo que necesitas conservar antes de dar el siguiente paso.', action:'Consultar mi proyecto', caption:'VALORAMOS CADA PROYECTO DESDE EL PRINCIPIO'},
-    {id:'mudanzas', name:'Mudanzas', title:'Cambiamos de lugar.', accent:'Cuidamos lo que importa.', description:'Te acompañamos en tu próxima etapa. Coordinamos tu mudanza con atención a tus muebles, tus objetos y cada detalle del traslado.', action:'Planificar mi mudanza', caption:'DE AQUÍ, A TU SIGUIENTE ETAPA'},
-    {id:'vaciados', name:'Vaciados', title:'Deja espacio.', accent:'Abre posibilidades.', description:'Recupera el espacio de tu vivienda, local o trastero. Cuéntanos qué necesitas retirar y valoramos contigo el trabajo.', action:'Consultar un vaciado', caption:'ESPACIO PARA LO QUE VIENE'},
-    {id:'pintura', name:'Pintura', title:'Un cambio de color.', accent:'Un nuevo aire.', description:'Renueva tu hogar o negocio con una nueva pintura. Revisamos el espacio y el acabado que buscas para preparar tu propuesta.', action:'Consultar mi pintura', caption:'TU ESPACIO, CON OTRA MIRADA'}
+    {id:'derribos', name:'Derribos', title:'Un nuevo espacio.', accent:'Un buen comienzo.', description:'Prepara tu próxima reforma. Revisamos qué necesitas derribar y qué quieres conservar.', action:'Consultar mi proyecto', caption:'VALORAMOS CADA PROYECTO DESDE EL PRINCIPIO'},
+    {id:'pintura', name:'Pintura', title:'Un cambio de color.', accent:'Un nuevo aire.', description:'Dale otro aire a tu hogar o negocio. Valoramos las superficies y el acabado que buscas.', action:'Consultar mi pintura', caption:'TU ESPACIO, CON OTRA MIRADA'},
+    {id:'vaciados', name:'Vaciados', title:'Deja espacio.', accent:'Abre posibilidades.', description:'Recupera tu vivienda, local o trastero. Cuéntanos qué quieres retirar y organizamos el vaciado.', action:'Consultar un vaciado', image:'images/trabajos/carga-muebles.webp', imageAlt:'Miembro del equipo retirando un panel de madera junto a una zona con muebles y materiales', caption:'Espacio para lo que viene.'},
+    {id:'mudanzas', name:'Mudanzas', title:'Cambiamos de lugar.', accent:'Cuidamos lo que importa.', description:'Tu hogar cambia de lugar. Nosotros cuidamos de tus muebles y de cada detalle del traslado.', action:'Planificar mi mudanza', image:'images/collage/chira-porte-sillas.webp', imageAlt:'Miembro del equipo cargando sillas en una furgoneta', caption:'De aquí, a tu siguiente etapa.'}
   ];
   readonly renderedSlides = [...this.slides, ...this.slides, ...this.slides];
   readonly cursor = signal(this.slides.length);
@@ -33,6 +34,7 @@ export class FeaturedServicesComponent {
   private reduced = false;
   private timer?: ReturnType<typeof setInterval>;
   private touching = false;
+  private hovered = false;
 
   constructor() {
     afterNextRender(() => {
@@ -80,10 +82,15 @@ export class FeaturedServicesComponent {
       });
     },this.reduced ? 0 : 680);
   }
+  setHovered(value: boolean): void { this.hovered = value; this.restart(); }
   setTouching(value:boolean): void {this.touching=value; this.restart();}
+  setFocused(value: boolean): void { this.focused = value; this.restart(); }
+  onFocusOut(event: FocusEvent): void {
+    if (!this.root.nativeElement.contains(event.relatedTarget as Node | null)) this.setFocused(false);
+  }
   private restart(): void {
     clearInterval(this.timer);
-    if(!this.visible || this.touching || this.reduced || document.hidden) return;
-    this.zone.runOutsideAngular(() => {this.timer=setInterval(() => this.zone.run(() => this.move(1)),this.active() === 0 ? 24000 : this.active() === 3 ? 10000 : 5000);});
+    if(!this.visible || this.touching || this.hovered || this.focused || this.reduced || document.hidden) return;
+    this.zone.runOutsideAngular(() => {this.timer=setInterval(() => this.zone.run(() => this.move(1)),this.slides[this.active()].id === 'derribos' ? 24000 : 12000);});
   }
 }

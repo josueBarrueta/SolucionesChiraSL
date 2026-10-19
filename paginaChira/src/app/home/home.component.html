@@ -1,5 +1,9 @@
 <div class="home" id="inicio">
+  <div class="intro-stack">
   <section class="hero" aria-labelledby="hero-title">
+    <div class="hero-background" aria-hidden="true">
+      <img src="images/trabajos/equipo-mudanzas.webp" alt="" width="1440" height="1440" fetchpriority="high" />
+    </div>
     <div class="container hero-grid">
       <div class="hero-content">
         <span class="eyebrow hero-enter">
@@ -19,12 +23,8 @@
         </p>
 
         <div class="hero-actions hero-enter">
-          <a class="button button-primary" routerLink="/formulario">
+          <a class="button button-primary" routerLink="/contacto">
             Cuéntanos qué necesitas
-          </a>
-
-          <a class="discover-link" href="#bienvenido">
-            Descubre Chira
           </a>
         </div>
 
@@ -34,173 +34,65 @@
         </div>
       </div>
 
-      <div class="hero-visual">
-        <div class="hero-photo">
-          <img
-            src="images/trabajos/equipo-mudanzas.webp"
-            alt="Dos miembros del equipo de Chira junto a una furgoneta de mudanzas"
-            width="1440"
-            height="1440"
-            fetchpriority="high"
-          />
 
-          <div class="photo-caption">
-            <span>HOGARES · NEGOCIOS · COMUNIDADES</span>
-            <p>Tu mudanza, en buenas manos.</p>
-          </div>
-        </div>
-
-        <div class="experience-badge">
-          <strong>20<span>+</span></strong>
-          <p>Años construyendo<br />confianza</p>
-        </div>
-
-        <span class="visual-label" aria-hidden="true">
-          CUIDAMOS CADA DETALLE
-        </span>
-      </div>
     </div>
   </section>
 
-  <app-featured-services />
+  <app-featured-services class="intro-services" />
+  </div>
 
-  <section class="trust-strip" aria-label="Nuestro compromiso">
+  <section class="trust-strip" aria-label="Zona de servicio">
     <div class="container trust-grid">
       <div>
-        <span aria-hidden="true">01</span>
-        <p>Trato cercano</p>
-      </div>
-
-      <div>
-        <span aria-hidden="true">02</span>
-        <p>Soluciones a medida</p>
-      </div>
-
-      <div>
-        <span aria-hidden="true">03</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+          <path d="M20 10c0 6-8 11-8 11S4 16 4 10a8 8 0 1 1 16 0Z" /><circle cx="12" cy="10" r="2.5" />
+        </svg>
         <p>Valencia y alrededores</p>
       </div>
     </div>
   </section>
 
-  <section class="visual-services" id="todos-los-servicios" aria-labelledby="visual-services-title">
-    <div class="container">
-      <div class="visual-services-heading reveal">
-        <div><span class="eyebrow">DISTINTAS NECESIDADES. UN MISMO EQUIPO.</span><h2 id="visual-services-title">Movemos. Montamos.<br /><span>Transformamos.</span></h2></div>
-        <p>Desde el primer traslado hasta el último detalle. Descubre cómo podemos ayudarte.</p>
-      </div>
-      <app-service-film />
-    </div>
-  </section>
-
-  <section
-    class="welcome"
-    id="bienvenido"
-    aria-labelledby="welcome-title"
-  >
-    <div class="container welcome-grid">
-      <div class="welcome-photo reveal">
-        <img
-          src="images/trabajos/carga-muebles.webp"
-          alt="Un miembro del equipo de Chira cargando un mueble en una furgoneta"
-          width="899"
-          height="899"
-          loading="lazy"
-        />
-
-        <span class="image-label">
-          Un nuevo comienzo, sin complicaciones.
-        </span>
-      </div>
-
-      <div class="welcome-content">
-        <span class="eyebrow reveal">
-          TODO EMPIEZA CON UNA CONVERSACIÓN
-        </span>
-
-        <h2 id="welcome-title" class="reveal">
-          Tú nos cuentas la idea.<br />
-          <span>Nosotros nos ponemos manos a la obra.</span>
-        </h2>
-
-        <p class="reveal">
-          A veces necesitas trasladar tus muebles. Otras, renovar
-          una habitación o dejar un espacio listo para su próxima etapa.
-          En Soluciones Chira SL queremos hacértelo fácil.
-        </p>
-
-        <p class="reveal">
-          Portes, montaje de muebles, mudanzas, vaciados, limpieza y
-          pintura y derribos. Coordinamos lo que necesitas con atención
-          personalizada y cuidado por tus cosas.
-        </p>
-
-        <div class="welcome-points reveal">
-          <span>✓ Un solo equipo</span>
-          <span>✓ Atención personalizada</span>
-          <span>✓ Compromiso en cada trabajo</span>
+  <section class="team-story" id="bienvenido" aria-labelledby="team-story-title">
+    <div class="container team-story-grid">
+      <div class="team-story-content reveal">
+        <span class="eyebrow">LAS PERSONAS DETRÁS DE CADA TRABAJO</span>
+        <h2 id="team-story-title">Un equipo cercano.<br /><span>Trabajo que se ve.</span></h2>
+        <p>Somos Soluciones Chira SL. Te ayudamos a trasladar, montar y transformar tus espacios, coordinando lo que necesitas con atención personalizada y cuidado por tus cosas.</p>
+        <div class="team-story-values">
+          <span><span aria-hidden="true">✓</span> Un solo equipo</span>
+          <span><span aria-hidden="true">✓</span> Trato cercano</span>
+          <span><span aria-hidden="true">✓</span> Cuidado en cada detalle</span>
         </div>
+        <a class="team-story-link" routerLink="/nosotros">Conoce a Chira</a>
       </div>
-    </div>
-  </section>
-
-  <!-- Collage de trabajos -->
-  <section class="galeria" aria-labelledby="galeria-title">
-    <div class="container">
-      <div class="galeria-intro">
-        <span class="eyebrow">NUESTRO TRABAJO, EN IMÁGENES</span>
-
-        <h2 id="galeria-title">
-          Pequeños detalles.<br />
-          <span>Resultados que se ven.</span>
-        </h2>
-      </div>
-
-      <div class="collage" id="collage">
-        @for (foto of fotografias; track foto.id) {
-          <figure class="collage-foto">
-          <img
-            [src]="foto.imagen"
-            [alt]="foto.descripcion"
-            [width]="foto.ancho"
-            [height]="foto.alto"
-            loading="lazy"
-            decoding="async"
-          />
-          <figcaption><span class="collage-marca">Soluciones <strong>Chira SL</strong></span></figcaption>
+      <div class="team-story-mosaic" aria-label="Fotos de nuestros trabajos que se renuevan automáticamente" aria-live="off" (mouseenter)="setMosaicHovered(true)" (mouseleave)="setMosaicHovered(false)">
+        @for (slot of mosaicSlots; track slot) {
+          <figure class="story-photo reveal" [class.story-photo-main]="slot === 0">
+            @for (photo of mosaicPhotos; track photo.image; let i = $index) {
+              <img [src]="'images/collage/' + photo.image" [alt]="mosaicActive()[slot] === i ? photo.alt : ''" [attr.aria-hidden]="mosaicActive()[slot] !== i ? 'true' : null" [attr.data-photo]="i" [class.is-active]="mosaicActive()[slot] === i" [style.object-position]="photo.position" width="1080" height="1080" loading="lazy" decoding="async" />
+            }
+            <figcaption>
+              @if (slot === 0) { Manos a la obra.<span>{{ mosaicPhotos[mosaicActive()[slot]].label }}</span> }
+              @else { {{ mosaicPhotos[mosaicActive()[slot]].label }} }
+            </figcaption>
           </figure>
         }
       </div>
-
-      <div class="galeria-pie">
-        <p>¿Tienes un proyecto en mente?</p>
-
-        <a class="discover-link" routerLink="/contacto">
-          Cuéntanos tu idea
-        </a>
-      </div>
     </div>
   </section>
 
-  <section class="closing" aria-labelledby="closing-title">
-    <div class="container">
-      <div class="closing-panel reveal">
-        <div>
-          <span class="eyebrow">HAGAMOS QUE SEA MÁS SENCILLO</span>
-
-          <h2 id="closing-title">Tu próximo paso empieza aquí.</h2>
-
-          <p>
-            Cuéntanos qué necesitas y solicita tu presupuesto
-            sin compromiso.
-          </p>
-        </div>
-
-        <a class="button button-light" href="tel:+34610928521">
-          <span class="phone-label">LLÁMANOS</span>
-          <span class="phone-number">610 92 85 21</span>
-        </a>
+  <section class="coverage" aria-labelledby="coverage-title">
+    <div class="container coverage-grid">
+      <div class="coverage-content reveal">
+        <span class="eyebrow">VALENCIA Y ALREDEDORES</span>
+        <h2 id="coverage-title">Cerca de ti.<br /><span>Donde nos necesites.</span></h2>
+        <p>Trabajamos en Valencia y alrededores, acompañándote en los cambios de tu hogar o negocio con un trato cercano y atención a cada detalle.</p>
+        <p class="coverage-detail">Cuéntanos dónde necesitas el servicio. Confirmamos contigo la cobertura y las condiciones según el tipo de trabajo y la localidad.</p>
+        <div class="coverage-note"><span aria-hidden="true"></span>Un equipo cercano. Un proyecto a tu medida.</div>
       </div>
+      <figure class="coverage-map reveal">
+        <img src="images/marca/valencia-puntos.svg" alt="Silueta de la Comunidad Valenciana formada por puntos azules, con Valencia ciudad señalada" width="560" height="460" loading="lazy" decoding="async" />
+      </figure>
     </div>
   </section>
 </div>

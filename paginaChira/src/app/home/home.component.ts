@@ -1,12 +1,12 @@
 import { FeaturedServicesComponent } from '../shared/featured-services/featured-services.component';
-import { ServiceFilmComponent } from '../shared/service-film/service-film.component';
 import {
   Component,
   ElementRef,
   NgZone,
   OnDestroy,
   afterNextRender,
-  inject
+  inject,
+  signal
 } from '@angular/core';
 
 import { Meta, Title } from '@angular/platform-browser';
@@ -15,18 +15,10 @@ import { RouterLink } from '@angular/router';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-interface Fotografia {
-  id: string;
-  imagen: string;
-  descripcion: string;
-  ancho: number;
-  alto: number;
-}
-
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [RouterLink, ServiceFilmComponent, FeaturedServicesComponent],
+  imports: [RouterLink, FeaturedServicesComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
@@ -38,99 +30,73 @@ export class HomeComponent implements OnDestroy {
 
   private media?: ReturnType<typeof gsap.matchMedia>;
 
-  readonly fotografias: Fotografia[] = [
-  {
-    "id": "chira-montaje-mueble",
-    "imagen": "images/collage/chira-montaje-mueble.webp",
-    "descripcion": "Sofá gris en forma de L instalado en un salón",
-    "ancho": 899,
-    "alto": 899
-  },
-  {
-    "id": "chira-porte-sillas",
-    "imagen": "images/collage/chira-porte-sillas.webp",
-    "descripcion": "Carga de sillas de oficina en una furgoneta",
-    "ancho": 1440,
-    "alto": 1440
-  },
-  {
-    "id": "chira-traslado-oficina-cristales",
-    "imagen": "images/collage/chira-traslado-oficina-cristales.webp",
-    "descripcion": "Dos trabajadores desmontando una mampara de cristal en una oficina",
-    "ancho": 1080,
-    "alto": 1080
-  },
-  {
-    "id": "chira-desmontaje-transporte-montaje",
-    "imagen": "images/collage/chira-desmontaje-transporte-montaje.webp",
-    "descripcion": "Sofá gris con cojines de colores y mesa de centro en un salón",
-    "ancho": 810,
-    "alto": 810
-  },
-  {
-    "id": "chira-CrLLvGFIWqP",
-    "imagen": "images/collage/chira-CrLLvGFIWqP.webp",
-    "descripcion": "Furgoneta con cajas y muebles cargados para un traslado",
-    "ancho": 720,
-    "alto": 720
-  },
-  {
-    "id": "chira-CsDtYZ9oC6m-1",
-    "imagen": "images/collage/chira-CsDtYZ9oC6m-1.webp",
-    "descripcion": "Armario de madera montado en una habitación",
-    "ancho": 720,
-    "alto": 720
-  },
-  {
-    "id": "chira-CsDtYZ9oC6m-2",
-    "imagen": "images/collage/chira-CsDtYZ9oC6m-2.webp",
-    "descripcion": "Cama de dormitorio con cajones rojos y blancos en su base",
-    "ancho": 720,
-    "alto": 720
-  },
-  {
-    "id": "chira-CsRnaU7IW0t",
-    "imagen": "images/collage/chira-CsRnaU7IW0t.webp",
-    "descripcion": "Estructura de madera y mueble durante su montaje",
-    "ancho": 720,
-    "alto": 720
-  },
-  {
-    "id": "chira-CwnX-joIPtM-2",
-    "imagen": "images/collage/chira-CwnX-joIPtM-2.webp",
-    "descripcion": "Trabajador montando una cama con base de almacenaje",
-    "ancho": 1440,
-    "alto": 1440
-  },
-  {
-    "id": "chira-CwnX-joIPtM-3",
-    "imagen": "images/collage/chira-CwnX-joIPtM-3.webp",
-    "descripcion": "Armario blanco con franja central de acabado madera",
-    "ancho": 1200,
-    "alto": 1200
-  },
-  {
-    "id": "chira-CwnX-joIPtM-4",
-    "imagen": "images/collage/chira-CwnX-joIPtM-4.webp",
-    "descripcion": "Trabajador ajustando las divisiones interiores de un mueble",
-    "ancho": 1440,
-    "alto": 1440
-  },
-  {
-    "id": "chira-CwnX-joIPtM-5",
-    "imagen": "images/collage/chira-CwnX-joIPtM-5.webp",
-    "descripcion": "Estructura de una cama durante el montaje en un dormitorio",
-    "ancho": 1440,
-    "alto": 1440
-  },
-  {
-    "id": "chira-montaje-armario-herramientas",
-    "imagen": "images/collage/chira-montaje-armario-herramientas.webp",
-    "descripcion": "Herramientas y piezas de un armario durante su montaje",
-    "ancho": 1440,
-    "alto": 1440
+  readonly mosaicPhotos = [
+    { image: 'chira-traslado-oficina-cristales.webp', label: 'Desmontaje de mamparas', alt: 'Dos miembros del equipo trabajando en una mampara de cristal', position: '44% center' },
+    { image: 'chira-CsDtYZ9oC6m-1.webp', label: 'Montaje de armario', alt: 'Armario de madera montado en una habitación', position: 'center' },
+    { image: 'chira-montaje-mueble.webp', label: 'Cada pieza en su sitio', alt: 'Sofá gris en forma de L instalado en un salón', position: 'center 72%' },
+    { image: 'chira-porte-sillas.webp', label: 'Traslado de mobiliario', alt: 'Carga de sillas en una furgoneta', position: 'center' },
+    { image: 'chira-desmontaje-transporte-montaje.webp', label: 'Muebles en su nuevo espacio', alt: 'Sofá gris con cojines y mesa de centro en un salón', position: 'center' },
+    { image: 'chira-CrLLvGFIWqP.webp', label: 'Preparados para el traslado', alt: 'Furgoneta con cajas y muebles para un traslado', position: 'center' },
+    { image: 'chira-CsDtYZ9oC6m-2.webp', label: 'Montaje de dormitorio', alt: 'Cama con cajones rojos y blancos', position: 'center' },
+    { image: 'chira-CsRnaU7IW0t.webp', label: 'Montaje, pieza a pieza', alt: 'Estructura de madera y mueble durante su montaje', position: 'center' },
+    { image: 'chira-CwnX-joIPtM-2.webp', label: 'Cuidado en cada montaje', alt: 'Trabajador montando una cama con base de almacenaje', position: 'center' },
+    { image: 'chira-CwnX-joIPtM-3.webp', label: 'Mobiliario para el hogar', alt: 'Armario blanco con una franja de acabado de madera', position: 'center' },
+    { image: 'chira-CwnX-joIPtM-4.webp', label: 'Ajustando cada detalle', alt: 'Trabajador ajustando las divisiones interiores de un mueble', position: 'center' },
+    { image: 'chira-CwnX-joIPtM-5.webp', label: 'Del montaje al resultado', alt: 'Estructura de una cama durante su montaje', position: 'center' },
+    { image: 'chira-montaje-armario-herramientas.webp', label: 'Manos a la obra', alt: 'Herramientas y piezas de un armario durante su montaje', position: 'center' }
+  ];
+  readonly mosaicSlots = [0, 1, 2];
+  readonly mosaicActive = signal([0, 1, 2]);
+  private mosaicTimer?: ReturnType<typeof setInterval>;
+  private mosaicObserver?: IntersectionObserver;
+  private mosaicMotion?: MediaQueryList;
+  private mosaicVisible = false;
+  private mosaicHovered = false;
+  private nextMosaicPhoto = 3;
+  private nextMosaicSlot = 0;
+  private readonly syncMosaic = () => this.restartMosaic();
+
+  private startMosaic(): void {
+    const mosaic = this.element.nativeElement.querySelector('.team-story-mosaic');
+    if (!mosaic) return;
+    this.mosaicMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    this.mosaicObserver = new IntersectionObserver(entries => {
+      this.mosaicVisible = entries[0].isIntersecting;
+      this.restartMosaic();
+    }, { threshold: .2 });
+    this.mosaicObserver.observe(mosaic);
+    this.mosaicMotion.addEventListener('change', this.syncMosaic);
+    document.addEventListener('visibilitychange', this.syncMosaic);
   }
-];
+
+  setMosaicHovered(value: boolean): void {
+    this.mosaicHovered = value;
+    this.restartMosaic();
+  }
+
+  private restartMosaic(): void {
+    clearInterval(this.mosaicTimer);
+    if (!this.mosaicVisible || this.mosaicHovered || this.mosaicMotion?.matches || document.hidden) return;
+    this.zone.runOutsideAngular(() => {
+      this.mosaicTimer = setInterval(() => this.advanceMosaic(), 4500);
+    });
+  }
+
+  private advanceMosaic(): void {
+    const active = this.mosaicActive();
+    // Only fade to a loaded photo, and never show the same photo twice at once.
+    for (let attempt = 0; attempt < this.mosaicPhotos.length; attempt++) {
+      const candidate = this.nextMosaicPhoto++ % this.mosaicPhotos.length;
+      if (active.includes(candidate)) continue;
+      const img = (this.element.nativeElement as HTMLElement).querySelectorAll<HTMLElement>('.story-photo')[this.nextMosaicSlot]?.querySelector<HTMLImageElement>(`img[data-photo="${candidate}"]`);
+      if (!img?.complete || !img.naturalWidth) continue;
+      const next = [...active];
+      next[this.nextMosaicSlot] = candidate;
+      this.nextMosaicSlot = (this.nextMosaicSlot + 1) % 3;
+      this.zone.run(() => this.mosaicActive.set(next));
+      return;
+    }
+  }
 
   constructor() {
     this.title.setTitle(
@@ -146,6 +112,7 @@ export class HomeComponent implements OnDestroy {
     afterNextRender(() => {
       this.zone.runOutsideAngular(() => {
         this.startAnimations();
+        this.startMosaic();
       });
     });
   }
@@ -243,5 +210,9 @@ export class HomeComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this.media?.revert();
+    clearInterval(this.mosaicTimer);
+    this.mosaicObserver?.disconnect();
+    this.mosaicMotion?.removeEventListener('change', this.syncMosaic);
+    document.removeEventListener('visibilitychange', this.syncMosaic);
   }
 }
