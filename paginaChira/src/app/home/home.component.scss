@@ -849,3 +849,12 @@ h2 {
   .trust-grid p { font-size: 14px; }
   .trust-grid > div { padding: 0; }
 }
+
+/* Keep the cover anchored to the left on large desktop viewports. */
+@media(min-width:1600px) {
+  .hero-grid.container {
+    width: calc(100% - 16vw);
+    max-width: none;
+    margin-inline: 8vw;
+  }
+}

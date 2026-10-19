@@ -1,7 +1,4 @@
-import { PaintingVideoComponent } from '../shared/painting-video/painting-video.component';
-import { DemolitionVideoComponent } from '../shared/demolition-video/demolition-video.component';
 import { animatePage } from '../shared/page-motion';
-import { ServiceSceneComponent } from '../shared/service-scene/service-scene.component';
 import { Component, DestroyRef, ElementRef, NgZone, afterNextRender, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Meta, Title } from '@angular/platform-browser';
@@ -11,7 +8,7 @@ import { SERVICIOS } from './servicios.data';
 @Component({
   selector: 'app-servicio',
   standalone: true,
-  imports: [RouterLink, ServiceSceneComponent, DemolitionVideoComponent, PaintingVideoComponent],
+  imports: [RouterLink],
   templateUrl: './servicio.component.html',
   styleUrls: ['./servicio.component.scss']
 })
@@ -29,7 +26,7 @@ export class ServicioComponent {
 
   constructor() {
     afterNextRender(() => this.zone.runOutsideAngular(() => {
-      const cleanup = animatePage(this.element.nativeElement, '.hero-grid > div, .preparation .two-columns > *, .steps > li, .faq .two-columns > *, .contact');
+      const cleanup = animatePage(this.element.nativeElement, '.service-title-block, .service-summary, .scope-list > li');
       this.destroyRef.onDestroy(cleanup);
     }));
     this.route.data

@@ -24,3 +24,14 @@
 .scene.panoramic svg{overflow:hidden}
 .scene.scene-pending{visibility:hidden}
 @media(prefers-reduced-motion:reduce){.scene.scene-pending{visibility:visible}}
+
+:host(.catalog-preview-scene) .halo { fill: #213c50; }
+:host(.catalog-preview-scene) .scene.borderless .scene-caption { color: #b8cddd; }
+:host(.catalog-preview-scene) .route { stroke: #658399; }
+
+:host(.catalog-preview-scene) .scene.borderless svg { max-height: 220px; }
+
+:host(.catalog-editorial-scene) .halo { fill: #152e40; }
+:host(.catalog-editorial-scene) .route { stroke: #547084; }
+:host(.catalog-editorial-scene) .scene-caption { display: none; }
+:host(.catalog-editorial-scene) .scene.borderless svg { max-height: 170px; }

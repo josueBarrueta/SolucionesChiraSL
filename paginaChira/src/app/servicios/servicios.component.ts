@@ -239,7 +239,7 @@ export class ServiciosComponent implements OnDestroy {
     this.media.add(
       '(prefers-reduced-motion: no-preference)',
       () => {
-        const intro = root.querySelectorAll('.intro-enter');
+        const intro = root.querySelectorAll('.eyebrow.intro-enter, .title-word, .intro-description.intro-enter');
         if (intro.length) gsap.from(intro, {
           y: 20,
           opacity: 0,
@@ -254,7 +254,7 @@ export class ServiciosComponent implements OnDestroy {
 
         items.forEach((item: HTMLElement) => {
           gsap.from(item, {
-            y: 24,
+            y: 16,
             opacity: 0,
             duration: 0.7,
             ease: 'power2.out',
