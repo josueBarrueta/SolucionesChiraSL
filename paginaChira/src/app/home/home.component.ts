@@ -120,7 +120,7 @@ export class HomeComponent implements OnDestroy {
   private startAnimations(): void {
     gsap.registerPlugin(ScrollTrigger);
 
-    const root = this.element.nativeElement;
+    const root = this.element.nativeElement as HTMLElement;
 
     this.media = gsap.matchMedia();
 
@@ -162,7 +162,66 @@ export class HomeComponent implements OnDestroy {
             0.65
           );
 
+        const team = root.querySelector('.team-story');
+        const coverage = root.querySelector('.coverage');
+        const film = root.querySelector('.story-film');
+        const map = root.querySelector('.coverage figure');
+        if (film && team) {
+          const track = film.querySelector<HTMLElement>('.story-film-track');
+          const speed = { rate: 24 };
+          const applySpeed = () => {
+            track?.getAnimations().forEach(animation => animation.updatePlaybackRate(speed.rate));
+          };
+          gsap.fromTo(speed, { rate: 24 }, {
+            rate: 1,
+            ease: 'power2.out',
+            onUpdate: applySpeed,
+            scrollTrigger: {
+              trigger: film,
+              start: 'top bottom',
+              end: 'center center',
+              scrub: .6
+            }
+          });
+          applySpeed();
+          const heading = team.querySelector('.story-heading');
+          const closing = team.querySelector('.story-closing');
+          [heading, closing].forEach(text => {
+            if (!text) return;
+            gsap.fromTo(text, { opacity: 0 }, {
+              opacity: 1, ease: 'none',
+              scrollTrigger: {
+                trigger: text,
+                start: 'top 95%',
+                end: 'top 55%',
+                scrub: .5
+              }
+            });
+          });
+        }
+        if (map) {
+          const dots = Array.from(map.querySelectorAll<SVGCircleElement>('.map-dots circle'));
+          const rowDelay = (_index: number, dot: SVGCircleElement) =>
+            (Number(dot.getAttribute('cy')) - 38) / 500;
+          gsap.from(dots, {
+            opacity: 0, duration: .22, ease: 'power1.out',
+            stagger: rowDelay,
+            scrollTrigger: { trigger: map, start: 'top 85%', once: true }
+          });
+          gsap.to(dots, {
+            attr: { r: () => gsap.utils.random(1, 3.2) },
+            duration: () => gsap.utils.random(.7, 1.6),
+            delay: () => gsap.utils.random(0, 1.5),
+            repeat: -1, repeatRefresh: true, yoyo: true, ease: 'sine.inOut',
+            scrollTrigger: {
+              trigger: map, start: 'top bottom', end: 'bottom top',
+              toggleActions: 'play pause resume pause'
+            }
+          });
+        }
+
         root.querySelectorAll('.reveal, .collage-foto').forEach((item: Element) => {
+          if (item.closest('.team-story')) return;
           gsap.from(item, {
             y: 28,
             opacity: 0,
