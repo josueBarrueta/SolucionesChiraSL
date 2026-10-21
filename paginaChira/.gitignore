@@ -46,3 +46,9 @@ Thumbs.db
 .env
 .env.*
 !.env.example
+
+# Variantes de fotografías regeneradas por optimize:images
+/public/images/optimized/
+
+# Estilos de iconos generados desde PrimeIcons
+/src/generated/

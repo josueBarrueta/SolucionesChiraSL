@@ -1,4 +1,4 @@
-@import 'primeicons/primeicons.css';
+@use './generated/primeicons';
 
 html {
   /* Keep mobile desktop mode from enlarging individual text blocks. */

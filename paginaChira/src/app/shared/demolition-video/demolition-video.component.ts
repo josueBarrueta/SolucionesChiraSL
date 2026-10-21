@@ -1,5 +1,8 @@
+import { isPlatformBrowser } from '@angular/common';
+import { loadVisibleVideo } from '../lazy-video';
 import {
   Component,
+  PLATFORM_ID,
   DestroyRef,
   ElementRef,
   afterNextRender,
@@ -27,6 +30,7 @@ export class DemolitionVideoComponent {
   readonly selected = signal(0);
   readonly playbackActive = input(true);
   readonly paused = signal(false);
+  private readonly browser = isPlatformBrowser(inject(PLATFORM_ID));
   readonly failed = signal(false);
   readonly media = MEDIA;
   private visible = false;
@@ -81,6 +85,10 @@ export class DemolitionVideoComponent {
     if (!this.playbackActive() || index !== this.selected()) return;
     const current = this.videos(index);
     const next = (index + 1) % this.zones.length;
+    // Carga la siguiente pareja al terminar; conserva el último fotograma durante la espera.
+    if (current.length === 2 && current.every((video) => video.ended) && this.visible) {
+      this.videos(next).forEach(loadVisibleVideo);
+    }
     // Keep the final frames visible until both incoming videos can display a frame.
     if (
       current.length !== 2 ||
@@ -105,6 +113,7 @@ export class DemolitionVideoComponent {
   }
 
   sync(): void {
+    if (!this.browser) return;
     const active = this.videos(this.selected());
     for (const video of this.root.nativeElement.querySelectorAll('video')) {
       video.muted = true;
@@ -116,6 +125,7 @@ export class DemolitionVideoComponent {
         !this.paused() &&
         !video.ended
       ) {
+        loadVisibleVideo(video);
         void video.play().catch(() => {
           if (video.isConnected && video.error === null) {
             this.paused.set(true);

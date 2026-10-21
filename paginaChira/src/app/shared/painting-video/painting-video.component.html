@@ -6,11 +6,13 @@
 >
   <div class="soft-edge">
     <video
-      src="videos/pintura/fachada.mp4#t=0.001"
+      data-src="videos/pintura/fachada.mp4#t=0.001"
+      poster="videos/pintura/fachada.poster.webp"
+      loading="lazy"
       muted
       loop
       playsinline
-      preload="auto"
+      preload="none"
       (loadedmetadata)="sync()"
       (error)="failed.set(true)"
       aria-label="Plataforma elevadora junto a la fachada"
@@ -19,7 +21,8 @@
   @if (companionPhoto(); as photo) {
     <img
       class="companion-photo"
-      [src]="photo"
+      [appResponsiveImage]="photo"
+      sizes="(max-width: 700px) 50vw, 390px"
       alt="Equipo trabajando en una fachada desde una plataforma elevadora"
       width="1536"
       height="2048"

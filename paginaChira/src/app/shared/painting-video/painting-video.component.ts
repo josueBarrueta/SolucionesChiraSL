@@ -1,5 +1,9 @@
+import { isPlatformBrowser } from '@angular/common';
+import { loadVisibleVideo } from '../lazy-video';
+import { ResponsiveImageDirective } from '../responsive-image.directive';
 import {
   Component,
+  PLATFORM_ID,
   DestroyRef,
   ElementRef,
   afterNextRender,
@@ -13,6 +17,7 @@ import {
 @Component({
   selector: 'app-painting-video',
   standalone: true,
+  imports: [ResponsiveImageDirective],
   templateUrl: './painting-video.component.html',
   styleUrl: './painting-video.component.scss',
 })
@@ -20,6 +25,7 @@ export class PaintingVideoComponent {
   readonly companionPhoto = input<string>();
   readonly playbackActive = input(true);
   readonly paused = signal(false);
+  private readonly browser = isPlatformBrowser(inject(PLATFORM_ID));
   readonly failed = signal(false);
   private visible = false;
   private readonly root = inject(ElementRef<HTMLElement>);
@@ -62,9 +68,11 @@ export class PaintingVideoComponent {
   }
 
   sync(): void {
+    if (!this.browser) return;
     for (const video of this.root.nativeElement.querySelectorAll('video')) {
       video.muted = true;
       if (this.playbackActive() && this.visible && !document.hidden && !this.paused()) {
+        loadVisibleVideo(video);
         void video.play().catch(() => {
           if (video.isConnected && video.error === null) {
             this.paused.set(true);

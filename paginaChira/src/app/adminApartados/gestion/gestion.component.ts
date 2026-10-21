@@ -1,11 +1,10 @@
 import { DOCUMENT } from '@angular/common';
-import { InvoicePreviewService } from '../adminFacturas/invoice-preview.service';
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ApiError, ChiraApiService, Encuesta } from '../../shared/chira-api.service';
-
-type Resource = 'clientes' | 'trabajos' | 'gastos' | 'facturas';
+type Resource = 'clientes' | 'trabajos' | 'gastos';
+type RelatedResource = Resource | 'facturas';
 type Row = Record<string, any>;
 interface Field {
   key: string;
@@ -56,13 +55,6 @@ const fields: Record<Resource, Field[]> = {
     { key: 'proveedor', label: 'Proveedor' },
     { key: 'ivaImporte', label: 'IVA del justificante (€)', type: 'number' },
   ],
-  facturas: [
-    { key: 'numeroExterno', label: 'Número de factura externa (opcional)' },
-    { key: 'clienteId', label: 'Cliente', source: 'clientes', required: true },
-    { key: 'trabajoId', label: 'Trabajo', source: 'trabajos' },
-    { key: 'fecha', label: 'Fecha', type: 'date', required: true },
-    { key: 'vencimiento', label: 'Vencimiento', type: 'date' },
-  ],
 };
 @Component({
   selector: 'app-gestion',
@@ -72,16 +64,17 @@ const fields: Record<Resource, Field[]> = {
   styleUrls: ['./gestion.component.scss'],
 })
 export class GestionComponent implements OnInit, OnDestroy {
-  @Input({ required: true }) resource!: Resource;
-  @ViewChild('editor', { static: true }) editor!: ElementRef<HTMLDialogElement>;
+  @Input({ required: true })
+  resource!: Resource;
+  @ViewChild('editor', { static: true })
+  editor!: ElementRef<HTMLDialogElement>;
   protected readonly api = inject(ChiraApiService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly document = inject(DOCUMENT);
-  private readonly invoicePreview = inject(InvoicePreviewService);
   private refreshTimer?: ReturnType<typeof setInterval>;
   private overflow: string | null = null;
-  data: Record<Resource, Row[]> = { clientes: [], trabajos: [], gastos: [], facturas: [] };
+  data: Record<RelatedResource, Row[]> = { clientes: [], trabajos: [], gastos: [], facturas: [] };
   encuestas: Encuesta[] = [];
   empresa: Row = {};
   draft: Row = {};
@@ -91,28 +84,17 @@ export class GestionComponent implements OnInit, OnDestroy {
   editorError = '';
   message = '';
   search = '';
-  jobSearch = '';
-  jobPickerOpen = false;
   showArchived = false;
   status = '';
   selected: Row | null = null;
-  payment: Row = {};
   readonly today = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Madrid' }).format(
     new Date(),
   );
   get title(): string {
-    return { clientes: 'Clientes', trabajos: 'Trabajos', gastos: 'Gastos', facturas: 'Facturas' }[
-      this.resource
-    ];
+    return { clientes: 'Clientes', trabajos: 'Trabajos', gastos: 'Gastos' }[this.resource];
   }
   get fields(): Field[] {
     return fields[this.resource];
-  }
-  get documents(): boolean {
-    return this.resource === 'facturas';
-  }
-  get issued(): boolean {
-    return this.resource === 'facturas' && this.draft['estado'] === 'Registrada';
   }
   get rows(): Row[] {
     return this.data[this.resource].filter(
@@ -133,18 +115,8 @@ export class GestionComponent implements OnInit, OnDestroy {
   get states(): string[] {
     return (
       fields[this.resource].find((f) => f.key === 'estado')?.options ??
-      (this.resource === 'facturas'
-        ? ['Borrador', 'Registrada']
-        : this.resource === 'gastos'
-          ? ['Pagado', 'Pendiente']
-          : [])
+      (this.resource === 'gastos' ? ['Pagado', 'Pendiente'] : [])
     );
-  }
-  get draftTotal(): number {
-    return (this.draft['lineas'] ?? []).reduce((sum: number, line: Row) => {
-      const base = Math.round(Number(line['cantidad'] ?? 0) * Number(line['precio'] ?? 0) * 100);
-      return sum + base + Math.round((base * Number(line['iva'] ?? 0)) / 100);
-    }, 0);
   }
   clientRequests(client: Row): Encuesta[] {
     const id = client['id'];
@@ -190,7 +162,6 @@ export class GestionComponent implements OnInit, OnDestroy {
   get requestClient(): Row | undefined {
     return this.data.clientes.find((c) => c['id'] === this.draft['clienteId']);
   }
-  confirmingIssue = false;
   period = 'mes';
   anchor = this.today;
   desde = this.today.slice(0, 7) + '-01';
@@ -199,7 +170,7 @@ export class GestionComponent implements OnInit, OnDestroy {
     '-' +
     new Date(Number(this.today.slice(0, 4)), Number(this.today.slice(5, 7)), 0).getDate();
   get financial(): boolean {
-    return this.resource === 'facturas' || this.resource === 'gastos';
+    return this.resource === 'gastos';
   }
   get invalidPeriod(): boolean {
     return !!this.desde && !!this.hasta && this.desde > this.hasta;
@@ -245,92 +216,37 @@ export class GestionComponent implements OnInit, OnDestroy {
       (row) => !row['archivada'] && this.inPeriod(row['fecha']),
     );
   }
-  get summary(): { label: string; value: string; note: string }[] {
+  get summary(): {
+    label: string;
+    value: string;
+    note: string;
+  }[] {
+    if (this.resource !== 'gastos') return [];
     const sum = (rows: Row[], key: string) =>
       this.money(rows.reduce((n, row) => n + (row[key] ?? 0), 0));
-    if (this.resource === 'gastos')
-      return [
-        {
-          label: 'Gastos registrados',
-          value: sum(this.periodRows, 'importeCentimos'),
-          note: 'Importes totales del periodo',
-        },
-        {
-          label: 'Gastos pagados',
-          value: sum(
-            this.periodRows.filter((r) => r['pagado']),
-            'importeCentimos',
-          ),
-          note: 'Según el estado registrado',
-        },
-        {
-          label: 'Gastos pendientes',
-          value: sum(
-            this.periodRows.filter((r) => !r['pagado']),
-            'importeCentimos',
-          ),
-          note: 'Pendientes o sin pago indicado',
-        },
-      ];
     return [
       {
-        label: 'Borradores del periodo',
-        value: sum(
-          this.periodRows.filter((r) => r['estado'] === 'Borrador'),
-          'totalCentimos',
-        ),
-        note: 'No añaden ingresos',
+        label: 'Gastos registrados',
+        value: sum(this.periodRows, 'importeCentimos'),
+        note: 'Importes totales del periodo',
       },
       {
-        label: 'Facturas emitidas',
+        label: 'Gastos pagados',
         value: sum(
-          this.periodRows.filter((r) => r['modoEmision'] === 'Emitida'),
-          'totalCentimos',
+          this.periodRows.filter((r) => r['pagado']),
+          'importeCentimos',
         ),
-        note: 'Con número definitivo',
+        note: 'Según el estado registrado',
       },
       {
-        label: 'Pendiente de cobro',
-        value: this.money(
-          this.periodRows
-            .filter((r) => r['estado'] === 'Registrada')
-            .reduce((n, r) => n + r['totalCentimos'] - (r['pagadoCentimos'] ?? 0), 0),
+        label: 'Gastos pendientes',
+        value: sum(
+          this.periodRows.filter((r) => !r['pagado']),
+          'importeCentimos',
         ),
-        note: 'Saldo actual del periodo',
+        note: 'Pendientes o sin pago indicado',
       },
     ];
-  }
-  get finishedJobs(): Row[] {
-    return this.data.trabajos.filter(
-      (r) => !r['archivada'] && r['estado'] === 'Finalizado' && this.inPeriod(r['fecha']),
-    );
-  }
-  prepareJob(job: Row): void {
-    const previous =
-      this.data.facturas.find(
-        (r) => r['trabajoId'] === job['id'] && r['estado'] === 'Registrada',
-      ) ?? this.data.facturas.find((r) => r['trabajoId'] === job['id'] && !r['archivada']);
-    if (previous) {
-      this.open(previous);
-      return;
-    }
-    if (!job['clienteId']) {
-      this.error = 'Completa el cliente del trabajo antes de preparar su factura.';
-      return;
-    }
-    this.open();
-    Object.assign(this.draft, {
-      clienteId: job['clienteId'],
-      trabajoId: job['id'],
-      lineas: [
-        {
-          concepto: job['titulo'],
-          cantidad: 1,
-          precio: job['precioAcordadoCentimos'] == null ? 0 : job['precioAcordadoCentimos'] / 100,
-          iva: this.empresa['ivaPredeterminado'],
-        },
-      ],
-    });
   }
   invoiceState(row: Row): string {
     return row['modoEmision'] === 'Emitida'
@@ -338,31 +254,6 @@ export class GestionComponent implements OnInit, OnDestroy {
       : row['estado'] === 'Registrada'
         ? 'Registro interno · ' + row['referencia']
         : 'Borrador';
-  }
-  get issuerMissing(): string[] {
-    return [
-      { key: 'nombre', label: 'razón social' },
-      { key: 'nif', label: 'NIF' },
-      { key: 'direccion', label: 'domicilio fiscal' },
-      { key: 'serieFacturas', label: 'serie de facturas' },
-    ]
-      .filter((f) => !this.empresa[f.key]?.trim())
-      .map((f) => f.label);
-  }
-  requestIssue(): void {
-    this.editorError = '';
-    if (
-      JSON.stringify(this.draft) !==
-      JSON.stringify(this.data.facturas.find((r) => r['id'] === this.draft['id']))
-    ) {
-      this.editorError = 'Guarda los cambios del borrador antes de emitirlo.';
-      return;
-    }
-    if (this.issuerMissing.length) {
-      this.editorError = 'Completa en Configuración: ' + this.issuerMissing.join(', ') + '.';
-      return;
-    }
-    this.confirmingIssue = true;
   }
   async attach(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement,
@@ -448,43 +339,11 @@ export class GestionComponent implements OnInit, OnDestroy {
           .map((e) => ({ id: e.id, nombre: `${e.referencia} · ${e.nombre}` }))
       : this.data[source].filter((r) => !r['archivada'] || r['id'] === current);
   }
-  jobReference(job: Row): string {
-    return (
-      this.encuestas.find((e) => e.id === job['encuestaId'])?.referencia ||
-      job['referencia'] ||
-      `Trabajo · ${job['id']}`
-    );
-  }
   jobDate(job: Row): string {
     const value = String(job['fecha'] || '');
     return /^\d{4}-\d{2}-\d{2}$/.test(value)
       ? value.split('-').reverse().join('/')
       : 'Sin fecha prevista';
-  }
-  jobInvoice(job: Row): string {
-    const invoices = this.data.facturas.filter(
-      (r) => r['trabajoId'] === job['id'] && !r['archivada'] && r['id'] !== this.draft['id'],
-    );
-    return invoices.some((r) => r['estado'] === 'Registrada')
-      ? 'Ya facturado'
-      : invoices.length
-        ? 'Factura en borrador'
-        : '';
-  }
-  get selectedJob(): Row | undefined {
-    return this.data.trabajos.find((r) => r['id'] === this.draft['trabajoId']);
-  }
-  get invoiceJobs(): Row[] {
-    if (!this.draft['clienteId']) return [];
-    const query = this.jobSearch.trim().toLocaleLowerCase('es');
-    return this.options('trabajos', this.draft['trabajoId']).filter(
-      (job) =>
-        job['clienteId'] === this.draft['clienteId'] &&
-        [job['titulo'], this.jobReference(job), job['direccion'], this.jobDate(job), job['estado']]
-          .join(' ')
-          .toLocaleLowerCase('es')
-          .includes(query),
-    );
   }
   clientChanged(): void {
     if (this.resource === 'trabajos') {
@@ -504,27 +363,27 @@ export class GestionComponent implements OnInit, OnDestroy {
       }
       return;
     }
-    if (this.resource !== 'facturas') return;
-    if (this.selectedJob?.['clienteId'] !== this.draft['clienteId']) this.draft['trabajoId'] = '';
-    this.jobSearch = '';
-    this.jobPickerOpen = false;
-  }
-  selectJob(job?: Row): void {
-    this.draft['trabajoId'] = job?.['id'] || '';
-    this.jobPickerOpen = false;
-    this.jobSearch = '';
+    return;
   }
   get surveyGroups(): {
     title: string;
     address: boolean;
-    answers: { label: string; value: string; missing: boolean }[];
+    answers: {
+      label: string;
+      value: string;
+      missing: boolean;
+    }[];
   }[] {
     const groups = new Map<
       string,
       {
         title: string;
         address: boolean;
-        answers: { label: string; value: string; missing: boolean }[];
+        answers: {
+          label: string;
+          value: string;
+          missing: boolean;
+        }[];
       }
     >();
     for (const answer of this.solicitud?.respuestas || []) {
@@ -550,50 +409,24 @@ export class GestionComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.error = '';
     try {
-      const names = Object.keys(this.data) as Resource[];
+      const names = Object.keys(this.data) as RelatedResource[];
       const [records, surveys, settings] = await Promise.all([
         Promise.all(
-          names.map((name) => this.api.request<{ registros: Row[] }>(`/gestion/${name}`)),
+          names.map((name) =>
+            this.api.request<{
+              registros: Row[];
+            }>(`/gestion/${name}`),
+          ),
         ),
         this.api.listar(),
-        this.api.request<{ configuracion: Row }>('/gestion/configuracion'),
+        this.api.request<{
+          configuracion: Row;
+        }>('/gestion/configuracion'),
       ]);
       names.forEach((name, i) => (this.data[name] = records[i].registros));
       this.encuestas = surveys.encuestas;
       this.empresa = settings.configuracion;
       const id = this.route.snapshot.queryParamMap.get('registro');
-      const trabajoId = this.route.snapshot.queryParamMap.get('trabajo');
-      if (this.resource === 'facturas' && trabajoId && !this.editor.nativeElement.open) {
-        const job = this.data.trabajos.find(
-          (r) => r['id'] === trabajoId && r['estado'] === 'Finalizado',
-        );
-        if (job && !job['clienteId'])
-          throw new Error('Completa el cliente del trabajo antes de preparar la factura.');
-        if (job) {
-          const invoice =
-            this.data.facturas.find(
-              (r) => r['trabajoId'] === trabajoId && r['estado'] === 'Registrada',
-            ) ?? this.data.facturas.find((r) => r['trabajoId'] === trabajoId && !r['archivada']);
-          this.open(invoice);
-          if (!invoice)
-            Object.assign(this.draft, {
-              clienteId: job['clienteId'],
-              trabajoId,
-              lineas: [
-                {
-                  concepto: job['titulo'],
-                  cantidad: 1,
-                  precio:
-                    job['precioAcordadoCentimos'] == null ? 0 : job['precioAcordadoCentimos'] / 100,
-                  iva: this.empresa['ivaPredeterminado'],
-                },
-              ],
-            });
-          this.message = invoice
-            ? 'Factura vinculada al trabajo.'
-            : 'Completa el precio y el IVA antes de guardar la factura.';
-        }
-      }
       if (id && !this.editor.nativeElement.open) {
         const row = this.data[this.resource].find((r) => r['id'] === id);
         if (row) this.open(row);
@@ -608,8 +441,6 @@ export class GestionComponent implements OnInit, OnDestroy {
   open(row?: Row): void {
     this.selected = row ?? null;
     this.editorError = '';
-    this.jobSearch = '';
-    this.jobPickerOpen = false;
     this.draft = row
       ? structuredClone(row)
       : {
@@ -622,25 +453,18 @@ export class GestionComponent implements OnInit, OnDestroy {
           direccion: '',
           localidad: '',
           codigoPostal: '',
-          funcion: '',
-          disponibilidad: '',
           clienteId: '',
           trabajoId: '',
           encuestaId: '',
           estado: this.resource === 'trabajos' ? 'Pendiente' : 'Borrador',
           fecha: this.resource === 'trabajos' ? '' : this.today,
           precioAcordado: null,
-          vencimiento: '',
           categoria: 'Otros',
           importe: 0,
           descripcion: '',
           tareas: '',
           notas: '',
-          condiciones: this.empresa['condiciones'] ?? '',
           archivada: false,
-          lineas: [
-            { concepto: '', cantidad: 1, precio: 0, iva: this.empresa['ivaPredeterminado'] },
-          ],
         };
     if (this.resource === 'gastos' && row) {
       this.draft['importe'] = row['importeCentimos'] / 100;
@@ -649,8 +473,6 @@ export class GestionComponent implements OnInit, OnDestroy {
     if (this.resource === 'trabajos' && row)
       this.draft['precioAcordado'] =
         row['precioAcordadoCentimos'] == null ? null : row['precioAcordadoCentimos'] / 100;
-    this.confirmingIssue = false;
-    this.payment = { importe: 0, fecha: this.today, metodo: 'Transferencia' };
     if (!this.editor.nativeElement.open) {
       this.overflow = this.document.body.style.overflow;
       this.document.body.style.overflow = 'hidden';
@@ -661,13 +483,10 @@ export class GestionComponent implements OnInit, OnDestroy {
     if (this.saving) return;
     this.editor.nativeElement.close();
     this.restoreScroll();
-    if (
-      this.route.snapshot.queryParamMap.has('registro') ||
-      this.route.snapshot.queryParamMap.has('trabajo')
-    )
+    if (this.route.snapshot.queryParamMap.has('registro'))
       void this.router.navigate([], {
         relativeTo: this.route,
-        queryParams: { registro: null, trabajo: null },
+        queryParams: { registro: null },
         queryParamsHandling: 'merge',
         replaceUrl: true,
       });
@@ -684,18 +503,10 @@ export class GestionComponent implements OnInit, OnDestroy {
     }
   }
   async save(): Promise<void> {
-    if (this.saving || this.issued) return;
+    if (this.saving) return;
     this.editorError = '';
     if (this.resource === 'gastos' && !this.validAmount(this.draft['importe'])) {
       this.editorError = 'Introduce un importe de al menos 0,01 € y como máximo dos decimales.';
-      return;
-    }
-    if (
-      this.resource === 'facturas' &&
-      this.draft['trabajoId'] &&
-      (!this.selectedJob || this.selectedJob['clienteId'] !== this.draft['clienteId'])
-    ) {
-      this.editorError = 'Selecciona un trabajo del cliente de esta factura.';
       return;
     }
     this.saving = true;
@@ -744,48 +555,15 @@ export class GestionComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.error = '';
     try {
-      const result = await this.api.request<{ trabajos: number }>(
-        '/gestion/sincronizar',
-        'POST',
-        {},
-      );
+      const result = await this.api.request<{
+        trabajos: number;
+      }>('/gestion/sincronizar', 'POST', {});
       this.message = `Solicitudes sincronizadas. Clientes actualizados y ${result.trabajos} trabajos vinculados, sin duplicados.`;
       await this.load();
     } catch (e) {
       this.error = e instanceof Error ? e.message : 'No se pudo sincronizar.';
     } finally {
       this.loading = false;
-    }
-  }
-  addLine(): void {
-    this.draft['lineas'].push({
-      concepto: '',
-      cantidad: 1,
-      precio: 0,
-      iva: this.empresa['ivaPredeterminado'],
-    });
-  }
-  async issue(): Promise<void> {
-    if (this.saving || !this.confirmingIssue) return;
-    this.saving = true;
-    this.editorError = '';
-    try {
-      const result = await this.api.request<{ registro: Row }>(
-        `/gestion/facturas/${this.draft['id']}/emitir`,
-        'POST',
-        {},
-      );
-      this.draft = result.registro;
-      this.confirmingIssue = false;
-      this.message =
-        'Factura ' +
-        this.draft['referencia'] +
-        ' emitida. Puedes reimprimirla con el mismo número.';
-      await this.load();
-    } catch (e) {
-      this.editorError = e instanceof Error ? e.message : 'No se pudo emitir.';
-    } finally {
-      this.saving = false;
     }
   }
   validAmount(value: unknown): boolean {
@@ -795,30 +573,6 @@ export class GestionComponent implements OnInit, OnDestroy {
       Math.abs(scaled - Math.round(scaled)) <= Number.EPSILON * Math.max(1, Math.abs(scaled)) * 4
     );
   }
-  async pay(): Promise<void> {
-    if (this.saving) return;
-    if (!this.validAmount(this.payment['importe'])) {
-      this.editorError = 'Introduce un pago de al menos 0,01 € y como máximo dos decimales.';
-      return;
-    }
-    this.saving = true;
-    this.editorError = '';
-    try {
-      const result = await this.api.request<{ registro: Row }>(
-        `/gestion/facturas/${this.draft['id']}/pago`,
-        'POST',
-        this.payment,
-      );
-      this.draft = result.registro;
-      this.payment['importe'] = 0;
-      this.message = 'Pago registrado.';
-      await this.load();
-    } catch (e) {
-      this.editorError = e instanceof Error ? e.message : 'No se pudo registrar el pago.';
-    } finally {
-      this.saving = false;
-    }
-  }
   print(rowOverride?: Row): void {
     const row =
       rowOverride ??
@@ -826,14 +580,7 @@ export class GestionComponent implements OnInit, OnDestroy {
       this.draft;
     const empresa = row['empresa'] ?? this.empresa;
     const cliente =
-      row['cliente'] ??
-      row['clienteFiscal'] ??
-      this.data.clientes.find((r) => r['id'] === row['clienteId']) ??
-      {};
-    if (this.documents) {
-      this.invoicePreview.show(row, empresa, cliente);
-      return;
-    }
+      row['cliente'] ?? this.data.clientes.find((r) => r['id'] === row['clienteId']) ?? {};
     const escape = (value: unknown) =>
       String(value ?? '').replace(
         /[&<>"']/g,
@@ -844,14 +591,7 @@ export class GestionComponent implements OnInit, OnDestroy {
       this.editorError = 'Permite ventanas emergentes para imprimir o guardar como PDF.';
       return;
     }
-    const title =
-      this.resource === 'trabajos'
-        ? 'Ficha de servicio'
-        : row['modoEmision'] === 'Emitida'
-          ? 'Factura'
-          : row['estado'] === 'Registrada'
-            ? 'Registro interno de factura'
-            : 'Borrador de factura';
+    const title = 'Ficha de servicio';
     const details = (values: unknown[]) =>
       values
         .filter((value) => value !== null && value !== undefined && value !== '')
@@ -860,45 +600,7 @@ export class GestionComponent implements OnInit, OnDestroy {
     const section = (label: string, value: unknown) =>
       value ? `<section class="notes"><h2>${label}</h2><p>${escape(value)}</p></section>` : '';
     const survey = this.encuestas.find((e) => e.id === row['encuestaId']);
-    const paymentSummary =
-      this.resource === 'facturas' && row['estado'] === 'Registrada'
-        ? `<div class="payment-status"><div><span>Pagado</span><strong>${this.money(row['pagadoCentimos'] ?? 0)}</strong></div><div><span>Pendiente</span><strong>${this.money(row['totalCentimos'] - (row['pagadoCentimos'] ?? 0))}</strong></div></div>`
-        : '';
-    const content =
-      this.resource === 'trabajos'
-        ? `<h2 class="service-title">${escape(row['titulo'])}</h2>${section('Lugar del servicio', row['direccion'])}${section('Descripción', row['descripcion'])}${section('Tareas y materiales', row['tareas'])}${(survey?.respuestas ?? []).map((r) => section(escape(r.pregunta), r.respuesta)).join('')}`
-        : /* HTML */ `<table>
-              <thead>
-                <tr>
-                  <th>Concepto</th>
-                  <th class="number">Cant.</th>
-                  <th class="number">Precio</th>
-                  <th class="number">IVA</th>
-                  <th class="number">Base</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${(row['lineas'] ?? [])
-                  .map(
-                    (line: Row) =>
-                      `<tr><td>${escape(line['concepto'])}</td><td class="number">${escape(line['cantidad'])}</td><td class="number">${this.money(Math.round(line['precio'] * 100))}</td><td class="number">${escape(line['iva'])}%</td><td class="number">${this.money(Math.round(line['cantidad'] * line['precio'] * 100))}</td></tr>`,
-                  )
-                  .join('')}
-              </tbody>
-            </table>
-            <div class="totals">
-              <div>
-                <span>Base imponible</span><strong>${this.money(row['baseCentimos'])}</strong>
-              </div>
-              <div><span>IVA</span><strong>${this.money(row['ivaCentimos'])}</strong></div>
-              <div class="grand-total">
-                <span>Total</span><strong>${this.money(row['totalCentimos'])}</strong>
-              </div>
-            </div>
-            ${paymentSummary}${section('Condiciones', row['condiciones'])}${section(
-              'Datos de pago · IBAN',
-              empresa['iban'],
-            )}`;
+    const content = `<h2 class="service-title">${escape(row['titulo'])}</h2>${section('Lugar del servicio', row['direccion'])}${section('Descripción', row['descripcion'])}${section('Tareas y materiales', row['tareas'])}${(survey?.respuestas ?? []).map((r) => section(escape(r.pregunta), r.respuesta)).join('')}`;
     popup.document.write(
       /* HTML */ `<!doctype html>
         <html lang="es">
@@ -1010,54 +712,6 @@ export class GestionComponent implements OnInit, OnDestroy {
                 font-weight: 500;
                 text-align: right;
               }
-              table {
-                width: 100%;
-                border-collapse: collapse;
-                table-layout: fixed;
-              }
-              th {
-                font-size: 10px;
-                text-transform: uppercase;
-                letter-spacing: 0.6px;
-                color: #4f5a63;
-                padding: 12px 8px;
-                border-bottom: 2px solid #293946;
-              }
-              td {
-                padding: 15px 8px;
-                border-bottom: 1px solid #dfe2e5;
-                vertical-align: top;
-                overflow-wrap: anywhere;
-              }
-              th:first-child,
-              td:first-child {
-                text-align: left;
-                width: 44%;
-                padding-left: 0;
-              }
-              .number {
-                text-align: right;
-              }
-              th:last-child,
-              td:last-child {
-                padding-right: 0;
-              }
-              .totals {
-                width: 55%;
-                margin: 24px 0 32px auto;
-              }
-              .totals div {
-                display: flex;
-                justify-content: space-between;
-                gap: 16px;
-                padding: 7px 0;
-              }
-              .grand-total {
-                border-top: 2px solid #293946;
-                margin-top: 10px;
-                font-size: 21px;
-                color: #293946;
-              }
               .notes {
                 margin: 24px 0;
                 break-inside: avoid;
@@ -1081,12 +735,6 @@ export class GestionComponent implements OnInit, OnDestroy {
                 color: #5f6b75;
                 text-align: center;
               }
-              thead {
-                display: table-header-group;
-              }
-              tr {
-                break-inside: avoid;
-              }
               @page {
                 size: A4;
                 margin: 16mm;
@@ -1104,9 +752,6 @@ export class GestionComponent implements OnInit, OnDestroy {
                 }
                 .info {
                   grid-template-columns: 1fr;
-                }
-                .totals {
-                  width: 100%;
                 }
               }
               @media print {
@@ -1134,10 +779,6 @@ export class GestionComponent implements OnInit, OnDestroy {
                 }
                 .info {
                   grid-template-columns: 1fr 1fr;
-                }
-                .totals {
-                  width: 55%;
-                  break-inside: avoid;
                 }
                 .footer {
                   break-inside: avoid;
@@ -1205,36 +846,6 @@ export class GestionComponent implements OnInit, OnDestroy {
               .meta div {
                 margin-bottom: 5px;
               }
-              .number,
-              .totals strong,
-              .payment-status strong {
-                font-variant-numeric: tabular-nums;
-                font-family: monospace;
-                white-space: nowrap;
-              }
-              th {
-                padding: 10px 4px;
-                font-size: 9px;
-                letter-spacing: 0;
-              }
-              td {
-                padding: 12px 4px;
-                font-size: 12px;
-              }
-              th:first-child,
-              td:first-child {
-                width: 40%;
-              }
-              .totals {
-                width: 100%;
-                margin: 20px 0;
-              }
-              .grand-total {
-                border-top: 2px dashed #4f5a63;
-                border-bottom: 2px dashed #4f5a63;
-                padding: 14px 0 !important;
-                font-size: 23px;
-              }
               .notes {
                 margin: 20px 0;
               }
@@ -1246,19 +857,6 @@ export class GestionComponent implements OnInit, OnDestroy {
                 margin-top: 24px;
                 font-size: 10px;
                 line-height: 1.6;
-              }
-              .payment-status {
-                padding: 12px 0;
-                border-bottom: 1px dashed #bac2c8;
-              }
-              .payment-status div {
-                display: flex;
-                justify-content: space-between;
-                gap: 20px;
-                padding: 4px 0;
-              }
-              .payment-status span {
-                color: #545e66;
               }
               @media print {
                 .receipt {
@@ -1277,22 +875,10 @@ export class GestionComponent implements OnInit, OnDestroy {
                 .info {
                   grid-template-columns: 1fr;
                 }
-                .totals {
-                  width: 100%;
-                }
-                .payment-status {
-                  break-inside: avoid;
-                }
               }
               @media (max-width: 420px) {
                 .receipt {
                   padding: 24px 16px;
-                }
-                td {
-                  font-size: 11px;
-                }
-                .grand-total {
-                  font-size: 21px;
                 }
               }
             </style>
@@ -1317,12 +903,7 @@ export class GestionComponent implements OnInit, OnDestroy {
                 <div class="document">
                   <p class="eyebrow">Soluciones Chira</p>
                   <h1>${title}</h1>
-                  <div class="reference">
-                    ${escape(
-                      row['referencia'] ??
-                        (this.resource === 'trabajos' ? 'Detalle del trabajo' : 'BORRADOR'),
-                    )}
-                  </div>
+                  <div class="reference">${escape(row['referencia'] ?? 'Detalle del trabajo')}</div>
                 </div>
               </header>
               <section class="info">
@@ -1340,7 +921,7 @@ export class GestionComponent implements OnInit, OnDestroy {
                 <div class="meta">
                   <h2>Datos del documento</h2>
                   <div>
-                    <span>${this.resource === 'trabajos' ? 'Fecha prevista' : 'Fecha'}</span
+                    <span>${'Fecha prevista'}</span
                     ><strong>${escape(row['fecha'] || 'Sin asignar')}</strong>
                   </div>
                   ${row['fechaOperacion']
@@ -1354,11 +935,7 @@ export class GestionComponent implements OnInit, OnDestroy {
               </section>
               ${content}
               <footer class="footer">
-                ${this.resource === 'facturas'
-                  ? row['modoEmision'] === 'Emitida'
-                    ? 'Factura emitida · Los pagos reflejan los cobros registrados.'
-                    : 'Borrador o registro interno · No acredita el pago.'
-                  : 'Ficha de servicio · Detalle de los trabajos previstos.'}
+                ${'Ficha de servicio · Detalle de los trabajos previstos.'}
               </footer>
             </main>
           </body>

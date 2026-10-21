@@ -3,7 +3,9 @@
     <section class="hero" aria-labelledby="hero-title">
       <div class="hero-background" aria-hidden="true">
         <img
-          src="images/trabajos/equipo-mudanzas.webp"
+          appResponsiveImage="images/trabajos/equipo-mudanzas.webp"
+          [imageWidths]="[480, 960, 1440]"
+          sizes="(max-width: 700px) 90vw, (max-width: 1514px) 74vw, 1120px"
           alt=""
           width="1440"
           height="1440"
@@ -80,10 +82,11 @@
       <div class="story-film-track">
         @for (copy of [0, 1]; track copy) {
           <div class="story-film-set" [attr.aria-hidden]="copy === 1 ? 'true' : null">
-            @for (photo of mosaicPhotos; track photo.image; let i = $index) {
+            @for (photo of galleryPhotos; track photo.image; let i = $index) {
               <figure class="story-frame" [class.story-frame-wide]="i % 3 === 0">
                 <img
-                  [src]="'images/collage/' + photo.image"
+                  [appResponsiveImage]="'images/collage/' + photo.image"
+                  sizes="(max-width: 700px) 240px, 370px"
                   [alt]="copy === 0 ? photo.alt : ''"
                   [style.object-position]="photo.position"
                   width="1080"

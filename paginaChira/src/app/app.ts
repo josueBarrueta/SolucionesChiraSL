@@ -1,5 +1,5 @@
 import { SeoService } from './seo/seo.service';
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
@@ -19,6 +19,4 @@ export class App {
     const path = this.router.url.split(/[?#]/)[0];
     return path === '/login' || path === '/admin' || path.startsWith('/admin/');
   }
-
-  protected readonly title = signal('paginaChira');
 }

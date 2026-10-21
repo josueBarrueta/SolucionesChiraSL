@@ -1,3 +1,4 @@
+import { ResponsiveImageDirective } from '../responsive-image.directive';
 import { PaintingVideoComponent } from '../painting-video/painting-video.component';
 import { DemolitionVideoComponent } from '../demolition-video/demolition-video.component';
 import { SwipeDirective } from '../swipe.directive';
@@ -11,14 +12,13 @@ import {
   signal,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-featured-services',
   standalone: true,
   imports: [
+    ResponsiveImageDirective,
     RouterLink,
-    ButtonModule,
     SwipeDirective,
     DemolitionVideoComponent,
     PaintingVideoComponent,
@@ -37,8 +37,6 @@ export class FeaturedServicesComponent {
       accent: 'Un buen comienzo.',
       description:
         'Prepara tu próxima reforma. Revisamos qué necesitas derribar y qué quieres conservar.',
-      action: 'Consultar mi proyecto',
-      caption: 'VALORAMOS CADA PROYECTO DESDE EL PRINCIPIO',
     },
     {
       id: 'pintura',
@@ -47,8 +45,6 @@ export class FeaturedServicesComponent {
       accent: 'Un nuevo aire.',
       description:
         'Dale otro aire a tu hogar o negocio. Valoramos las superficies y el acabado que buscas.',
-      action: 'Consultar mi pintura',
-      caption: 'TU ESPACIO, CON OTRA MIRADA',
     },
     {
       id: 'vaciados',
@@ -57,11 +53,9 @@ export class FeaturedServicesComponent {
       accent: 'Abre posibilidades.',
       description:
         'Recupera tu vivienda, local o trastero. Cuéntanos qué quieres retirar y organizamos el vaciado.',
-      action: 'Consultar un vaciado',
       image: 'images/trabajos/carga-muebles.webp',
       imageAlt:
         'Miembro del equipo retirando un panel de madera junto a una zona con muebles y materiales',
-      caption: 'Espacio para lo que viene.',
     },
     {
       id: 'mudanzas',
@@ -70,10 +64,8 @@ export class FeaturedServicesComponent {
       accent: 'Cuidamos lo que importa.',
       description:
         'Tu hogar cambia de lugar. Nosotros cuidamos de tus muebles y de cada detalle del traslado.',
-      action: 'Planificar mi mudanza',
       image: 'images/collage/chira-porte-sillas.webp',
       imageAlt: 'Miembro del equipo cargando sillas en una furgoneta',
-      caption: 'De aquí, a tu siguiente etapa.',
     },
   ];
   readonly renderedSlides = [...this.slides, ...this.slides, ...this.slides];

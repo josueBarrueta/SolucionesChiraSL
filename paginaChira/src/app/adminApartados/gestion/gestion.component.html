@@ -5,13 +5,11 @@
       <h1>{{ title }}</h1>
       <p class="subtitle">
         {{
-          resource === 'facturas'
-            ? 'Tus facturas, claras y organizadas.'
-            : resource === 'gastos'
-              ? 'Cada gasto, en su lugar.'
-              : resource === 'clientes'
-                ? 'Los datos de cada cliente y su historial de servicios.'
-                : 'Completa el servicio acordado, su precio y la fecha prevista.'
+          resource === 'gastos'
+            ? 'Cada gasto, en su lugar.'
+            : resource === 'clientes'
+              ? 'Los datos de cada cliente y su historial de servicios.'
+              : 'Completa el servicio acordado, su precio y la fecha prevista.'
         }}
       </p>
     </div>
@@ -108,72 +106,19 @@
         </article>
       }
     </div>
-    @if (resource === 'facturas') {
-      <section class="finance-card">
-        <header>
-          <div>
-            <h2>Trabajos finalizados</h2>
-            <p>Prepara la factura del servicio y completa su precio antes de emitirla.</p>
-          </div>
-        </header>
-        <div class="table-scroll">
-          <table>
-            <thead>
-              <tr>
-                <th>Trabajo / Cliente</th>
-                <th>Fecha prevista</th>
-                <th>Facturación</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (job of finishedJobs; track job['id']) {
-                <tr>
-                  <td>
-                    <strong>{{ job['titulo'] }}</strong
-                    ><small>{{ clientName(job['clienteId']) }} · {{ jobReference(job) }}</small>
-                  </td>
-                  <td>{{ jobDate(job) }}</td>
-                  <td>{{ jobInvoice(job) || 'Sin factura' }}</td>
-                  <td>
-                    <button class="button" (click)="prepareJob(job)" type="button">
-                      Preparar / ver factura
-                    </button>
-                  </td>
-                </tr>
-              } @empty {
-                <tr>
-                  <td colspan="4">No hay trabajos finalizados en este periodo.</td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-      </section>
-      @if (issuerMissing.length) {
-        <p class="hint">Para emitir, completa en Configuración: {{ issuerMissing.join(', ') }}.</p>
-      }
-    }
+
     <section class="finance-card">
       <header>
         <div>
           <h2>{{ title }}</h2>
-          <p>
-            {{
-              resource === 'facturas'
-                ? 'Guarda el borrador, emite una vez y conserva su número para reimprimir.'
-                : 'Compras, proveedores y justificantes de tus servicios.'
-            }}
-          </p>
+          <p>Compras, proveedores y justificantes de tus servicios.</p>
         </div>
       </header>
       <div class="table-scroll">
         <table>
           <thead>
             <tr>
-              <th>
-                {{ resource === 'facturas' ? 'Cliente / Referencia' : 'Proveedor / Concepto' }}
-              </th>
+              <th>Proveedor / Concepto</th>
               <th>Fecha</th>
               <th>Importe</th>
               <th>Estado</th>
@@ -184,37 +129,15 @@
             @for (row of rows; track row['id']) {
               <tr>
                 <td>
-                  <strong>{{
-                    resource === 'facturas'
-                      ? row['cliente']?.['nombre'] || clientName(row['clienteId'])
-                      : row['proveedor'] || row['concepto']
-                  }}</strong
-                  ><small>{{
-                    resource === 'facturas'
-                      ? row['referencia'] || 'Borrador sin número'
-                      : row['concepto'] + ' · ' + row['categoria']
-                  }}</small>
+                  <strong>{{ row['proveedor'] || row['concepto'] }}</strong
+                  ><small>{{ row['concepto'] + ' · ' + row['categoria'] }}</small>
                 </td>
                 <td>{{ row['fecha'] }}</td>
                 <td>
-                  <strong>{{
-                    money(resource === 'facturas' ? row['totalCentimos'] : row['importeCentimos'])
-                  }}</strong>
-                  @if (resource === 'facturas' && row['estado'] === 'Registrada') {
-                    <small
-                      >Pendiente:
-                      {{ money(row['totalCentimos'] - (row['pagadoCentimos'] ?? 0)) }}</small
-                    >
-                  }
+                  <strong>{{ money(row['importeCentimos']) }}</strong>
                 </td>
                 <td>
-                  <span class="badge">{{
-                    resource === 'facturas'
-                      ? invoiceState(row)
-                      : row['pagado']
-                        ? 'Pagado'
-                        : 'Pendiente'
-                  }}</span>
+                  <span class="badge">{{ row['pagado'] ? 'Pagado' : 'Pendiente' }}</span>
                 </td>
                 <td>
                   <div class="actions">
@@ -355,12 +278,6 @@
             @if (resource === 'gastos') {
               <strong>{{ money(row['importeCentimos']) }}</strong>
             }
-            @if (documents) {
-              <strong>{{ money(row['totalCentimos']) }}</strong>
-            }
-            @if (resource === 'facturas' && row['estado'] === 'Registrada') {
-              <p>Pendiente: {{ money(row['totalCentimos'] - row['pagadoCentimos']) }}</p>
-            }
           </div>
           <div class="actions">
             @if (contact(row); as cliente) {
@@ -404,13 +321,7 @@
     <div>
       <p class="eyebrow">SOLUCIONES CHIRA · {{ title }}</p>
       <h2 id="editor-title">{{ selected ? label(draft) : 'Nuevo registro' }}</h2>
-      <p class="subtitle">
-        {{
-          issued
-            ? 'Documento registrado · Consulta los importes y los pagos'
-            : 'Revisa los datos y guarda los cambios'
-        }}
-      </p>
+      <p class="subtitle">Revisa los datos y guarda los cambios</p>
     </div>
     <button
       class="button icon"
@@ -486,149 +397,63 @@
     @if (editorError) {
       <p class="notice error" role="alert">{{ editorError }}</p>
     }
-    <fieldset [disabled]="saving || issued">
+    <fieldset [disabled]="saving">
       <h3 class="form-section-title">
         <i class="pi pi-id-card" aria-hidden="true"></i> Datos del registro
       </h3>
       <div class="form-grid">
         @for (field of fields; track field.key) {
-          @if (resource === 'facturas' && field.key === 'trabajoId') {
-            <div class="job-selector wide">
-              <span class="field-label" id="invoice-job-label">Trabajo vinculado (opcional)</span>
-              <p class="hint">
-                {{
-                  draft['clienteId']
-                    ? 'Selecciona el trabajo por su referencia, fecha y dirección.'
-                    : 'Selecciona primero el cliente para ver sus trabajos.'
-                }}
-              </p>
-              <button
-                class="button job-picker-trigger"
-                type="button"
-                aria-labelledby="invoice-job-label invoice-job-value"
-                [disabled]="!draft['clienteId']"
-                [attr.aria-expanded]="jobPickerOpen"
-                aria-controls="invoice-job-options"
-                (click)="jobPickerOpen = !jobPickerOpen"
+          <label [class.wide]="field.type === 'textarea'"
+            >{{ field.label }}{{ field.required ? ' *' : '' }}
+            @if (field.source) {
+              <select
+                [name]="field.key"
+                [(ngModel)]="draft[field.key]"
+                (ngModelChange)="field.key === 'clienteId' && clientChanged()"
+                [required]="!!field.required"
               >
-                <span id="invoice-job-value">{{
-                  selectedJob
-                    ? selectedJob['titulo'] + ' · ' + jobReference(selectedJob)
-                    : 'Sin trabajo vinculado'
-                }}</span
-                ><i class="pi pi-chevron-down" aria-hidden="true"></i>
-              </button>
-              @if (jobPickerOpen) {
-                <div class="job-picker" id="invoice-job-options">
-                  <label
-                    >Buscar trabajo<input
-                      type="search"
-                      name="jobSearch"
-                      [(ngModel)]="jobSearch"
-                      placeholder="Referencia, servicio, fecha o dirección…"
-                  /></label>
-                  <div class="job-options">
-                    <button class="job-option" type="button" (click)="selectJob()">
-                      Sin trabajo vinculado<small
-                        >Crear la factura sin asociarla a un trabajo</small
-                      >
-                    </button>
-                    @for (job of invoiceJobs; track job['id']) {
-                      <button
-                        class="job-option"
-                        type="button"
-                        [class.chosen]="draft['trabajoId'] === job['id']"
-                        [attr.aria-pressed]="draft['trabajoId'] === job['id']"
-                        (click)="selectJob(job)"
-                      >
-                        <strong>{{ job['titulo'] }}</strong
-                        ><span class="job-reference">{{ jobReference(job) }}</span
-                        ><small>{{ clientName(job['clienteId']) }} · {{ jobDate(job) }}</small
-                        ><small>{{ job['direccion'] || 'Dirección sin especificar' }}</small
-                        ><span class="job-tags"
-                          ><span class="badge">{{ job['estado'] }}</span>
-                          @if (jobInvoice(job)) {
-                            <span class="badge invoice-tag">{{ jobInvoice(job) }}</span>
-                          }
-                        </span>
-                      </button>
-                    } @empty {
-                      <p class="hint">
-                        No hay trabajos de este cliente que coincidan con la búsqueda.
-                      </p>
-                    }
-                  </div>
-                </div>
-              }
-              @if (selectedJob; as job) {
-                <div class="selected-job" role="status">
-                  <strong>Trabajo seleccionado: {{ job['titulo'] }}</strong
-                  ><span>{{ jobReference(job) }} · {{ jobDate(job) }}</span
-                  ><span
-                    >{{ clientName(job['clienteId']) }} ·
-                    {{ job['direccion'] || 'Dirección sin especificar' }}</span
-                  >
-                  @if (jobInvoice(job)) {
-                    <p class="invoice-warning">
-                      {{ jobInvoice(job) }}. Revisa la factura vinculada antes de crear otra.
-                    </p>
-                  }
-                </div>
-              }
-            </div>
-          } @else {
-            <label [class.wide]="field.type === 'textarea'"
-              >{{ field.label }}{{ field.required ? ' *' : '' }}
-              @if (field.source) {
-                <select
-                  [name]="field.key"
-                  [(ngModel)]="draft[field.key]"
-                  (ngModelChange)="field.key === 'clienteId' && clientChanged()"
-                  [required]="!!field.required"
-                >
-                  <option value="">Sin seleccionar</option>
-                  @for (option of options(field.source, draft[field.key]); track option['id']) {
-                    <option [value]="option['id']">{{ label(option) }}</option>
-                  }
-                </select>
-              } @else if (field.options) {
-                <select
-                  [name]="field.key"
-                  [(ngModel)]="draft[field.key]"
-                  [required]="!!field.required"
-                >
-                  @for (option of field.options; track option) {
-                    <option [value]="option">{{ option }}</option>
-                  }
-                </select>
-              } @else if (field.type === 'textarea') {
-                <textarea
-                  [name]="field.key"
-                  [(ngModel)]="draft[field.key]"
-                  rows="4"
-                  maxlength="3000"
-                ></textarea>
-              } @else if (field.type === 'number') {
-                <input
-                  type="number"
-                  [name]="field.key"
-                  [(ngModel)]="draft[field.key]"
-                  [min]="field.key === 'ivaImporte' ? 0 : 0.01"
-                  max="1000000"
-                  step="0.01"
-                  [required]="!!field.required"
-                />
-              } @else {
-                <input
-                  [type]="field.type || 'text'"
-                  [name]="field.key"
-                  [(ngModel)]="draft[field.key]"
-                  [required]="!!field.required"
-                  [attr.maxlength]="field.type === 'date' ? null : 250"
-                />
-              }
-            </label>
-          }
+                <option value="">Sin seleccionar</option>
+                @for (option of options(field.source, draft[field.key]); track option['id']) {
+                  <option [value]="option['id']">{{ label(option) }}</option>
+                }
+              </select>
+            } @else if (field.options) {
+              <select
+                [name]="field.key"
+                [(ngModel)]="draft[field.key]"
+                [required]="!!field.required"
+              >
+                @for (option of field.options; track option) {
+                  <option [value]="option">{{ option }}</option>
+                }
+              </select>
+            } @else if (field.type === 'textarea') {
+              <textarea
+                [name]="field.key"
+                [(ngModel)]="draft[field.key]"
+                rows="4"
+                maxlength="3000"
+              ></textarea>
+            } @else if (field.type === 'number') {
+              <input
+                type="number"
+                [name]="field.key"
+                [(ngModel)]="draft[field.key]"
+                [min]="field.key === 'ivaImporte' ? 0 : 0.01"
+                max="1000000"
+                step="0.01"
+                [required]="!!field.required"
+              />
+            } @else {
+              <input
+                [type]="field.type || 'text'"
+                [name]="field.key"
+                [(ngModel)]="draft[field.key]"
+                [required]="!!field.required"
+                [attr.maxlength]="field.type === 'date' ? null : 250"
+              />
+            }
+          </label>
         }
       </div>
       @if (resource === 'gastos') {
@@ -653,69 +478,7 @@
           </div>
         }
       }
-      @if (documents) {
-        <h3 class="form-section-title">
-          <i class="pi pi-list" aria-hidden="true"></i> Conceptos del documento
-        </h3>
-        @for (line of draft['lineas']; track $index; let i = $index) {
-          <div class="line">
-            <label class="concept"
-              >Concepto<input
-                [name]="'concepto' + i"
-                [(ngModel)]="line['concepto']"
-                required
-                maxlength="300" /></label
-            ><label
-              >Cantidad<input
-                type="number"
-                [name]="'cantidad' + i"
-                [(ngModel)]="line['cantidad']"
-                min="0.01"
-                max="100000"
-                step="0.01"
-                required /></label
-            ><label
-              >Precio (€)<input
-                type="number"
-                [name]="'precio' + i"
-                [(ngModel)]="line['precio']"
-                min="0"
-                max="1000000"
-                step="0.01"
-                required /></label
-            ><label
-              >IVA (%)<input
-                type="number"
-                [name]="'iva' + i"
-                [(ngModel)]="line['iva']"
-                min="0"
-                max="100"
-                step="0.01"
-                required /></label
-            ><button
-              class="button icon"
-              type="button"
-              aria-label="Eliminar concepto"
-              [disabled]="draft['lineas'].length === 1"
-              (click)="draft['lineas'].splice(i, 1)"
-            >
-              <i class="pi pi-trash" aria-hidden="true"></i>
-            </button>
-          </div>
-        }
-        <button
-          class="button"
-          type="button"
-          [disabled]="draft['lineas']?.length >= 50"
-          (click)="addLine()"
-        >
-          Añadir concepto
-        </button>
-        <div class="total">
-          <span>Total del documento</span><strong>{{ money(draftTotal) }}</strong
-          ><small>IVA incluido</small>
-        </div>
-      }
+
       <label class="notes"
         >Notas internas<textarea
           name="notas"
@@ -724,29 +487,17 @@
           maxlength="3000"
         ></textarea>
       </label>
-      @if (documents) {
-        <label class="notes"
-          >Condiciones visibles en el documento<textarea
-            name="condiciones"
-            [(ngModel)]="draft['condiciones']"
-            rows="4"
-            maxlength="3000"
-          ></textarea>
-        </label>
-      }
     </fieldset>
-    @if (!issued) {
-      <div class="actions">
-        <button class="button primary" type="submit" [disabled]="saving">
-          {{ saving ? 'Guardando…' : 'Guardar' }}
+    <div class="actions">
+      <button class="button primary" type="submit" [disabled]="saving">
+        {{ saving ? 'Guardando…' : 'Guardar' }}
+      </button>
+      @if (draft['id']) {
+        <button class="button" type="button" [disabled]="saving" (click)="archive()">
+          {{ draft['archivada'] ? 'Restaurar' : 'Archivar' }}
         </button>
-        @if (draft['id']) {
-          <button class="button" type="button" [disabled]="saving" (click)="archive()">
-            {{ draft['archivada'] ? 'Restaurar' : 'Archivar' }}
-          </button>
-        }
-      </div>
-    }
+      }
+    </div>
     @if (resource === 'trabajos' && draft['id']) {
       <div class="actions">
         <button class="button" type="button" (click)="print()">
@@ -759,90 +510,8 @@
         }
       </div>
     }
-    @if (documents && draft['id']) {
-      <div class="actions">
-        <button class="button" type="button" (click)="print()">Imprimir / guardar PDF</button>
-        @if (resource === 'facturas' && !issued) {
-          <button class="button" type="button" [disabled]="saving" (click)="requestIssue()">
-            Emitir factura
-          </button>
-        }
-      </div>
-      @if (resource === 'facturas' && !issued) {
-        <p class="hint">
-          Guarda el borrador antes de emitir. Al confirmar se asigna el siguiente número de la serie
-          y los datos quedan bloqueados.
-        </p>
-      }
-    }
   </form>
-  @if (confirmingIssue) {
-    <section class="issue-confirm" aria-label="Confirmar emisión">
-      <h3>Emitir factura con número definitivo</h3>
-      <p>
-        Se emitirá el borrador guardado por {{ money(draft['totalCentimos']) }}. Sus datos quedarán
-        bloqueados.
-      </p>
-      <div class="actions">
-        <button class="button" type="button" [disabled]="saving" (click)="confirmingIssue = false">
-          Cancelar</button
-        ><button class="button primary" type="button" [disabled]="saving" (click)="issue()">
-          {{ saving ? 'Emitiendo…' : 'Confirmar emisión' }}
-        </button>
-      </div>
-    </section>
-  }
-  @if (issued) {
-    <div class="payments">
-      <h3 class="form-section-title"><i class="pi pi-wallet" aria-hidden="true"></i> Pagos</h3>
-      <div
-        class="payment-summary"
-        [class.settled]="draft['totalCentimos'] === draft['pagadoCentimos']"
-      >
-        <span>{{
-          draft['totalCentimos'] === draft['pagadoCentimos'] ? 'Pago completo' : 'Importe pendiente'
-        }}</span
-        ><strong>{{ money(draft['totalCentimos'] - draft['pagadoCentimos']) }}</strong>
-      </div>
-      @for (pago of draft['pagos']; track $index) {
-        <div class="payment-row">
-          <span
-            >{{ pago['fecha'] }}<small>{{ pago['metodo'] }}</small></span
-          ><strong>{{ money(pago['importeCentimos']) }}</strong>
-        </div>
-      }
-      @if (draft['totalCentimos'] > draft['pagadoCentimos']) {
-        <form (ngSubmit)="pay()">
-          <div class="form-grid">
-            <label
-              >Importe (€)<input
-                type="number"
-                name="pago"
-                [(ngModel)]="payment['importe']"
-                min="0.01"
-                [max]="(draft['totalCentimos'] - draft['pagadoCentimos']) / 100"
-                step="0.01"
-                required /></label
-            ><label
-              >Fecha<input
-                type="date"
-                name="fechaPago"
-                [(ngModel)]="payment['fecha']"
-                required /></label
-            ><label
-              >Método<select name="metodo" [(ngModel)]="payment['metodo']">
-                <option>Transferencia</option>
-                <option>Efectivo</option>
-                <option>Tarjeta</option>
-                <option>Otro</option>
-              </select></label
-            >
-          </div>
-          <button class="button primary" [disabled]="saving" type="submit">Registrar pago</button>
-        </form>
-      }
-    </div>
-  }
+
   @if (resource === 'clientes' && draft['id']) {
     <section class="client-history">
       <div class="client-profile-heading">

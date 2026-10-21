@@ -19,7 +19,7 @@
   >
     <div class="slides" [class.resetting]="resetting()">
       @for (slide of renderedSlides; track $index; let i = $index) {
-        <article
+        <div
           class="panel"
           [class.demolition-panel]="slide.id === 'derribos'"
           [class.video-panel]="slide.id === 'derribos' || slide.id === 'pintura'"
@@ -66,7 +66,8 @@
             } @else {
               <img
                 class="service-photo"
-                [src]="slide.image"
+                [appResponsiveImage]="slide.image!"
+                sizes="(max-width: 700px) calc(100vw - 48px), 560px"
                 [alt]="slide.imageAlt"
                 width="899"
                 height="899"
@@ -75,7 +76,7 @@
               />
             }
           </div>
-        </article>
+        </div>
       }
     </div>
   </div>
@@ -87,10 +88,10 @@
           class="service-tab"
           [class.selected]="active() === i"
           [attr.aria-pressed]="active() === i"
-          [attr.aria-label]="'Mostrar ' + slide.name"
+          [attr.aria-label]="'0' + (i + 1) + ' ' + slide.name + ': mostrar servicio'"
           (click)="select(i)"
         >
-          <span class="tab-number" aria-hidden="true">0{{ i + 1 }}</span
+          <span class="tab-number">0{{ i + 1 }}</span
           >{{ slide.name }}
         </button>
       }

@@ -1,3 +1,4 @@
+import { ResponsiveImageDirective } from '../shared/responsive-image.directive';
 import { WhatsappDirective } from '../shared/whatsapp.directive';
 import { Component, ElementRef, HostListener, ViewChild, inject, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
@@ -7,7 +8,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, WhatsappDirective],
+  imports: [ResponsiveImageDirective, RouterLink, RouterLinkActive, WhatsappDirective],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
 })

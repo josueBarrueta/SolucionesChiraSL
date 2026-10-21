@@ -11,10 +11,12 @@
           <figcaption>Antes</figcaption>
           <div class="soft-edge">
             <video
-              [src]="media + zone.before + '.mp4'"
+              [attr.data-src]="media + zone.before + '.mp4'"
+              [poster]="media + zone.before + '.poster.webp'"
+              loading="lazy"
               muted
               playsinline
-              preload="auto"
+              preload="none"
               (loadeddata)="ready()"
               (ended)="advance(i)"
               (error)="failed.set(true)"
@@ -26,10 +28,12 @@
           <figcaption>Después</figcaption>
           <div class="soft-edge">
             <video
-              [src]="media + zone.after + '.mp4'"
+              [attr.data-src]="media + zone.after + '.mp4'"
+              [poster]="media + zone.after + '.poster.webp'"
+              loading="lazy"
               muted
               playsinline
-              preload="auto"
+              preload="none"
               (loadeddata)="ready()"
               (ended)="advance(i)"
               (error)="failed.set(true)"

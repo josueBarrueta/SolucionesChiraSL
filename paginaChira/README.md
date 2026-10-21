@@ -85,3 +85,23 @@ con la inspección de URLs y los datos estructurados con la prueba de resultados
 La indexación y las posiciones dependen del sitio publicado; estas tareas no se han realizado
 desde una cuenta externa. El SEO local puede completarse con una ficha de Google Business
 Profile y datos del negocio confirmados.
+
+## Rendimiento de imágenes y vídeos
+
+`npm start` y `npm run build` ejecutan `prepare:assets`, que prepara los iconos sin bloqueo
+y las fotografías en WebP a 480 y 960 píxeles,
+con una variante de 1440 para la portada. Los originales se conservan. Las variantes
+están en `public/images/optimized`, una carpeta generada y excluida de Git.
+`npm run optimize:images` permite regenerarlas sin compilar. `ResponsiveImageDirective`
+conecta cada imagen con sus variantes y cada plantilla define el tamaño que ocupa.
+
+Los vídeos muestran portadas estáticas y solo conectan el archivo multimedia al ser
+visibles y estar activos. Derribos conserva la última imagen mientras prepara la pareja
+siguiente. Las portadas se guardan junto a cada vídeo. Si se cambia un vídeo, pueden
+regenerarse con `node scripts/generate-video-posters.mjs`, con FFmpeg instalado o su ruta
+en `CHIRA_FFMPEG`. La compilación verifica imágenes, portadas y carga aplazada.
+
+GitHub Pages controla las cabeceras de caché de la web publicada. El proyecto no puede
+ampliar su duración mediante archivos de configuración de Apache o Nginx; esa mejora
+requiere un alojamiento o CDN que permita configurar las cabeceras. Una nueva nota de
+PageSpeed debe medirse después de publicar los cambios.

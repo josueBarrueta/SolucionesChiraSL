@@ -1,13 +1,6 @@
+import { ResponsiveImageDirective } from '../shared/responsive-image.directive';
 import { FeaturedServicesComponent } from '../shared/featured-services/featured-services.component';
-import {
-  Component,
-  ElementRef,
-  NgZone,
-  OnDestroy,
-  afterNextRender,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, ElementRef, NgZone, OnDestroy, afterNextRender, inject } from '@angular/core';
 
 import { RouterLink } from '@angular/router';
 
@@ -17,7 +10,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [RouterLink, FeaturedServicesComponent],
+  imports: [ResponsiveImageDirective, RouterLink, FeaturedServicesComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })
@@ -27,7 +20,7 @@ export class HomeComponent implements OnDestroy {
 
   private media?: ReturnType<typeof gsap.matchMedia>;
 
-  readonly mosaicPhotos = [
+  readonly galleryPhotos = [
     {
       image: 'chira-traslado-oficina-cristales.webp',
       label: 'Desmontaje de mamparas',
@@ -107,70 +100,11 @@ export class HomeComponent implements OnDestroy {
       position: 'center',
     },
   ];
-  readonly mosaicSlots = [0, 1, 2];
-  readonly mosaicActive = signal([0, 1, 2]);
-  private mosaicTimer?: ReturnType<typeof setInterval>;
-  private mosaicObserver?: IntersectionObserver;
-  private mosaicMotion?: MediaQueryList;
-  private mosaicVisible = false;
-  private mosaicHovered = false;
-  private nextMosaicPhoto = 3;
-  private nextMosaicSlot = 0;
-  private readonly syncMosaic = () => this.restartMosaic();
-
-  private startMosaic(): void {
-    const mosaic = this.element.nativeElement.querySelector('.team-story-mosaic');
-    if (!mosaic) return;
-    this.mosaicMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    this.mosaicObserver = new IntersectionObserver(
-      (entries) => {
-        this.mosaicVisible = entries[0].isIntersecting;
-        this.restartMosaic();
-      },
-      { threshold: 0.2 },
-    );
-    this.mosaicObserver.observe(mosaic);
-    this.mosaicMotion.addEventListener('change', this.syncMosaic);
-    document.addEventListener('visibilitychange', this.syncMosaic);
-  }
-
-  setMosaicHovered(value: boolean): void {
-    this.mosaicHovered = value;
-    this.restartMosaic();
-  }
-
-  private restartMosaic(): void {
-    clearInterval(this.mosaicTimer);
-    if (!this.mosaicVisible || this.mosaicHovered || this.mosaicMotion?.matches || document.hidden)
-      return;
-    this.zone.runOutsideAngular(() => {
-      this.mosaicTimer = setInterval(() => this.advanceMosaic(), 4500);
-    });
-  }
-
-  private advanceMosaic(): void {
-    const active = this.mosaicActive();
-    // Only fade to a loaded photo, and never show the same photo twice at once.
-    for (let attempt = 0; attempt < this.mosaicPhotos.length; attempt++) {
-      const candidate = this.nextMosaicPhoto++ % this.mosaicPhotos.length;
-      if (active.includes(candidate)) continue;
-      const img = (this.element.nativeElement as HTMLElement)
-        .querySelectorAll<HTMLElement>('.story-photo')
-        [this.nextMosaicSlot]?.querySelector<HTMLImageElement>(`img[data-photo="${candidate}"]`);
-      if (!img?.complete || !img.naturalWidth) continue;
-      const next = [...active];
-      next[this.nextMosaicSlot] = candidate;
-      this.nextMosaicSlot = (this.nextMosaicSlot + 1) % 3;
-      this.zone.run(() => this.mosaicActive.set(next));
-      return;
-    }
-  }
 
   constructor() {
     afterNextRender(() => {
       this.zone.runOutsideAngular(() => {
         this.startAnimations();
-        this.startMosaic();
       });
     });
   }
@@ -193,8 +127,6 @@ export class HomeComponent implements OnDestroy {
         });
 
         const enter = root.querySelectorAll('.hero-enter');
-        const visual = root.querySelectorAll('.hero-visual');
-        const badge = root.querySelectorAll('.experience-badge');
         if (enter.length)
           intro.from(
             enter,
@@ -205,28 +137,6 @@ export class HomeComponent implements OnDestroy {
             },
             0,
           );
-        if (visual.length)
-          intro.from(
-            visual,
-            {
-              y: 30,
-              opacity: 0,
-              duration: 1,
-            },
-            0.15,
-          );
-        if (badge.length)
-          intro.from(
-            badge,
-            {
-              y: 16,
-              scale: 0.95,
-              opacity: 0,
-              duration: 0.6,
-            },
-            0.65,
-          );
-
         const team = root.querySelector('.team-story');
         const film = root.querySelector('.story-film');
         const map = root.querySelector('.coverage figure');
@@ -280,7 +190,7 @@ export class HomeComponent implements OnDestroy {
           });
         }
 
-        root.querySelectorAll('.reveal, .collage-foto').forEach((item: Element) => {
+        root.querySelectorAll('.reveal').forEach((item: Element) => {
           if (item.closest('.team-story')) return;
           gsap.from(item, {
             y: 28,
@@ -297,44 +207,9 @@ export class HomeComponent implements OnDestroy {
       },
       root,
     );
-
-    this.media.add(
-      '(min-width: 951px) and (prefers-reduced-motion: no-preference)',
-      () => {
-        const photos = root.querySelectorAll('.hero-photo img');
-        const hero = root.querySelector('.hero');
-        if (!photos.length || !hero) return;
-        gsap.fromTo(
-          photos,
-          {
-            scale: 1.08,
-            yPercent: -2,
-          },
-          {
-            scale: 1.08,
-            yPercent: 2,
-            ease: 'none',
-            scrollTrigger: {
-              trigger: hero,
-              start: 'top top',
-              end: 'bottom top',
-              scrub: 1,
-            },
-          },
-        );
-      },
-      root,
-    );
   }
 
   ngOnDestroy(): void {
     this.media?.revert();
-    clearInterval(this.mosaicTimer);
-    this.mosaicObserver?.disconnect();
-    this.mosaicMotion?.removeEventListener('change', this.syncMosaic);
-    this.element.nativeElement.ownerDocument.removeEventListener(
-      'visibilitychange',
-      this.syncMosaic,
-    );
   }
 }

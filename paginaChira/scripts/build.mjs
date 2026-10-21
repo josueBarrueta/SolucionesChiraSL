@@ -1,3 +1,5 @@
+import { verifyMedia } from './verify-media.mjs';
+import { prepareAssets } from './prepare-assets.mjs';
 import { verifySeo } from './verify-seo.mjs';
 import { spawnSync } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
@@ -5,6 +7,7 @@ import { resolve } from 'node:path';
 import { pagePaths, preparePages } from './prepare-pages.mjs';
 import { prepareSeo } from './prepare-seo.mjs';
 
+await prepareAssets();
 const args = process.argv.slice(2);
 const result = spawnSync(
   process.execPath,
@@ -26,4 +29,5 @@ const source = await readFile('src/app/app.routes.ts', 'utf8');
 await preparePages(browser, source);
 await prepareSeo(browser, pagePaths(source));
 await verifySeo(browser);
+await verifyMedia(browser);
 console.log('SEO preparado: páginas públicas, sitemap y metadatos del panel.');
