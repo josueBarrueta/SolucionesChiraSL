@@ -1,4 +1,4 @@
-import { Component, DestroyRef, ElementRef, afterNextRender, inject, input, signal } from '@angular/core';
+import { Component, DestroyRef, ElementRef, afterNextRender, effect, untracked, inject, input, signal } from '@angular/core';
 
 
 @Component({
@@ -9,6 +9,7 @@ import { Component, DestroyRef, ElementRef, afterNextRender, inject, input, sign
 })
 export class PaintingVideoComponent {
   readonly companionPhoto = input<string>();
+  readonly playbackActive = input(true);
   readonly paused = signal(false);
   readonly failed = signal(false);
   private visible = false;
@@ -16,6 +17,10 @@ export class PaintingVideoComponent {
   private readonly destroy = inject(DestroyRef);
 
   constructor() {
+    effect(() => {
+      this.playbackActive();
+      untracked(() => this.sync());
+    });
     afterNextRender(() => {
       const preference = window.matchMedia('(prefers-reduced-motion: reduce)');
       this.paused.set(preference.matches);
@@ -44,7 +49,7 @@ export class PaintingVideoComponent {
   sync(): void {
     for (const video of this.root.nativeElement.querySelectorAll('video')) {
       video.muted = true;
-      if (this.visible && !document.hidden && !this.paused()) {
+      if (this.playbackActive() && this.visible && !document.hidden && !this.paused()) {
         void video.play().catch(() => {
           if (video.isConnected && video.error === null) {
             this.paused.set(true);

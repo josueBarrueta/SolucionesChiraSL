@@ -1,4 +1,4 @@
-import { Component, DestroyRef, ElementRef, afterNextRender, inject, signal } from '@angular/core';
+import { Component, DestroyRef, ElementRef, afterNextRender, effect, untracked, inject, input, signal } from '@angular/core';
 
 const MEDIA = 'videos/derribos/';
 
@@ -15,6 +15,7 @@ export class DemolitionVideoComponent {
     { name: 'Planta superior', before: 'planta-superior-antes', after: 'planta-superior-despues' }
   ];
   readonly selected = signal(0);
+  readonly playbackActive = input(true);
   readonly paused = signal(false);
   readonly failed = signal(false);
   readonly media = MEDIA;
@@ -25,6 +26,10 @@ export class DemolitionVideoComponent {
   private readonly destroy = inject(DestroyRef);
 
   constructor() {
+    effect(() => {
+      this.playbackActive();
+      untracked(() => this.sync());
+    });
     afterNextRender(() => {
       const preference = window.matchMedia('(prefers-reduced-motion: reduce)');
       this.paused.set(preference.matches);
@@ -57,7 +62,7 @@ export class DemolitionVideoComponent {
   }
 
   advance(index: number): void {
-    if (index !== this.selected()) return;
+    if (!this.playbackActive() || index !== this.selected()) return;
     const current = this.videos(index);
     const next = (index + 1) % this.zones.length;
     // Keep the final frames visible until both incoming videos can display a frame.
@@ -83,7 +88,7 @@ export class DemolitionVideoComponent {
     const active = this.videos(this.selected());
     for (const video of this.root.nativeElement.querySelectorAll('video')) {
       video.muted = true;
-      if (active.includes(video) && this.visible && !document.hidden && !this.paused() && !video.ended) {
+      if (active.includes(video) && this.playbackActive() && this.visible && !document.hidden && !this.paused() && !video.ended) {
         void video.play().catch(() => {
           if (video.isConnected && video.error === null) {
             this.paused.set(true);

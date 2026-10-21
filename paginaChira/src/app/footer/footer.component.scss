@@ -364,3 +364,9 @@
 .footer { background: #000; }
 .footer-logo { display: inline-block; max-width: 100%; }
 .footer-logo img { display: block; width: 270px; max-width: 100%; height: auto; }
+
+.footer { background: #0b2c48; }
+.footer-logo img { mix-blend-mode: screen; }
+
+.footer-logo { background: #0b2c48; isolation: isolate; }
+.footer::before { background: radial-gradient(circle, #237dba20, transparent 70%); }

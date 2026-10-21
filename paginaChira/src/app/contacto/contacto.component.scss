@@ -1,331 +1,41 @@
-:host {
-  display: block;
-  font-family: Arial, Helvetica, sans-serif;
-  color: #101c28;
-}
+:host { --accent: #0066b3; --muted: #53697a; display: block; background: #ffffff; color: #17354d; }
+*, *::before, *::after { box-sizing: border-box; }
+h1, h2, h3, p { margin: 0; }
+h1, h2, h3 { text-wrap: balance; }
+.contacto { display: flow-root; overflow: clip; padding: 56px 0 72px; background: radial-gradient(ellipse at 95% 0%, #ffffff, transparent 40%), #ffffff; }
+.contacto-container { width: min(1200px, calc(100% - 48px)); margin: auto; }
+.contacto-header { padding-bottom: 46px; }
+.contacto-subtitle, .section-label { color: var(--accent); font-size: 10px; font-weight: 600; letter-spacing: 1.8px; line-height: 1.7; }
+h1 { margin: 18px 0 22px; font-size: clamp(38px, 4.6vw, 62px); font-weight: 650; letter-spacing: -2px; line-height: 1.1; }
+h1 span { color: var(--accent); }
+.contacto-header > p:last-child { max-width: 640px; color: var(--muted); font-size: 16px; line-height: 1.85; }
+.contacto-content { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 56px; border-top: 1px solid #c9dce9; }
+.contacto-card { min-width: 0; padding-top: 30px; }
+.contacto-formulario { grid-column: 2; grid-row: 1; }
+.contacto-info { grid-column: 1; grid-row: 1; padding-right: 36px; border-right: 1px solid #c9dce9; }
+.section-label { display: block; margin-bottom: 24px; }
+h2 { margin-bottom: 20px; font-size: clamp(26px, 2.6vw, 34px); font-weight: 550; letter-spacing: -.9px; line-height: 1.2; }
+.contacto-card > p { color: var(--muted); font-size: 14px; line-height: 1.85; }
+.formulario-pasos { margin: 26px 0 30px; }
+.formulario-pasos > div { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 18px; padding: 20px 0; border-bottom: 1px solid #c9dce9; }
+.formulario-pasos > div > span { color: var(--accent); font-size: 12px; font-variant-numeric: tabular-nums; padding-top: 3px; }
+h3 { font-size: 17px; font-weight: 550; line-height: 1.5; }
+.formulario-pasos p { margin-top: 8px; color: var(--muted); font-size: 13px; line-height: 1.85; }
+.contacto-button { display: inline-flex; align-items: center; justify-content: center; min-height: 50px; padding: 14px 24px; border: 1px solid #c9dce9; border-radius: 5px; color: var(--accent); background: transparent; font-size: 13px; font-weight: 650; text-decoration: none; transition: background .2s, border-color .2s, transform .2s; }
+.contacto-info > .contacto-button { margin-top: 28px; }
+.contacto-button:hover { border-color: var(--accent); background: #ffffff; transform: translateY(-2px); }
+.presupuesto { width: 100%; background: var(--accent); border-color: var(--accent); color: #082338; }
+.presupuesto:hover { background: #a6ddff; }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; }
+.contacto-card > .presupuesto-nota { margin-top: 16px; font-size: 11px; line-height: 1.8; }
+.contacto-ayuda { margin-top: 36px; padding-top: 26px; border-top: 1px solid #c9dce9; }
+.contacto-ayuda h3 { font-size: 16px; }
+.contacto-ayuda ul { margin: 18px 0 0; padding-left: 18px; color: var(--muted); font-size: 13px; line-height: 1.85; }
+.contacto-ayuda li { padding-left: 4px; margin-bottom: 10px; }
+.contacto-ayuda li::marker { color: var(--accent); }
+@media(max-width:950px) { .contacto-content { gap: 32px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); } .contacto-info { padding-right: 24px; } }
+@media(max-width:700px) { .contacto { padding: 36px 0 44px; } .contacto-container { width: calc(100% - 40px); } .contacto-header { padding-bottom: 30px; } h1 { letter-spacing: -1.3px; } .contacto-header > p:last-child { font-size: 14px; } .contacto-content { grid-template-columns: 1fr; gap: 40px; } .contacto-formulario, .contacto-info { grid-column: auto; grid-row: auto; } .contacto-info { padding-right: 0; border-right: 0; border-top: 1px solid #c9dce9; } .contacto-info > .contacto-button { width: 100%; } .formulario-pasos > div { gap: 12px; } }
+@media(prefers-reduced-motion:reduce) { .contacto-button { transition: none; } .contacto-button:hover { transform: none; } }
 
-.contacto,
-.contacto * {
-  box-sizing: border-box;
-}
-
-.contacto {
-  min-height: 70vh;
-  padding: 80px 40px;
-  background: #f3f5f6;
-}
-
-.contacto-container {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.contacto-header {
-  max-width: 800px;
-  margin-bottom: 48px;
-}
-
-.contacto-subtitle {
-  margin: 0 0 22px;
-  color: #374e61;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 2.5px;
-  line-height: 1.6;
-}
-
-.contacto-header h1 {
-  margin: 0 0 24px;
-  font-size: clamp(36px, 5vw, 64px);
-  font-weight: 800;
-  line-height: 1.08;
-  letter-spacing: -2px;
-  text-wrap: balance;
-}
-
-.contacto-header > p:last-child {
-  max-width: 650px;
-  margin: 0;
-  color: #4d575f;
-  font-size: 17px;
-  line-height: 1.8;
-}
-
-.contacto-content {
-  display: grid;
-  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-  grid-template-areas: "info formulario";
-  align-items: stretch;
-  gap: 28px;
-}
-
-.contacto-card {
-  min-width: 0;
-  padding: 36px;
-  border: 1px solid #d7dce1;
-  border-radius: 18px;
-  box-shadow: 0 8px 28px rgba(33, 27, 30, 0.04);
-}
-
-.contacto-formulario {
-  grid-area: formulario;
-  background: #ffffff;
-}
-
-.contacto-info {
-  grid-area: info;
-  background: #e8ecef;
-}
-
-/* En escritorio, ambas tarjetas comparten la misma fila y altura. */
-@media (min-width: 901px) {
-  .contacto .contacto-content {
-    grid-template-rows: auto;
-    align-items: stretch;
-  }
-
-  .contacto .contacto-content > .contacto-card {
-    box-sizing: border-box;
-    align-self: stretch;
-    height: 100%;
-    min-height: 0;
-    max-height: none;
-    margin: 0;
-  }
-}
-
-.telefono-icono,
-.formulario-icono {
-  display: grid;
-  place-items: center;
-  width: 56px;
-  height: 56px;
-  margin-bottom: 24px;
-  border-radius: 14px;
-  background: #d6dee4;
-  color: #374e61;
-  font-size: 30px;
-}
-
-.formulario-icono {
-  background: #e8ecef;
-}
-
-.contacto-card h2 {
-  margin: 0 0 16px;
-  font-size: 26px;
-  line-height: 1.25;
-  letter-spacing: -0.6px;
-}
-
-.contacto-card p {
-  margin: 0 0 22px;
-  color: #4d575f;
-  font-size: 16px;
-  line-height: 1.8;
-}
-
-.contacto-phone {
-  display: block;
-  width: fit-content;
-  max-width: 100%;
-  margin: 26px 0;
-  color: #374e61;
-  font-size: clamp(26px, 3vw, 36px);
-  font-weight: 800;
-  line-height: 1.2;
-  letter-spacing: -1px;
-  text-decoration: none;
-}
-
-.contacto-phone:hover {
-  text-decoration: none;
-  text-underline-offset: 6px;
-}
-
-.contacto-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 18px;
-  min-height: 54px;
-  padding: 16px 24px;
-  border: 1px solid #374e61;
-  border-radius: 12px;
-  background: #374e61;
-  color: #ffffff;
-  font: inherit;
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 1.4;
-  text-align: center;
-  text-decoration: none;
-  transition: background-color 180ms ease;
-}
-
-.contacto-button:hover {
-  background: #293c4b;
-}
-
-.contacto-button span {
-  font-size: 20px;
-}
-
-.contacto-button:focus-visible,
-.contacto-phone:focus-visible {
-  outline: 3px solid #2381ba;
-  outline-offset: 5px;
-  border-radius: 6px;
-}
-
-.presupuesto {
-  width: 100%;
-}
-
-.formulario-pasos {
-  display: grid;
-  gap: 22px;
-  margin: 30px 0;
-}
-
-.formulario-pasos > div {
-  display: flex;
-  align-items: flex-start;
-  gap: 16px;
-}
-
-.formulario-pasos > div > span {
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  background: #e8ecef;
-  color: #374e61;
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.formulario-pasos h3 {
-  margin: 0 0 6px;
-  font-size: 16px;
-  line-height: 1.5;
-}
-
-.formulario-pasos p {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.7;
-}
-
-.contacto-card .presupuesto-nota {
-  margin: 16px 0 0;
-  color: #5a646d;
-  font-size: 12px;
-  line-height: 1.7;
-}
-
-.contacto-ayuda {
-  margin-top: 32px;
-  padding-top: 26px;
-  border-top: 1px solid #c1cbd4;
-}
-
-.contacto-ayuda h3 {
-  margin: 0 0 16px;
-  font-size: 18px;
-  line-height: 1.4;
-}
-
-.contacto-ayuda ul {
-  display: grid;
-  gap: 12px;
-  margin: 0 0 20px;
-  padding-left: 22px;
-  color: #4d575f;
-  font-size: 15px;
-  line-height: 1.7;
-}
-
-.contacto-ayuda p {
-  margin-bottom: 0;
-  font-size: 14px;
-}
-
-@media (max-width: 900px) {
-  .contacto-content {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto auto;
-    grid-template-areas:
-      "formulario"
-      "info";
-    align-items: start;
-  }
-
-  .contacto .contacto-content > .contacto-card {
-    height: auto;
-    align-self: start;
-  }
-}
-
-@media (max-width: 600px) {
-  .contacto {
-    padding: 48px 20px;
-  }
-
-  .contacto-header {
-    margin-bottom: 30px;
-  }
-
-  .contacto-header h1 {
-    letter-spacing: -1.2px;
-  }
-
-  .contacto-card {
-    padding: 24px;
-  }
-
-  .contacto-button {
-    width: 100%;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .contacto-button {
-    transition: none;
-  }
-}
-
-/* Corrección de altura y desbordamiento. */
-.contacto .contacto-content {
-  grid-template-rows: auto;
-  align-items: stretch;
-}
-
-.contacto .contacto-content > .contacto-card {
-  height: auto;
-  min-height: 0;
-  max-height: none;
-  align-self: stretch;
-  margin: 0;
-}
-
-/* Permite que el texto de los pasos se ajuste al espacio disponible. */
-.formulario-pasos > div > div {
-  min-width: 0;
-}
-
-/* En tablet y móvil, cada tarjeta conserva su altura natural. */
-@media (max-width: 900px) {
-  .contacto .contacto-content {
-    grid-template-rows: auto auto;
-    align-items: start;
-  }
-
-  .contacto .contacto-content > .contacto-card {
-    height: auto;
-    align-self: start;
-  }
-}
-.secondary-phone { margin-top: 12px; }
+/* Paleta corporativa azul y blanco. */
+.presupuesto { background: #0066b3; color: #fff; } .presupuesto:hover { background: #004f8c; }

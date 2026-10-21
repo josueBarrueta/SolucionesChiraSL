@@ -1,12 +1,12 @@
 <section class="nosotros" aria-labelledby="nosotros-title">
   <div class="nosotros-container">
     <div class="nosotros-hero">
-      <div class="nosotros-intro entrada">
+      <div class="nosotros-intro">
         <p class="etiqueta">SOLUCIONES CHIRA SL · VALENCIA</p>
 
         <h1 id="nosotros-title">
-          Conoce Chira.
-          <span>Hablemos de tu próximo proyecto.</span>
+          Un equipo cercano.
+          <span>Contigo en cada cambio.</span>
         </h1>
 
         <p class="introduccion">
@@ -21,7 +21,8 @@
       </div>
 
       <img
-        class="nosotros-imagen entrada retraso-1"
+        class="nosotros-imagen hero-photo"
+        fetchpriority="high"
         src="images/collage/chira-conductor-furgoneta.webp"
         alt="Miembro del equipo de Soluciones Chira SL al volante de una furgoneta blanca"
         width="1440"
@@ -29,7 +30,7 @@
       />
     </div>
 
-    <div class="datos entrada retraso-2" aria-label="Datos de la empresa">
+    <div class="datos" aria-label="Datos de la empresa">
       <div class="dato">
         <strong>Valencia</strong>
         <span>Nuestra sede</span>
@@ -47,6 +48,7 @@
     </div>
 
     <section class="historia" aria-labelledby="historia-title">
+      <div class="team-gallery" (mouseenter)="galeriaEnPausa.set(true)" (mouseleave)="galeriaEnPausa.set(false)" (focusin)="galeriaEnPausa.set(true)" (focusout)="galeriaEnPausa.set(false)">
       <div class="nosotros-imagen imagen-secundaria fotos-equipo" aria-label="Nuestro equipo en distintos trabajos">
         @for (foto of fotosEquipo; track foto.imagen; let indice = $index) {
           <img
@@ -56,9 +58,13 @@
             [attr.aria-hidden]="fotoActiva() !== indice"
             width="1440"
             height="1440"
+            loading="lazy"
             decoding="async"
           />
         }
+      </div>
+
+
       </div>
 
       <div class="historia-texto">

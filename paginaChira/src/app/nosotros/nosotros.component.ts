@@ -1,4 +1,5 @@
-import { animatePage } from '../shared/page-motion';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Component, DestroyRef, ElementRef, NgZone, afterNextRender, inject, signal } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
@@ -15,6 +16,7 @@ export class NosotrosComponent {
   private readonly meta = inject(Meta);
 
   readonly fotoActiva = signal(0);
+  readonly galeriaEnPausa = signal(false);
   readonly fotosEquipo = [
     { imagen: 'images/trabajos/montaje-mampara-oficina.webp', descripcion: 'Miembro del equipo trabajando en una mampara de cristal' },
     { imagen: 'images/trabajos/equipo-mudanzas.webp', descripcion: 'Dos compañeros de Chira junto a la furgoneta' },
@@ -32,14 +34,29 @@ export class NosotrosComponent {
   constructor() {
     afterNextRender(() => {
       this.zone.runOutsideAngular(() => {
-        const cleanup = animatePage(this.element.nativeElement, '.nosotros-intro, .datos, .historia-texto, .valor, .nosotros-cta');
-        this.destroyRef.onDestroy(cleanup);
+        gsap.registerPlugin(ScrollTrigger);
+        const root: HTMLElement = this.element.nativeElement;
+        const media = gsap.matchMedia();
+        media.add('(prefers-reduced-motion: no-preference)', () => {
+          gsap.from(root.querySelectorAll('.nosotros-intro > *, .hero-photo'), {
+            y: 24, opacity: 0, duration: .85, stagger: .1, ease: 'power3.out'
+          });
+          root.querySelectorAll('.dato, .team-gallery, .historia-texto, .seccion-intro, .valor, .nosotros-cta').forEach(item => {
+            gsap.from(item, {
+              y: 24, opacity: 0, duration: .8, ease: 'power2.out',
+              scrollTrigger: {trigger: item, start: 'top 92%', once: true}
+            });
+          });
+          const timer = window.setInterval(() => {
+            const gallery = root.querySelector('.team-gallery');
+            const bounds = gallery?.getBoundingClientRect();
+            if (document.hidden || this.galeriaEnPausa() || !bounds || bounds.bottom <= 0 || bounds.top >= window.innerHeight) return;
+            this.zone.run(() => this.fotoActiva.update(index => (index + 1) % this.fotosEquipo.length));
+          }, 5000);
+          return () => window.clearInterval(timer);
+        }, root);
+        this.destroyRef.onDestroy(() => media.revert());
       });
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      const temporizador = window.setInterval(() => {
-        this.fotoActiva.update(indice => (indice + 1) % this.fotosEquipo.length);
-      }, 5000);
-      this.destroyRef.onDestroy(() => window.clearInterval(temporizador));
     });
     this.title.setTitle(
       'Sobre nosotros | Soluciones Chira SL'

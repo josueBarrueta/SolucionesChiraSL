@@ -834,13 +834,13 @@ h2 {
   content: ''; position: absolute; inset: 0; z-index: -1;
   background-image: var(--valencia-skyline);
   background-repeat: repeat-x; background-position: center bottom;
-  background-size: 640px auto; opacity: .35;
+  background-size: 640px auto; opacity: .85;
 }
 .trust-grid { min-height: 148px; align-items: end; justify-items: center; padding-top: 0; padding-bottom: 22px; }
 .trust-grid > div {
   padding: 0; border: 0; border-radius: 0;
   background: transparent; box-shadow: none;
-  text-shadow: 0 2px 8px #080b0f;
+  text-shadow: none;
 }
 .trust-grid p { font-size: 16px; }
 @media(max-width:700px) {
@@ -857,4 +857,46 @@ h2 {
     max-width: none;
     margin-inline: 8vw;
   }
+}
+
+:host { --cream: #fff; --text: #17354d; --muted: #53697a; }
+.intro-stack, .intro-services { background: #f2f7fc; }
+.trust-strip { background: #f2f7fc; color: #0066b3; }
+.trust-strip p { color: #53697a; font-weight: 400; }
+.team-story { background: #fff; color: #17354d; }
+.team-story h2 { color: #17354d; }
+.team-story .eyebrow, .team-story h2 span { color: #0066b3; }
+.story-heading > p, .story-closing > p { color: #53697a; }
+.team-story-link { background: #0066b3; color: #fff; border-color: #0066b3; }
+.team-story-link:hover { background: #004f8c; }
+.coverage { background: #edf5fb; color: #17354d; border-color: #d6e3ec; }
+.coverage .eyebrow, .coverage h2 span { color: #0066b3; }
+.coverage-content > p, .coverage-content > .coverage-detail, .coverage-note { color: #53697a; }
+.coverage-note { border-color: #c9dce9; }
+.coverage-note > span { background: #0066b3; }
+
+.coverage-map .map-dots { fill: #0875bb; }
+.coverage-map text { fill: #17354d; }
+.coverage-map { filter: none; }
+.story-closing { border-color: #d6e3ec; }
+
+/* A quiet location label above the illustrated skyline. */
+.trust-grid > div {
+  padding: 0;
+  border-radius: 0;
+  gap: 8px;
+  background: transparent;
+  box-shadow: none;
+}
+.trust-strip .trust-grid p { margin: 0; color: #17354d; font-weight: 500; }
+.trust-grid svg { color: #0066b3; width: 18px; height: 18px; }
+
+.trust-grid {
+  min-height: 180px;
+  align-items: start;
+  padding-top: 22px;
+  padding-bottom: 0;
+}
+@media (max-width: 700px) {
+  .trust-grid { min-height: 150px; padding-top: 20px; }
 }

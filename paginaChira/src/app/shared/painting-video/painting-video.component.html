@@ -1,5 +1,5 @@
 <figure class="painting-video" [class.with-photo]="companionPhoto()" role="group" aria-label="Trabajo en fachada">
-  <div class="soft-edge"><video src="videos/pintura/fachada.mp4" muted loop playsinline preload="metadata" (loadedmetadata)="sync()" (error)="failed.set(true)" aria-label="Plataforma elevadora junto a la fachada"></video></div>
+  <div class="soft-edge"><video src="videos/pintura/fachada.mp4#t=0.001" muted loop playsinline preload="auto" (loadedmetadata)="sync()" (error)="failed.set(true)" aria-label="Plataforma elevadora junto a la fachada"></video></div>
   @if (companionPhoto(); as photo) {
     <img class="companion-photo" [src]="photo" alt="Equipo trabajando en una fachada desde una plataforma elevadora" width="1536" height="2048" loading="lazy" decoding="async" />
   }

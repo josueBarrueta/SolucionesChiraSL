@@ -20,13 +20,9 @@
           </div>
           <div class="visual">
             @if (slide.id==='derribos') {
-              @if (cursor() === i) {
-                <app-demolition-video class="card-media background-media" />
-              }
+                <app-demolition-video class="card-media background-media" [playbackActive]="cursor() === i" />
             } @else if (slide.id === 'pintura') {
-              @if (cursor() === i) {
-                <app-painting-video class="card-media background-media" companionPhoto="images/trabajos/pintura-fachada.jpeg" />
-              }
+                <app-painting-video class="card-media background-media" [playbackActive]="cursor() === i" companionPhoto="images/trabajos/pintura-fachada.jpeg" />
             } @else {
 <img class="service-photo" [src]="slide.image" [alt]="slide.imageAlt" width="899" height="899" loading="lazy" decoding="async" />
             }
