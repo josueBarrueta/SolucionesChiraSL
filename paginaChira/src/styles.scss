@@ -1,4 +1,4 @@
-@import "primeicons/primeicons.css";
+@import 'primeicons/primeicons.css';
 
 html {
   /* Keep mobile desktop mode from enlarging individual text blocks. */
@@ -35,21 +35,44 @@ body {
   line-height: 1.4;
   box-shadow: 0 4px 16px #070f1833;
 }
-@media (max-width: 800px) { .chira-tooltip { display: none; } }
+@media (max-width: 800px) {
+  .chira-tooltip {
+    display: none;
+  }
+}
 
 /* Enlaces sin subrayados; el foco de teclado se conserva. */
-a, a:hover, a:focus, a:visited { text-decoration: none; }
+a,
+a:hover,
+a:focus,
+a:visited {
+  text-decoration: none;
+}
 
 /* Tacto: controles cómodos y campos sin zoom automático al escribir en móvil. */
 @media (pointer: coarse) {
-  button, input, select, textarea, summary, a.button, a.icon-button {
+  button,
+  input,
+  select,
+  textarea,
+  summary,
+  a.button,
+  a.icon-button {
     min-height: 44px;
   }
-  button, summary, a { -webkit-tap-highlight-color: transparent; }
-  .table-wrap { overscroll-behavior-x: contain; }
+  button,
+  summary,
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+  .table-wrap {
+    overscroll-behavior-x: contain;
+  }
 }
 @media (max-width: 600px) and (pointer: coarse) {
-  input:not([type="checkbox"]):not([type="radio"]), select, textarea {
+  input:not([type='checkbox']):not([type='radio']),
+  select,
+  textarea {
     font-size: 16px !important;
   }
 }

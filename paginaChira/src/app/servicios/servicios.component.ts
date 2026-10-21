@@ -6,9 +6,8 @@ import {
   OnDestroy,
   afterNextRender,
   inject,
-  signal
+  signal,
 } from '@angular/core';
-import { Meta, Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 
 import { gsap } from 'gsap';
@@ -29,13 +28,11 @@ interface Service {
   standalone: true,
   imports: [RouterLink, ServiceSceneComponent],
   templateUrl: './servicios.component.html',
-  styleUrls: ['./servicios.component.scss']
+  styleUrls: ['./servicios.component.scss'],
 })
 export class ServiciosComponent implements OnDestroy {
   private readonly element: ElementRef<HTMLElement> = inject(ElementRef);
   private readonly zone = inject(NgZone);
-  private readonly title = inject(Title);
-  private readonly meta = inject(Meta);
 
   private readonly opened = signal<Set<string>>(new Set());
   private media?: ReturnType<typeof gsap.matchMedia>;
@@ -51,9 +48,9 @@ export class ServiciosComponent implements OnDestroy {
       features: [
         'Traslado de muebles y electrodomésticos',
         'Recogidas y entregas',
-        'Atención a particulares y negocios'
+        'Atención a particulares y negocios',
       ],
-      action: 'Consultar un porte'
+      action: 'Consultar un porte',
     },
     {
       id: 'montaje',
@@ -62,12 +59,8 @@ export class ServiciosComponent implements OnDestroy {
       category: 'Montaje',
       description:
         'Tus muebles, listos para usar. Nos encargamos del montaje con precisión y cuidado por tu espacio.',
-      features: [
-        'Muebles para el hogar',
-        'Mobiliario de oficina',
-        'Montaje de muebles nuevos'
-      ],
-      action: 'Consultar un montaje'
+      features: ['Muebles para el hogar', 'Mobiliario de oficina', 'Montaje de muebles nuevos'],
+      action: 'Consultar un montaje',
     },
     {
       id: 'mudanzas',
@@ -79,9 +72,9 @@ export class ServiciosComponent implements OnDestroy {
       features: [
         'Mudanzas locales',
         'Traslados nacionales e internacionales',
-        'Mudanzas de hogares y negocios'
+        'Mudanzas de hogares y negocios',
       ],
-      action: 'Consultar una mudanza'
+      action: 'Consultar una mudanza',
     },
     {
       id: 'vaciados',
@@ -90,12 +83,8 @@ export class ServiciosComponent implements OnDestroy {
       category: 'Espacios',
       description:
         'Recupera el espacio que necesitas. Cuéntanos qué hay que retirar y dónde para valorar el trabajo.',
-      features: [
-        'Viviendas y locales',
-        'Oficinas',
-        'Trasteros'
-      ],
-      action: 'Consultar un vaciado'
+      features: ['Viviendas y locales', 'Oficinas', 'Trasteros'],
+      action: 'Consultar un vaciado',
     },
     {
       id: 'limpieza',
@@ -107,9 +96,9 @@ export class ServiciosComponent implements OnDestroy {
       features: [
         'Limpieza de hogares',
         'Oficinas y espacios comerciales',
-        'Atención a las necesidades de cada espacio'
+        'Atención a las necesidades de cada espacio',
       ],
-      action: 'Consultar una limpieza'
+      action: 'Consultar una limpieza',
     },
     {
       id: 'pintura',
@@ -118,32 +107,26 @@ export class ServiciosComponent implements OnDestroy {
       category: 'Renovación',
       description:
         'Un nuevo aire para tus espacios. Trabajos de pintura interior y exterior con acabados cuidados.',
-      features: [
-        'Pintura interior',
-        'Pintura exterior',
-        'Renovación de hogares y negocios'
-      ],
-      action: 'Consultar un trabajo de pintura'
+      features: ['Pintura interior', 'Pintura exterior', 'Renovación de hogares y negocios'],
+      action: 'Consultar un trabajo de pintura',
     },
     {
-      id: 'derribos', number: '07', title: 'Derribos', category: 'Renovación',
-      description: 'Consulta el derribo que necesitas. Revisamos el alcance, la ubicación y las condiciones antes de confirmar el trabajo.',
-      features: ['Valoración de elementos y zonas', 'Revisión de accesos y condiciones', 'Consulta sobre retirada de escombros'],
-      action: 'Consultar un derribo'
-    }
+      id: 'derribos',
+      number: '07',
+      title: 'Derribos',
+      category: 'Renovación',
+      description:
+        'Consulta el derribo que necesitas. Revisamos el alcance, la ubicación y las condiciones antes de confirmar el trabajo.',
+      features: [
+        'Valoración de elementos y zonas',
+        'Revisión de accesos y condiciones',
+        'Consulta sobre retirada de escombros',
+      ],
+      action: 'Consultar un derribo',
+    },
   ];
 
   constructor() {
-    this.title.setTitle(
-      'Servicios en Valencia | Soluciones Chira SL'
-    );
-
-    this.meta.updateTag({
-      name: 'description',
-      content:
-        'Descubre los servicios de Soluciones Chira SL: portes, montaje de muebles, mudanzas, vaciados, limpieza, pintura y derribos en Valencia y alrededores.'
-    });
-
     afterNextRender(() => {
       this.zone.runOutsideAngular(() => {
         this.startAnimations();
@@ -155,11 +138,7 @@ export class ServiciosComponent implements OnDestroy {
     return this.opened().has(id);
   }
 
-  toggleService(
-    id: string,
-    panel: HTMLDivElement,
-    trigger: HTMLButtonElement
-  ): void {
+  toggleService(id: string, panel: HTMLDivElement, trigger: HTMLButtonElement): void {
     const opening = !this.isOpen(id);
 
     if (!opening && panel.contains(document.activeElement)) {
@@ -182,9 +161,7 @@ export class ServiciosComponent implements OnDestroy {
       // Cancela la animación anterior si se pulsa varias veces.
       gsap.killTweensOf(panel);
 
-      const reducedMotion = window.matchMedia(
-        '(prefers-reduced-motion: reduce)'
-      ).matches;
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
       if (reducedMotion) {
         panel.hidden = !opening;
@@ -207,11 +184,11 @@ export class ServiciosComponent implements OnDestroy {
           onComplete: () => {
             gsap.set(panel, { clearProps: 'height,opacity' });
             ScrollTrigger.refresh();
-          }
+          },
         });
       } else {
         gsap.set(panel, {
-          height: panel.getBoundingClientRect().height
+          height: panel.getBoundingClientRect().height,
         });
 
         gsap.to(panel, {
@@ -223,7 +200,7 @@ export class ServiciosComponent implements OnDestroy {
             panel.hidden = true;
             gsap.set(panel, { clearProps: 'height,opacity' });
             ScrollTrigger.refresh();
-          }
+          },
         });
       }
     });
@@ -239,18 +216,19 @@ export class ServiciosComponent implements OnDestroy {
     this.media.add(
       '(prefers-reduced-motion: no-preference)',
       () => {
-        const intro = root.querySelectorAll('.eyebrow.intro-enter, .title-word, .intro-description.intro-enter');
-        if (intro.length) gsap.from(intro, {
-          y: 20,
-          opacity: 0,
-          duration: 0.7,
-          stagger: 0.1,
-          ease: 'power3.out'
-        });
-
-        const items = root.querySelectorAll<HTMLElement>(
-          '.service-card, .reveal'
+        const intro = root.querySelectorAll(
+          '.eyebrow.intro-enter, .title-word, .intro-description.intro-enter',
         );
+        if (intro.length)
+          gsap.from(intro, {
+            y: 20,
+            opacity: 0,
+            duration: 0.7,
+            stagger: 0.1,
+            ease: 'power3.out',
+          });
+
+        const items = root.querySelectorAll<HTMLElement>('.service-card, .reveal');
 
         items.forEach((item: HTMLElement) => {
           gsap.from(item, {
@@ -261,21 +239,19 @@ export class ServiciosComponent implements OnDestroy {
             scrollTrigger: {
               trigger: item,
               start: 'top 92%',
-              once: true
-            }
+              once: true,
+            },
           });
         });
       },
-      root
+      root,
     );
   }
 
   ngOnDestroy(): void {
-    this.element.nativeElement
-      .querySelectorAll<HTMLElement>('.service-panel')
-      .forEach((panel) => {
-        gsap.killTweensOf(panel);
-      });
+    this.element.nativeElement.querySelectorAll<HTMLElement>('.service-panel').forEach((panel) => {
+      gsap.killTweensOf(panel);
+    });
 
     this.media?.revert();
   }

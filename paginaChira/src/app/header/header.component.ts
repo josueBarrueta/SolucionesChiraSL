@@ -1,18 +1,6 @@
 import { WhatsappDirective } from '../shared/whatsapp.directive';
-import {
-  Component,
-  ElementRef,
-  HostListener,
-  ViewChild,
-  inject,
-  signal
-} from '@angular/core';
-import {
-  NavigationEnd,
-  Router,
-  RouterLink,
-  RouterLinkActive
-} from '@angular/router';
+import { Component, ElementRef, HostListener, ViewChild, inject, signal } from '@angular/core';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { SERVICIOS } from '../servicio/servicios.data';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -21,7 +9,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   standalone: true,
   imports: [RouterLink, RouterLinkActive, WhatsappDirective],
   templateUrl: './header.component.html',
-  styleUrl: './header.component.scss'
+  styleUrl: './header.component.scss',
 })
 export class HeaderComponent {
   private readonly router = inject(Router);
@@ -57,13 +45,11 @@ export class HeaderComponent {
 
   constructor() {
     // También cierra el menú al navegar con atrás o adelante.
-    this.router.events
-      .pipe(takeUntilDestroyed())
-      .subscribe((evento) => {
-        if (evento instanceof NavigationEnd) {
-          this.cerrarMenu();
-        }
-      });
+    this.router.events.pipe(takeUntilDestroyed()).subscribe((evento) => {
+      if (evento instanceof NavigationEnd) {
+        this.cerrarMenu();
+      }
+    });
   }
 
   alternarMenu(): void {

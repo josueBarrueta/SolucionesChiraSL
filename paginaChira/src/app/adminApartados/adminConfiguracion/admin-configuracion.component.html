@@ -1,4 +1,139 @@
-<section><div class="heading"><div><p class="eyebrow">SOLUCIONES CHIRA SL</p><h1>Configuración</h1><p class="subtitle">Datos de empresa y preferencias para tus documentos.</p></div></div>
-@if(error){<p class="notice error" role="alert">{{ error }}</p>}@if(message){<p class="notice" role="status">{{ message }}</p>}@if(loading){<p class="notice">Cargando…</p>}
-<form (ngSubmit)="save()"><fieldset [disabled]="loading || saving"><h3>Datos de empresa</h3><div class="form-grid">@for(field of fields;track field.key){<label>{{ field.label }}<input [name]="field.key" [(ngModel)]="data[field.key]" [type]="field.key==='email'?'email':'text'" [required]="field.key==='nombre'" maxlength="250" /></label>}<label>Moneda<input value="Euro (€) · EUR" readonly /></label><label>IVA predeterminado (%)<input type="number" name="iva" [(ngModel)]="data['ivaPredeterminado']" min="0" max="100" step="0.01" /></label></div><p class="hint">Deja el IVA vacío si todavía no lo has definido; cada concepto deberá tener un impuesto indicado antes de guardar.</p><label class="notes">Condiciones de las facturas<textarea name="condiciones" [(ngModel)]="data['condiciones']" maxlength="3000" rows="4"></textarea></label><div class="actions"><button class="button primary" type="submit">Guardar configuración</button></div></fieldset></form>
-<form (ngSubmit)="password()"><fieldset [disabled]="loading || saving"><h3>Cambiar contraseña del propietario</h3><div class="form-grid"><label>Contraseña actual<input name="actual" type="password" [(ngModel)]="current" autocomplete="current-password" required /></label><label>Nueva contraseña<input name="nueva" type="password" [(ngModel)]="next" autocomplete="new-password" minlength="12" maxlength="256" required /></label><label>Repetir nueva contraseña<input name="repetir" type="password" [(ngModel)]="repeat" autocomplete="new-password" minlength="12" maxlength="256" required /></label></div><div class="actions"><button class="button" type="submit">Cambiar contraseña</button></div></fieldset></form></section>
+<section>
+  <div class="heading">
+    <div>
+      <p class="eyebrow">SOLUCIONES CHIRA SL</p>
+      <h1>Configuración</h1>
+      <p class="subtitle">Datos fiscales, numeración de facturas y preferencias de tu empresa.</p>
+    </div>
+  </div>
+  @if (error) {
+    <p class="notice error" role="alert">{{ error }}</p>
+  }
+  @if (message) {
+    <p class="notice" role="status">{{ message }}</p>
+  }
+  @if (loading) {
+    <p class="notice">Cargando…</p>
+  }
+  <form (ngSubmit)="save()">
+    <fieldset [disabled]="loading || saving">
+      <h3>Datos fiscales de la empresa</h3>
+      <div class="form-grid">
+        @for (field of fields; track field.key) {
+          <label
+            >{{ field.label
+            }}<input
+              [name]="field.key"
+              [(ngModel)]="data[field.key]"
+              [type]="field.key === 'email' ? 'email' : 'text'"
+              [required]="field.key === 'nombre'"
+              maxlength="250"
+          /></label>
+        }
+        <label
+          >Serie de facturas<input
+            name="serieFacturas"
+            [(ngModel)]="data['serieFacturas']"
+            maxlength="30"
+            placeholder="Por ejemplo, CHI"
+            pattern="[A-Za-z0-9][A-Za-z0-9._/\-]*" /></label
+        ><label
+          >Primer número para una serie nueva<input
+            type="number"
+            name="primerNumero"
+            [(ngModel)]="data['primerNumero']"
+            min="1"
+            max="999999999"
+            step="1"
+            required
+          /><small
+            >Una serie iniciada continúa automáticamente. Usa el siguiente número libre si ya
+            facturabas con esa serie.</small
+          ></label
+        ><label
+          >Programa de facturación actual<input
+            name="programaActual"
+            [(ngModel)]="data['programaActual']"
+            maxlength="200" /></label
+        ><label>Moneda<input value="Euro (€) · EUR" readonly /></label
+        ><label
+          >IVA predeterminado (%)<input
+            type="number"
+            name="iva"
+            [(ngModel)]="data['ivaPredeterminado']"
+            min="0"
+            max="100"
+            step="0.01"
+        /></label>
+      </div>
+      <p class="hint">
+        Deja el IVA vacío si todavía no lo has definido; cada concepto deberá tener un impuesto
+        indicado antes de guardar.
+      </p>
+      <label class="notes"
+        >Condiciones de las facturas<textarea
+          name="condiciones"
+          [(ngModel)]="data['condiciones']"
+          maxlength="3000"
+          rows="4"
+        ></textarea>
+      </label>
+      <p class="hint">
+        Completa razón social, NIF, domicilio fiscal y serie para emitir facturas. Guardar la
+        configuración no emite facturas ni conecta con la AEAT.
+      </p>
+      <div class="actions">
+        <button class="button primary" type="submit">Guardar configuración</button>
+      </div>
+    </fieldset>
+  </form>
+  <section class="finance-card">
+    <header>
+      <div>
+        <h2>VERI*FACTU</h2>
+        <p>Conexión con la Agencia Tributaria</p>
+      </div>
+      <span class="badge">Desactivado</span>
+    </header>
+    <div class="integration-body">
+      <p>
+        No se envían facturas ni registros a la AEAT. La integración está pendiente, igual que en
+        Jofemar.
+      </p>
+    </div>
+  </section>
+  <form (ngSubmit)="password()">
+    <fieldset [disabled]="loading || saving">
+      <h3>Cambiar contraseña del propietario</h3>
+      <div class="form-grid">
+        <label
+          >Contraseña actual<input
+            name="actual"
+            type="password"
+            [(ngModel)]="current"
+            autocomplete="current-password"
+            required /></label
+        ><label
+          >Nueva contraseña<input
+            name="nueva"
+            type="password"
+            [(ngModel)]="next"
+            autocomplete="new-password"
+            minlength="12"
+            maxlength="256"
+            required /></label
+        ><label
+          >Repetir nueva contraseña<input
+            name="repetir"
+            type="password"
+            [(ngModel)]="repeat"
+            autocomplete="new-password"
+            minlength="12"
+            maxlength="256"
+            required
+        /></label>
+      </div>
+      <div class="actions"><button class="button" type="submit">Cambiar contraseña</button></div>
+    </fieldset>
+  </form>
+</section>

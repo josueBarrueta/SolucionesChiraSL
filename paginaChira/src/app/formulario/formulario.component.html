@@ -1,12 +1,11 @@
 <section class="form-page">
   <div class="container">
-
     <div class="page-heading">
       <span class="eyebrow">SOLUCIONES CHIRA SL</span>
       <h1>Cuéntanos <span>tu proyecto.</span></h1>
       <p>
-        Selecciona los servicios que necesitas y explícanos el trabajo.
-        Te contactaremos para preparar un presupuesto sin compromiso.
+        Selecciona los servicios que necesitas y déjanos tus datos. Te contactaremos para preparar
+        un presupuesto sin compromiso.
       </p>
     </div>
 
@@ -15,10 +14,7 @@
         <span class="info-label">HABLEMOS</span>
         <h2>Un equipo.<br />Muchas soluciones.</h2>
 
-        <p>
-          Para tu hogar, tu negocio o tu comunidad.
-          Nos ocupamos de los detalles contigo.
-        </p>
+        <p>Para tu hogar, tu negocio o tu comunidad. Nos ocupamos de los detalles contigo.</p>
 
         <ul>
           <li>Atención personalizada</li>
@@ -38,15 +34,11 @@
             <span class="success-icon" aria-hidden="true">✓</span>
             <h2>Solicitud enviada.</h2>
             <p>
-              Gracias por contactar con Soluciones Chira SL.
-              Tu consulta se ha enviado correctamente.
+              Gracias por contactar con Soluciones Chira SL. Tu consulta se ha enviado
+              correctamente.
             </p>
 
-            <button
-              class="submit-button"
-              type="button"
-              (click)="newRequest()"
-            >
+            <button class="submit-button" type="button" (click)="newRequest()">
               Enviar otra consulta
             </button>
           </div>
@@ -62,20 +54,13 @@
               [disabled]="status() === 'sending'"
               aria-describedby="services-help services-error"
             >
-              <legend class="section-title">
-                <span>01</span> Servicios *
-              </legend>
+              <legend class="section-title"><span>01</span> Servicios *</legend>
 
-              <p class="section-help" id="services-help">
-                Puedes seleccionar varias opciones.
-              </p>
+              <p class="section-help" id="services-help">Puedes seleccionar varias opciones.</p>
 
               <div class="services-grid">
                 @for (service of services; track service) {
-                  <label
-                    class="service-option"
-                    [class.selected]="isSelected(service)"
-                  >
+                  <label class="service-option" [class.selected]="isSelected(service)">
                     <input
                       type="checkbox"
                       [checked]="isSelected(service)"
@@ -93,141 +78,164 @@
               </p>
             </fieldset>
 
-            <!-- PREGUNTAS SEGÚN EL SERVICIO -->
-            @if (selectedQuestions.length) {
-              <fieldset [disabled]="status() === 'sending'">
-                <legend class="section-title">Sobre tu servicio</legend>
-
-                <p class="section-help">Completa los objetos o zonas y las direcciones exactas. Los campos con * son obligatorios.</p>
-                <div formGroupName="details" class="service-details">
-                  @for (block of selectedQuestions; track block.slug) {
-                    <section class="service-detail" [attr.aria-labelledby]="'details-' + block.slug">
-                      <h3 [id]="'details-' + block.slug">{{ block.service }}</h3>
-                      <div class="fields-grid">
-                        @for (field of block.fields; track field.name) {
-                          <div class="field">
-                            <label [for]="field.name">{{ field.label }}{{ field.required ? ' *' : ' (opcional)' }}</label>
-                            @if (field.type === 'select') {
-                              <select [id]="field.name" [formControlName]="field.name" [attr.aria-invalid]="invalid('details.' + field.name)">
-                                <option value="">Selecciona una opción</option>
-                                @for (option of field.options; track option) { <option [value]="option">{{ option }}</option> }
-                              </select>
-                            } @else {
-                              <input [id]="field.name" type="text" [attr.inputmode]="field.type === 'number' ? 'decimal' : null" [formControlName]="field.name" [placeholder]="field.placeholder" maxlength="300" [attr.aria-invalid]="invalid('details.' + field.name)" />
-                            }
-                            @if (invalid('details.' + field.name)) { <p class="field-error">Revisa este campo{{ field.type === 'number' ? ': introduce un número válido' : '' }}.</p> }
-                          </div>
-                        }
-                      </div>
-                      @if (usesItems(block)) {
-                        <div class="item-counter field">
-                          <label [for]="block.slug + '-count'">{{ block.items.label }} *</label>
-                          <div class="counter-controls">
-                            <button type="button" [disabled]="itemCount(block) <= 1" (click)="changeCount(block, itemCount(block) - 1)" [attr.aria-label]="'Reducir ' + block.items.label">−</button>
-                            <input [id]="block.slug + '-count'" type="number" min="1" [max]="maxItems" step="1" [value]="itemCount(block)" (change)="setCount(block, $event)" />
-                            <button type="button" [disabled]="itemCount(block) >= maxItems" (click)="changeCount(block, itemCount(block) + 1)" [attr.aria-label]="'Aumentar ' + block.items.label">+</button>
-                          </div>
-                          <p class="field-help">De 1 a {{ maxItems }}. Cada objeto o zona tiene su propio campo.</p>
-                        </div>
-                        <div class="item-list" aria-live="polite">
-                          @for (index of itemIndexes(block); track index) {
-                            <div class="fields-grid item-entry">
-                              <div class="field">
-                                <label [for]="block.slug + '-item-' + index">{{ block.items.singular }} {{ index }} *</label>
-                                <input [id]="block.slug + '-item-' + index" [formControlName]="block.slug + '_item_' + index + '_name'" [placeholder]="block.items.placeholder" maxlength="300" [attr.aria-invalid]="invalid('details.' + block.slug + '_item_' + index + '_name')" />
-                                @if (invalid('details.' + block.slug + '_item_' + index + '_name')) { <p class="field-error">Indica qué objeto o zona es.</p> }
-                              </div>
-                              @if (block.items.extraLabel) {
-                                <div class="field">
-                                  <label [for]="block.slug + '-extra-' + index">{{ block.items.extraLabel }}</label>
-                                  <input [id]="block.slug + '-extra-' + index" [formControlName]="block.slug + '_item_' + index + '_extra'" maxlength="300" />
-                                </div>
-                              }
-                            </div>
-                          }
-                        </div>
-                      } @else { <p class="field-help">Describe el contenido del espacio en «Los detalles». No necesitas enumerar cada objeto.</p> }
-                      @for (address of block.addresses; track address.prefix) {
-                        <section class="service-address" [attr.aria-labelledby]="address.prefix + '-title'">
-                          <h4 [id]="address.prefix + '-title'">{{ address.label }}</h4>
-                          @if (copyableAddresses(address).length) {
-                            <div class="field full-width">
-                              <label [for]="address.prefix + '-copy'">Copiar una dirección ya escrita (opcional)</label>
-                              <select [id]="address.prefix + '-copy'" (change)="copyAddress(address, $event)">
-                                <option value="">Escribir otra dirección</option>
-                                @for (source of copyableAddresses(address); track source.prefix) { <option [value]="source.prefix">{{ source.label }} · {{ source.prefix.split('_')[0] }}</option> }
-                              </select>
-                              <p class="field-help">Se copian los datos actuales. Después puedes ajustarlos para este servicio.</p>
-                            </div>
-                          }
-                          <div class="fields-grid">
-                            @for (field of address.fields; track field.name) {
-                              <div class="field">
-                                <label [for]="field.name">{{ field.label }}{{ field.required ? ' *' : ' (opcional)' }}</label>
-                                @if (field.type === 'select') {
-                                  <select [id]="field.name" [formControlName]="field.name" [attr.aria-invalid]="invalid('details.' + field.name)">
-                                    <option value="">Selecciona una opción</option>
-                                    @for (option of field.options; track option) { <option [value]="option">{{ option }}</option> }
-                                  </select>
-                                } @else {
-                                  <input [id]="field.name" [formControlName]="field.name" [placeholder]="field.placeholder" [attr.inputmode]="field.pattern ? 'numeric' : null" [attr.maxlength]="field.maxLength ?? 300" [attr.aria-invalid]="invalid('details.' + field.name)" />
-                                }
-                                @if (invalid('details.' + field.name)) { <p class="field-error">{{ field.pattern ? 'Introduce un código postal de 5 dígitos.' : 'Completa este campo.' }}</p> }
-                              </div>
-                            }
-                          </div>
-                        </section>
-                      }
-                    </section>
-                  }
-                </div>
-              </fieldset>
-            }
-
             <!-- DATOS PERSONALES -->
             <fieldset [disabled]="status() === 'sending'">
-              <legend class="section-title">
-                <span>02</span> Tus datos
-              </legend>
+              <legend class="section-title"><span>02</span> Tus datos</legend>
 
               <div class="fields-grid">
-                @for (field of personalFields; track field.name) {
-                  <div
-                    class="field"
-                    [class.full-width]="field.name === 'email'"
-                  >
-                    <label [for]="field.name">{{ field.label }}</label>
-
-                    <input
-                      [id]="field.name"
-                      [type]="field.type"
-                      [formControlName]="field.name"
-                      [placeholder]="field.placeholder"
-                      [attr.autocomplete]="field.autocomplete"
-                      [attr.maxlength]="field.maxlength"
-                      required
-                      [attr.aria-invalid]="invalid(field.name)"
-                      [attr.aria-describedby]="field.name + '-error'"
-                    />
-
-                    <p class="field-error" [id]="field.name + '-error'">
-                      @if (invalid(field.name)) {
-                        {{ field.error }}
-                      }
-                    </p>
+                <div class="field">
+                  <label for="firstName">Nombre *</label
+                  ><input
+                    id="firstName"
+                    formControlName="firstName"
+                    autocomplete="given-name"
+                    placeholder="Tu nombre"
+                    maxlength="100"
+                    required
+                    [attr.aria-invalid]="invalid('firstName')"
+                    aria-describedby="firstName-error"
+                  />
+                  <p class="field-error" id="firstName-error">
+                    @if (invalid('firstName')) {
+                      Introduce tu nombre.
+                    }
+                  </p>
+                </div>
+                <div class="field">
+                  <label for="lastName">Apellidos *</label
+                  ><input
+                    id="lastName"
+                    formControlName="lastName"
+                    autocomplete="family-name"
+                    placeholder="Tus apellidos"
+                    maxlength="150"
+                    required
+                    [attr.aria-invalid]="invalid('lastName')"
+                    aria-describedby="lastName-error"
+                  />
+                  <p class="field-error" id="lastName-error">
+                    @if (invalid('lastName')) {
+                      Introduce tus apellidos.
+                    }
+                  </p>
+                </div>
+                <div
+                  class="field full-width address-block"
+                  role="group"
+                  aria-labelledby="address-title"
+                >
+                  <h3 id="address-title">Dirección</h3>
+                  <p class="section-help">
+                    Escribe cada dato en su casilla. Nosotros ponemos las comas.
+                  </p>
+                  <div class="combined-address">
+                    <div class="address-part street-part">
+                      <label for="street">Calle *</label
+                      ><input
+                        id="street"
+                        formControlName="street"
+                        autocomplete="address-line1"
+                        placeholder="Calle Mayor"
+                        maxlength="140"
+                        required
+                        [attr.aria-invalid]="invalid('street')"
+                        aria-describedby="direction-error"
+                      />
+                    </div>
+                    <span class="address-comma" aria-hidden="true">,</span>
+                    <div class="address-part">
+                      <label for="number">Número *</label
+                      ><input
+                        id="number"
+                        formControlName="number"
+                        placeholder="12"
+                        maxlength="30"
+                        required
+                        [attr.aria-invalid]="invalid('number')"
+                        aria-describedby="direction-error"
+                      />
+                    </div>
+                    <span class="address-comma" aria-hidden="true">,</span>
+                    <div class="address-part">
+                      <label for="floor">Piso <small>(opcional)</small></label
+                      ><input
+                        id="floor"
+                        formControlName="floor"
+                        autocomplete="address-line2"
+                        placeholder="3"
+                        maxlength="30"
+                        [attr.aria-invalid]="invalid('floor')"
+                      />
+                    </div>
+                    <span class="address-comma" aria-hidden="true">,</span>
+                    <div class="address-part">
+                      <label for="door">Puerta <small>(opcional)</small></label
+                      ><input
+                        id="door"
+                        formControlName="door"
+                        placeholder="B"
+                        maxlength="30"
+                        [attr.aria-invalid]="invalid('door')"
+                      />
+                    </div>
                   </div>
-                }
-
+                  <p class="field-error" id="direction-error">
+                    @if (invalid('street') || invalid('number')) {
+                      Indica la calle y el número del edificio.
+                    }
+                  </p>
+                  @if (formattedAddress) {
+                    <p class="address-preview"><span>Tu dirección</span>{{ formattedAddress }}</p>
+                  }
+                </div>
+                <div class="field">
+                  <label for="postalCode">Código postal *</label
+                  ><input
+                    id="postalCode"
+                    formControlName="postalCode"
+                    autocomplete="postal-code"
+                    inputmode="numeric"
+                    placeholder="46001"
+                    maxlength="5"
+                    required
+                    [attr.aria-invalid]="invalid('postalCode')"
+                    aria-describedby="postal-error"
+                  />
+                  <p class="field-error" id="postal-error">
+                    @if (invalid('postalCode')) {
+                      Introduce un código postal de 5 dígitos.
+                    }
+                  </p>
+                </div>
+                <div class="field">
+                  <label for="location">Localidad *</label
+                  ><input
+                    id="location"
+                    formControlName="location"
+                    autocomplete="address-level2"
+                    list="localities"
+                    placeholder="Valencia"
+                    maxlength="120"
+                    required
+                    [attr.aria-invalid]="invalid('location')"
+                    aria-describedby="location-error"
+                  /><datalist id="localities">
+                    @for (locality of localities; track locality) {
+                      <option [value]="locality"></option>
+                    }
+                  </datalist>
+                  <p class="field-error" id="location-error">
+                    @if (invalid('location')) {
+                      Indica tu localidad.
+                    }
+                  </p>
+                </div>
                 <div class="field full-width">
                   <div class="phone-grid">
                     <div>
                       <label for="country">País y prefijo *</label>
 
-                      <select
-                        id="country"
-                        formControlName="country"
-                        autocomplete="off"
-                      >
+                      <select id="country" formControlName="country" autocomplete="off">
                         @for (country of countries; track country.code) {
                           <option [value]="country.code">
                             {{ country.name }} (+{{ country.prefix }})
@@ -257,8 +265,8 @@
                   </div>
 
                   <p class="field-help" id="phone-help">
-                    Escribe el número sin repetir el prefijo.
-                    Se aplicará el formato del país seleccionado.
+                    Escribe el número sin repetir el prefijo. Se aplicará el formato del país
+                    seleccionado.
                   </p>
 
                   <p class="field-error" id="phone-error">
@@ -267,237 +275,47 @@
                     }
                   </p>
                 </div>
-              </div>
-            </fieldset>
-
-            @if (!selectedQuestions.length) {
-            <!-- DIRECCIÓN -->
-            <fieldset [disabled]="status() === 'sending'">
-              <legend class="section-title">
-                <span>03</span> ¿Dónde se realizará?
-              </legend>
-
-              <div class="fields-grid">
                 <div class="field full-width">
-                  <label for="location">Localidad *</label>
-
-                  <input
-                    id="location"
-                    type="text"
-                    formControlName="location"
-                    list="localities"
-                    autocomplete="address-level2"
-                    placeholder="Empieza a escribir: Valencia, Torrent..."
-                    maxlength="120"
+                  <label for="email">Correo electrónico *</label
+                  ><input
+                    id="email"
+                    type="email"
+                    formControlName="email"
+                    autocomplete="email"
+                    placeholder="tu@email.com"
+                    maxlength="254"
                     required
-                    [attr.aria-invalid]="invalid('location')"
-                    aria-describedby="location-help location-error"
+                    [attr.aria-invalid]="invalid('email')"
+                    aria-describedby="email-error"
                   />
-
-                  <datalist id="localities">
-                    @for (locality of localities; track locality) {
-                      <option [value]="locality"></option>
-                    }
-                  </datalist>
-
-                  <p class="field-help" id="location-help">
-                    Elige una sugerencia o escribe otra localidad.
-                  </p>
-
-                  <p class="field-error" id="location-error">
-                    @if (invalid('location')) {
-                      Indica la localidad del trabajo.
+                  <p class="field-error" id="email-error">
+                    @if (invalid('email')) {
+                      Introduce un correo electrónico válido.
                     }
                   </p>
-                </div>
-
-                <div class="field full-width">
-                  <label for="street">Calle y número (opcional)</label>
-                  <input
-                    id="street"
-                    type="text"
-                    formControlName="street"
-                    autocomplete="address-line1"
-                    role="combobox"
-                    aria-autocomplete="list"
-                    aria-controls="address-suggestions"
-                    [attr.aria-expanded]="addressSuggestionsOpen() && addressSuggestions().length > 0"
-                    [attr.aria-activedescendant]="
-                      addressSuggestionsOpen() && activeAddressSuggestion() >= 0
-                        ? 'address-option-' + activeAddressSuggestion()
-                        : null
-                    "
-                    placeholder="Ej.: Calle del Olivo 24"
-                    maxlength="180"
-                    aria-describedby="address-help address-status"
-                    (input)="searchAddress()"
-                    (focus)="addressSuggestionsOpen.set(true)"
-                    (blur)="closeAddressSuggestions()"
-                    (keydown)="addressKeydown($event)"
-                  />
-
-                  @if (addressSuggestionsOpen() && addressSuggestions().length) {
-                    <ul id="address-suggestions" class="address-suggestions" role="listbox" aria-label="Direcciones sugeridas">
-                      @for (address of addressSuggestions(); track $index; let index = $index) {
-                        <li
-                          role="option"
-                          [id]="'address-option-' + index"
-                          [attr.aria-selected]="activeAddressSuggestion() === index"
-                          [class.is-active]="activeAddressSuggestion() === index"
-                          (mousedown)="$event.preventDefault()"
-                          (click)="selectAddress(index)"
-                        >
-                          <strong>{{ address.value }}</strong>
-                          <span>
-                            {{ address.locality }}
-                            @if (address.postcode) {
-                              {{ address.locality ? ' · ' : '' }}{{ address.postcode }}
-                            }
-                          </span>
-                        </li>
-                      }
-                    </ul>
-                  }
-
-                  <p class="field-help" id="address-help">
-                    Indica primero la localidad para buscar sugerencias.
-                    Puedes escribir la dirección completa aunque no aparezca en la lista.
-                  </p>
-
-                  <p class="field-help" id="address-status" role="status">
-                    @if (addressSearchStatus() === 'loading') {
-                      Buscando direcciones…
-                    } @else if (addressSearchStatus() === 'error') {
-                      No se pudieron cargar las sugerencias. Puedes escribir la dirección.
-                    } @else if (addressSearchStatus() === 'ready' && !addressSuggestions().length) {
-                      No encontramos sugerencias. Puedes escribir la dirección.
-                    }
-                  </p>
-                </div>
-
-                <div class="field full-width">
-                  <label for="postalCode">Código postal (opcional)</label>
-                  <input
-                    id="postalCode"
-                    type="text"
-                    inputmode="numeric"
-                    autocomplete="postal-code"
-                    formControlName="postalCode"
-                    placeholder="5 dígitos"
-                    maxlength="5"
-                    [attr.aria-invalid]="invalid('postalCode')"
-                    aria-describedby="postal-help postal-error"
-                  />
-
-                  <p class="field-help" id="postal-help">
-                    Revisa el código postal de tu dirección.
-                    Si la sugerencia no identifica un portal concreto, complétalo tú.
-                  </p>
-                  <p class="field-error" id="postal-error">
-                    @if (invalid('postalCode')) {
-                      Introduce un código postal de 5 dígitos.
-                    }
-                  </p>
-                </div>
-
-                <div class="address-unit full-width">
-                  <h3>Piso y puerta</h3>
-                  <div class="address-unit-grid">
-                    <div class="field">
-                      <label for="floor">Piso (opcional)</label>
-                      <input
-                        id="floor"
-                        type="text"
-                        formControlName="floor"
-                        placeholder="Ej.: 3.º o bajo"
-                        maxlength="30"
-                      />
-                    </div>
-
-                    <div class="field">
-                      <label for="door">Puerta (opcional)</label>
-                      <input
-                        id="door"
-                        type="text"
-                        formControlName="door"
-                        placeholder="Ej.: B o 7"
-                        maxlength="30"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div class="field full-width">
-                  <label for="staircase">Escalera o bloque (opcional)</label>
-                  <input
-                    id="staircase"
-                    type="text"
-                    formControlName="staircase"
-                    placeholder="Ej.: escalera 2"
-                    maxlength="40"
-                  />
                 </div>
               </div>
             </fieldset>
 
-            }
-            <!-- DESCRIPCIÓN -->
-            <fieldset [disabled]="status() === 'sending'">
-              <legend class="section-title">
-                <span>04</span> Los detalles
-              </legend>
-
-              <label for="message">Describe el trabajo *</label>
-
-              <textarea
-                id="message"
-                formControlName="message"
-                rows="6"
-                maxlength="3000"
-                required
-                placeholder="Qué necesitas, tamaño del espacio, objetos que hay que trasladar, fechas aproximadas, si hay ascensor..."
-                [attr.aria-invalid]="invalid('message')"
-                aria-describedby="message-error"
-              ></textarea>
-
-              <p class="field-error" id="message-error">
-                @if (invalid('message')) {
-                  Escribe una descripción de al menos 20 caracteres.
-                }
-              </p>
-
-              <div class="bot-field" aria-hidden="true">
-                <label for="website">Deja este campo vacío</label>
-                <input
-                  id="website"
-                  formControlName="website"
-                  tabindex="-1"
-                  autocomplete="off"
-                />
-              </div>
-            </fieldset>
-
+            <div class="bot-field" aria-hidden="true">
+              <label for="website">Deja este campo vacío</label
+              ><input id="website" formControlName="website" tabindex="-1" autocomplete="off" />
+            </div>
             <p class="data-note">
-              Utilizaremos estos datos para responder a tu consulta.
-              La solicitud se guarda para que Soluciones Chira pueda gestionarla.
-              @if (!selectedQuestions.length) { La búsqueda de direcciones consulta Photon con la calle y la localidad. }
-              No incluyas información sensible.
+              Utilizaremos estos datos para responder a tu consulta. La solicitud se guarda para que
+              Soluciones Chira pueda gestionarla. No incluyas información sensible.
             </p>
 
             @if (status() === 'error') {
               <p class="send-error" role="alert">{{ errorMessage() }}</p>
             }
 
-            <button
-              class="submit-button"
-              type="submit"
-              [disabled]="status() === 'sending'"
-            >
+            <button class="submit-button" type="submit" [disabled]="status() === 'sending'">
               @if (status() === 'sending') {
                 <span class="spinner" aria-hidden="true"></span>
                 Enviando…
               } @else {
-                Solicitar presupuesto
+                Enviar solicitud
               }
             </button>
 

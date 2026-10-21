@@ -1,66 +1,209 @@
 <section aria-labelledby="agenda-title">
   <div class="heading">
-    <div><p class="eyebrow">ORGANIZACIÓN DEL TRABAJO</p><h1 id="agenda-title">Agenda</h1><p class="subtitle">Tus trabajos y solicitudes con fecha, en un solo calendario.</p></div>
-    <button class="button" type="button" [disabled]="cargando" (click)="cargar()"><i class="pi pi-refresh" aria-hidden="true"></i> Actualizar</button>
+    <div>
+      <p class="eyebrow">ORGANIZACIÓN DEL TRABAJO</p>
+      <h1 id="agenda-title">Agenda</h1>
+      <p class="subtitle">Los trabajos con fecha asignada, en un solo calendario.</p>
+    </div>
+    <button class="button" type="button" [disabled]="cargando" (click)="cargar()">
+      <i class="pi pi-refresh" aria-hidden="true"></i> Actualizar
+    </button>
   </div>
-  @if (error) { <p class="notice" role="alert">{{ error }}</p> }
-  @if (cargando) { <p class="notice" role="status">Cargando agenda…</p> }
+  @if (error) {
+    <p class="notice" role="alert">{{ error }}</p>
+  }
+  @if (cargando) {
+    <p class="notice" role="status">Cargando agenda…</p>
+  }
   @if (!cargando && !error) {
     <div class="agenda-layout">
       <section class="calendar" aria-label="Calendario mensual">
         <div class="calendar-heading">
-          <div><h2 aria-live="polite">{{ tituloMes }}</h2><p>{{ totalMes }} trabajos con fecha este mes</p></div>
+          <div>
+            <h2 aria-live="polite">{{ tituloMes }}</h2>
+            <p>{{ totalMes }} trabajos con fecha este mes</p>
+          </div>
           <div class="navigation">
             <button class="button" type="button" (click)="irHoy()">Hoy</button>
-            <button class="button icon" type="button" aria-label="Mes anterior" (click)="cambiarMes(-1)"><i class="pi pi-chevron-left" aria-hidden="true"></i></button>
-            <button class="button icon" type="button" aria-label="Mes siguiente" (click)="cambiarMes(1)"><i class="pi pi-chevron-right" aria-hidden="true"></i></button>
+            <button
+              class="button icon"
+              type="button"
+              aria-label="Mes anterior"
+              (click)="cambiarMes(-1)"
+            >
+              <i class="pi pi-chevron-left" aria-hidden="true"></i>
+            </button>
+            <button
+              class="button icon"
+              type="button"
+              aria-label="Mes siguiente"
+              (click)="cambiarMes(1)"
+            >
+              <i class="pi pi-chevron-right" aria-hidden="true"></i>
+            </button>
           </div>
         </div>
-        <label class="completed-filter"><input type="checkbox" [(ngModel)]="mostrarFinalizadas" /> Mostrar trabajos finalizados</label>
+        <label class="completed-filter"
+          ><input type="checkbox" [(ngModel)]="mostrarFinalizadas" /> Mostrar trabajos
+          finalizados</label
+        >
         <div class="calendar-scroll">
-          <div class="month-grid" appSwipe [swipeMaxWidth]="600" (swipe)="cambiarMes($event === 'left' ? 1 : -1)">
-            @for (dia of diasSemana; track dia) { <div class="weekday">{{ dia }}</div> }
+          <div
+            class="month-grid"
+            appSwipe
+            [swipeMaxWidth]="600"
+            (swipe)="cambiarMes($event === 'left' ? 1 : -1)"
+          >
+            @for (dia of diasSemana; track dia) {
+              <div class="weekday">{{ dia }}</div>
+            }
             @for (dia of dias; track dia.fecha) {
-              <div class="day" (click)="abrirDia(dia.fecha)" [class.outside]="!dia.delMes" [class.today]="dia.fecha === hoy" [class.selected]="dia.fecha === seleccion">
-                <button class="day-number" type="button" aria-haspopup="dialog" aria-controls="dia-modal" [attr.aria-label]="dia.fecha + ', ' + dia.trabajos.length + ' trabajos'" [attr.aria-pressed]="dia.fecha === seleccion" [attr.aria-current]="dia.fecha === hoy ? 'date' : null" (click)="abrirDia(dia.fecha)">{{ dia.numero }}</button>
-                @if (dia.trabajos.length) { <span class="mobile-job-count" aria-hidden="true">{{ dia.trabajos.length }}</span> }
-                @for (trabajo of dia.trabajos.slice(0, 2); track trabajo.id) {
-                  <a (click)="$event.stopPropagation()" class="calendar-job" [class.finished]="trabajo.estado === 'Finalizada'" [routerLink]="trabajo.gestionId ? '/admin/trabajos' : '/admin/encuestas'" [queryParams]="trabajo.gestionId ? { registro: trabajo.gestionId } : { respuesta: trabajo.id }" [title]="trabajo.nombre + ' · ' + trabajo.servicios.join(', ')"><strong>{{ trabajo.nombre }}</strong><span>{{ trabajo.servicios.join(', ') }}</span></a>
+              <div
+                class="day"
+                (click)="abrirDia(dia.fecha)"
+                [class.outside]="!dia.delMes"
+                [class.today]="dia.fecha === hoy"
+                [class.selected]="dia.fecha === seleccion"
+              >
+                <button
+                  class="day-number"
+                  type="button"
+                  aria-haspopup="dialog"
+                  aria-controls="dia-modal"
+                  [attr.aria-label]="dia.fecha + ', ' + dia.trabajos.length + ' trabajos'"
+                  [attr.aria-pressed]="dia.fecha === seleccion"
+                  [attr.aria-current]="dia.fecha === hoy ? 'date' : null"
+                  (click)="abrirDia(dia.fecha)"
+                >
+                  {{ dia.numero }}
+                </button>
+                @if (dia.trabajos.length) {
+                  <span class="mobile-job-count" aria-hidden="true">{{ dia.trabajos.length }}</span>
                 }
-                @if (dia.trabajos.length > 2) { <button class="more" type="button" (click)="abrirDia(dia.fecha)">+{{ dia.trabajos.length - 2 }} más</button> }
+                @for (trabajo of dia.trabajos.slice(0, 2); track trabajo.id) {
+                  <a
+                    (click)="$event.stopPropagation()"
+                    class="calendar-job"
+                    [class.finished]="trabajo.estado === 'Finalizada'"
+                    [routerLink]="trabajo.gestionId ? '/admin/trabajos' : '/admin/encuestas'"
+                    [queryParams]="
+                      trabajo.gestionId
+                        ? { registro: trabajo.gestionId }
+                        : { respuesta: trabajo.id }
+                    "
+                    [title]="trabajo.nombre + ' · ' + trabajo.servicios.join(', ')"
+                    ><strong>{{ trabajo.nombre }}</strong
+                    ><span>{{ trabajo.servicios.join(', ') }}</span></a
+                  >
+                }
+                @if (dia.trabajos.length > 2) {
+                  <button class="more" type="button" (click)="abrirDia(dia.fecha)">
+                    +{{ dia.trabajos.length - 2 }} más
+                  </button>
+                }
               </div>
             }
           </div>
         </div>
-        <p class="calendar-hint"><i class="pi pi-info-circle" aria-hidden="true"></i> <span class="touch-hint">Desliza para cambiar de mes. </span>Pulsa un día para ver sus trabajos o un trabajo para abrir su respuesta. Las archivadas no aparecen.</p>
+        <p class="calendar-hint">
+          <i class="pi pi-info-circle" aria-hidden="true"></i>
+          <span class="touch-hint">Desliza para cambiar de mes. </span>Pulsa un día para ver sus
+          trabajos o un trabajo para abrir su ficha. Los trabajos archivados o cancelados no
+          aparecen.
+        </p>
       </section>
-
     </div>
     <section class="unscheduled" aria-labelledby="unscheduled-title">
-      <div><h2 id="unscheduled-title">Aceptadas sin fecha <span class="badge">{{ sinFecha.length }}</span></h2><p>Asigna una fecha a estos trabajos para que aparezcan en el calendario.</p></div>
+      <div>
+        <h2 id="unscheduled-title">
+          Trabajos sin fecha <span class="badge">{{ sinFecha.length }}</span>
+        </h2>
+        <p>Asigna una fecha a estos trabajos para que aparezcan en el calendario.</p>
+      </div>
       @for (trabajo of sinFecha; track trabajo.id) {
-        <a class="unscheduled-row" [routerLink]="trabajo.gestionId ? '/admin/trabajos' : '/admin/encuestas'" [queryParams]="trabajo.gestionId ? { registro: trabajo.gestionId } : { respuesta: trabajo.id }"><span><strong>{{ trabajo.nombre }}</strong><small>{{ trabajo.referencia }} · {{ trabajo.servicios.join(', ') }}</small></span><span class="assign">Asignar fecha</span></a>
-      } @empty { <p class="all-set">No hay trabajos aceptados pendientes de asignar fecha.</p> }
+        <a
+          class="unscheduled-row"
+          [routerLink]="trabajo.gestionId ? '/admin/trabajos' : '/admin/encuestas'"
+          [queryParams]="
+            trabajo.gestionId ? { registro: trabajo.gestionId } : { respuesta: trabajo.id }
+          "
+          ><span
+            ><strong>{{ trabajo.nombre }}</strong
+            ><small>{{ trabajo.referencia }} · {{ trabajo.servicios.join(', ') }}</small></span
+          ><span class="assign">Asignar fecha</span></a
+        >
+      } @empty {
+        <p class="all-set">No hay trabajos aceptados pendientes de asignar fecha.</p>
+      }
     </section>
   }
 </section>
 
-<dialog #diaModal id="dia-modal" class="day-modal" aria-labelledby="modal-day-title" (cancel)="$event.preventDefault(); cerrarDia()" (click)="cerrarDesdeFondo($event)">
+<dialog
+  #diaModal
+  id="dia-modal"
+  class="day-modal"
+  aria-labelledby="modal-day-title"
+  (cancel)="$event.preventDefault(); cerrarDia()"
+  (click)="cerrarDesdeFondo($event)"
+>
   <div class="modal-heading">
-    <div><p class="eyebrow">PLAN DEL DÍA</p><h2 id="modal-day-title">{{ fechaSeleccionada }}</h2><p>{{ trabajosDia.length }} trabajos programados</p></div>
-    <button class="button icon" type="button" aria-label="Cerrar trabajos del día" (click)="cerrarDia()" autofocus><i class="pi pi-times" aria-hidden="true"></i></button>
+    <div>
+      <p class="eyebrow">PLAN DEL DÍA</p>
+      <h2 id="modal-day-title">{{ fechaSeleccionada }}</h2>
+      <p>{{ trabajosDia.length }} trabajos programados</p>
+    </div>
+    <button
+      class="button icon"
+      type="button"
+      aria-label="Cerrar trabajos del día"
+      (click)="cerrarDia()"
+      autofocus
+    >
+      <i class="pi pi-times" aria-hidden="true"></i>
+    </button>
   </div>
   <div class="modal-body">
     @for (trabajo of trabajosDia; track trabajo.id) {
       <article class="daily-work">
-        <div class="work-heading"><small>{{ trabajo.referencia }}</small><span class="badge">{{ trabajo.estado }}</span></div>
-        <h3>{{ trabajo.nombre }}</h3><p class="work-service">{{ trabajo.servicios.join(', ') }}</p>
-        <p><i class="pi pi-map-marker" aria-hidden="true"></i> {{ trabajo.direccion }} · {{ trabajo.localidad }} {{ trabajo.codigoPostal }}</p>
+        <div class="work-heading">
+          <small>{{ trabajo.referencia }}</small
+          ><span class="badge">{{ trabajo.estadoTrabajo || trabajo.estado }}</span>
+        </div>
+        <h3>{{ trabajo.nombre }}</h3>
+        <p class="work-service">{{ trabajo.servicios.join(', ') }}</p>
+        <p>
+          <i class="pi pi-map-marker" aria-hidden="true"></i> {{ trabajo.direccion }} ·
+          {{ trabajo.localidad }} {{ trabajo.codigoPostal }}
+        </p>
         <p><i class="pi pi-phone" aria-hidden="true"></i> {{ trabajo.telefono }}</p>
-        @if (trabajo.mensaje) { <div class="work-description"><strong>Qué hay que hacer</strong><p>{{ trabajo.mensaje }}</p></div> }
-        @if (trabajo.notas) { <div class="work-description"><strong>Notas internas</strong><p>{{ trabajo.notas }}</p></div> }
-        <a class="button work-link" [routerLink]="trabajo.gestionId ? '/admin/trabajos' : '/admin/encuestas'" [queryParams]="trabajo.gestionId ? { registro: trabajo.gestionId } : { respuesta: trabajo.id }" (click)="cerrarDia()">Ver trabajo y editar</a>
+        @if (trabajo.mensaje) {
+          <div class="work-description">
+            <strong>Qué hay que hacer</strong>
+            <p>{{ trabajo.mensaje }}</p>
+          </div>
+        }
+        @if (trabajo.notas) {
+          <div class="work-description">
+            <strong>Notas internas</strong>
+            <p>{{ trabajo.notas }}</p>
+          </div>
+        }
+        <a
+          class="button work-link"
+          [routerLink]="trabajo.gestionId ? '/admin/trabajos' : '/admin/encuestas'"
+          [queryParams]="
+            trabajo.gestionId ? { registro: trabajo.gestionId } : { respuesta: trabajo.id }
+          "
+          (click)="cerrarDia()"
+          >Ver trabajo y editar</a
+        >
       </article>
-    } @empty { <div class="empty"><i class="pi pi-calendar" aria-hidden="true"></i><p>No hay trabajos programados para este día.</p></div> }
+    } @empty {
+      <div class="empty">
+        <i class="pi pi-calendar" aria-hidden="true"></i>
+        <p>No hay trabajos programados para este día.</p>
+      </div>
+    }
   </div>
 </dialog>

@@ -1,7 +1,8 @@
 <div class="detail-page">
   <header class="service-header container">
     <nav class="breadcrumb" aria-label="Ruta de navegación">
-      <a routerLink="/servicios">Servicios</a><span aria-hidden="true">/</span><span aria-current="page">{{ service.name }}</span>
+      <a routerLink="/servicios">Servicios</a><span aria-hidden="true">/</span
+      ><span aria-current="page">{{ service.name }}</span>
     </nav>
     <div class="service-introduction">
       <div class="service-title-block">
@@ -12,7 +13,9 @@
         <h2>{{ service.headline }}</h2>
         <p>{{ service.description }}</p>
         <div class="actions">
-          <a class="button" routerLink="/formulario" [queryParams]="{ servicio: service.slug }">Pedir presupuesto</a>
+          <a class="button" routerLink="/formulario" [queryParams]="{ servicio: service.slug }"
+            >Pedir presupuesto</a
+          >
           <a class="phone-link" href="tel:+34610928521">610 92 85 21</a>
         </div>
         <span class="consultation-note">Presupuesto sin compromiso</span>
@@ -21,20 +24,36 @@
   </header>
 
   <section class="scope container" aria-labelledby="scope-title">
-    <div class="section-heading"><h2 id="scope-title">Qué podemos hacer por ti</h2><p>Acordamos el alcance según las características del trabajo.</p></div>
+    <div class="section-heading">
+      <h2 id="scope-title">Qué podemos hacer por ti</h2>
+      <p>Acordamos el alcance según las características del trabajo.</p>
+    </div>
     <ul class="scope-list">
       @for (feature of service.features; track feature; let i = $index) {
-        <li><span class="feature-number" aria-hidden="true">0{{ i + 1 }}</span><h3>{{ feature }}</h3></li>
+        <li>
+          <span class="feature-number" aria-hidden="true">0{{ i + 1 }}</span>
+          <h3>{{ feature }}</h3>
+        </li>
       }
     </ul>
   </section>
 
-  <section class="service-information container" aria-label="Información para solicitar el servicio">
+  <section
+    class="service-information container"
+    aria-label="Información para solicitar el servicio"
+  >
     <div class="preparation">
       <span class="eyebrow">PARA PREPARAR TU PRESUPUESTO</span>
       <h2>Qué necesitamos saber.</h2>
-      <p>Cuéntanos estos datos al contactar. Si todavía no tienes toda la información, la revisamos contigo.</p>
-      <ul class="information-list">@for (item of service.information; track item) {<li>{{ item }}</li>}</ul>
+      <p>
+        Cuéntanos estos datos al contactar. Si todavía no tienes toda la información, la revisamos
+        contigo.
+      </p>
+      <ul class="information-list">
+        @for (item of service.information; track item) {
+          <li>{{ item }}</li>
+        }
+      </ul>
       <a class="text-link" routerLink="/contacto">Consultar con el equipo</a>
     </div>
     <div class="faq" aria-labelledby="questions-title">
@@ -42,19 +61,37 @@
       <h2 id="questions-title">Antes de decidir.</h2>
       <div class="faq-list">
         @for (faq of service.faqs; track faq.question) {
-          <details><summary>{{ faq.question }}<span class="faq-icon" aria-hidden="true"></span></summary><p>{{ faq.answer }}</p></details>
+          <details>
+            <summary>{{ faq.question }}<span class="faq-icon" aria-hidden="true"></span></summary>
+            <p>{{ faq.answer }}</p>
+          </details>
         }
       </div>
     </div>
   </section>
 
   <section class="contact container" aria-labelledby="contact-title">
-    <div><span class="eyebrow">TU PROYECTO, NUESTRO SIGUIENTE PASO</span><h2 id="contact-title">Hablemos de {{ service.name.toLowerCase() }}.</h2><p>Valoramos tu solicitud y acordamos contigo las condiciones y la fecha.</p></div>
-    <a class="button" routerLink="/formulario" [queryParams]="{ servicio: service.slug }">Solicitar presupuesto</a>
+    <div>
+      <span class="eyebrow">TU PROYECTO, NUESTRO SIGUIENTE PASO</span>
+      <h2 id="contact-title">Hablemos de {{ service.name.toLowerCase() }}.</h2>
+      <p>Valoramos tu solicitud y acordamos contigo las condiciones y la fecha.</p>
+    </div>
+    <a class="button" routerLink="/formulario" [queryParams]="{ servicio: service.slug }"
+      >Solicitar presupuesto</a
+    >
   </section>
 
   <nav class="related container" aria-label="Otros servicios">
-    <div class="related-heading"><h2>Otros servicios</h2><a class="text-link" routerLink="/servicios">Ver todos</a></div>
-    <div class="related-links">@for (item of services; track item.slug) {@if (item.slug !== service.slug) {<a [routerLink]="['/servicios', item.slug]">{{ item.name }}</a>}}</div>
+    <div class="related-heading">
+      <h2>Otros servicios</h2>
+      <a class="text-link" routerLink="/servicios">Ver todos</a>
+    </div>
+    <div class="related-links">
+      @for (item of services; track item.slug) {
+        @if (item.slug !== service.slug) {
+          <a [routerLink]="['/servicios', item.slug]">{{ item.name }}</a>
+        }
+      }
+    </div>
   </nav>
 </div>

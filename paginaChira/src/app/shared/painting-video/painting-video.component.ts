@@ -1,11 +1,20 @@
-import { Component, DestroyRef, ElementRef, afterNextRender, effect, untracked, inject, input, signal } from '@angular/core';
-
+import {
+  Component,
+  DestroyRef,
+  ElementRef,
+  afterNextRender,
+  effect,
+  untracked,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
 
 @Component({
   selector: 'app-painting-video',
   standalone: true,
   templateUrl: './painting-video.component.html',
-  styleUrl: './painting-video.component.scss'
+  styleUrl: './painting-video.component.scss',
 })
 export class PaintingVideoComponent {
   readonly companionPhoto = input<string>();
@@ -24,12 +33,18 @@ export class PaintingVideoComponent {
     afterNextRender(() => {
       const preference = window.matchMedia('(prefers-reduced-motion: reduce)');
       this.paused.set(preference.matches);
-      const observer = new IntersectionObserver(entries => {
-        this.visible = entries[0].isIntersecting;
-        this.sync();
-      }, { threshold: .15 });
+      const observer = new IntersectionObserver(
+        (entries) => {
+          this.visible = entries[0].isIntersecting;
+          this.sync();
+        },
+        { threshold: 0.15 },
+      );
       const visibility = () => this.sync();
-      const motion = () => { this.paused.set(preference.matches); this.sync(); };
+      const motion = () => {
+        this.paused.set(preference.matches);
+        this.sync();
+      };
       observer.observe(this.root.nativeElement);
       document.addEventListener('visibilitychange', visibility);
       preference.addEventListener('change', motion);
@@ -42,7 +57,7 @@ export class PaintingVideoComponent {
   }
 
   toggle(): void {
-    this.paused.update(value => !value);
+    this.paused.update((value) => !value);
     this.sync();
   }
 
@@ -53,7 +68,9 @@ export class PaintingVideoComponent {
         void video.play().catch(() => {
           if (video.isConnected && video.error === null) {
             this.paused.set(true);
-            this.root.nativeElement.querySelectorAll('video').forEach((item: HTMLVideoElement) => item.pause());
+            this.root.nativeElement
+              .querySelectorAll('video')
+              .forEach((item: HTMLVideoElement) => item.pause());
           }
         });
       } else {

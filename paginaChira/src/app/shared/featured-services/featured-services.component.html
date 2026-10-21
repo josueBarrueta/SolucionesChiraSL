@@ -1,32 +1,79 @@
-<section class="featured" aria-label="Servicios destacados" aria-roledescription="carrusel"
-  (mouseenter)="setHovered(true)" (mouseleave)="setHovered(false)"
-  (focusin)="setFocused(true)" (focusout)="onFocusOut($event)">
-  <div class="section-heading"><h2 class="section-title">Nuestros servicios <span>destacados</span></h2><a routerLink="/servicios">Explora nuestros servicios</a></div>
-  <div class="viewport" appSwipe (swipe)="move($event === 'left' ? 1 : -1)" (swipeActive)="setTouching($event)">
+<section
+  class="featured"
+  aria-label="Servicios destacados"
+  aria-roledescription="carrusel"
+  (mouseenter)="setHovered(true)"
+  (mouseleave)="setHovered(false)"
+  (focusin)="setFocused(true)"
+  (focusout)="onFocusOut($event)"
+>
+  <div class="section-heading">
+    <h2 class="section-title">Nuestros servicios <span>destacados</span></h2>
+    <a routerLink="/servicios">Explora nuestros servicios</a>
+  </div>
+  <div
+    class="viewport"
+    appSwipe
+    (swipe)="move($event === 'left' ? 1 : -1)"
+    (swipeActive)="setTouching($event)"
+  >
     <div class="slides" [class.resetting]="resetting()">
-      @for (slide of renderedSlides; track $index; let i=$index) {
-        <article class="panel" [class.demolition-panel]="slide.id === 'derribos'" [class.video-panel]="slide.id === 'derribos' || slide.id === 'pintura'" [class.current]="cursor()===i"
-          [style.--position]="position(i)" [attr.inert]="cursor()!==i ? '' : null" [attr.aria-hidden]="cursor()!==i"
-          role="group" aria-roledescription="diapositiva" [attr.aria-label]="(i%slides.length+1)+' de '+slides.length+': '+slide.name">
+      @for (slide of renderedSlides; track $index; let i = $index) {
+        <article
+          class="panel"
+          [class.demolition-panel]="slide.id === 'derribos'"
+          [class.video-panel]="slide.id === 'derribos' || slide.id === 'pintura'"
+          [class.current]="cursor() === i"
+          [style.--position]="position(i)"
+          [attr.inert]="cursor() !== i ? '' : null"
+          [attr.aria-hidden]="cursor() !== i"
+          role="group"
+          aria-roledescription="diapositiva"
+          [attr.aria-label]="(i % slides.length) + 1 + ' de ' + slides.length + ': ' + slide.name"
+        >
           <div class="content">
-            <div class="card-heading"><span class="card-number" aria-hidden="true">0{{ i % slides.length + 1 }}</span><span class="tag">{{ slide.name }}</span><span class="featured-badge"><span aria-hidden="true">✦</span> Servicio destacado</span></div>
-            <h2>{{ slide.title }} <span>{{ slide.accent }}</span></h2>
+            <div class="card-heading">
+              <span class="card-number" aria-hidden="true">0{{ (i % slides.length) + 1 }}</span
+              ><span class="tag">{{ slide.name }}</span
+              ><span class="featured-badge"
+                ><span aria-hidden="true">✦</span> Servicio destacado</span
+              >
+            </div>
+            <h2>
+              {{ slide.title }} <span>{{ slide.accent }}</span>
+            </h2>
             <p>{{ slide.description }}</p>
             <div class="actions">
-              <a class="cta" routerLink="/formulario" [queryParams]="{ servicio: slide.id }">Pedir presupuesto</a>
-              <a class="all" [routerLink]="['/servicios',slide.id]">Conocer el servicio</a>
+              <a class="cta" routerLink="/formulario" [queryParams]="{ servicio: slide.id }"
+                >Pedir presupuesto</a
+              >
+              <a class="all" [routerLink]="['/servicios', slide.id]">Conocer el servicio</a>
             </div>
             <span class="note"><span aria-hidden="true">✓</span> Presupuesto sin compromiso</span>
           </div>
           <div class="visual">
-            @if (slide.id==='derribos') {
-                <app-demolition-video class="card-media background-media" [playbackActive]="cursor() === i" />
+            @if (slide.id === 'derribos') {
+              <app-demolition-video
+                class="card-media background-media"
+                [playbackActive]="cursor() === i"
+              />
             } @else if (slide.id === 'pintura') {
-                <app-painting-video class="card-media background-media" [playbackActive]="cursor() === i" companionPhoto="images/trabajos/pintura-fachada.jpeg" />
+              <app-painting-video
+                class="card-media background-media"
+                [playbackActive]="cursor() === i"
+                companionPhoto="images/trabajos/pintura-fachada.jpeg"
+              />
             } @else {
-<img class="service-photo" [src]="slide.image" [alt]="slide.imageAlt" width="899" height="899" loading="lazy" decoding="async" />
+              <img
+                class="service-photo"
+                [src]="slide.image"
+                [alt]="slide.imageAlt"
+                width="899"
+                height="899"
+                loading="lazy"
+                decoding="async"
+              />
             }
-
           </div>
         </article>
       }
@@ -34,12 +81,19 @@
   </div>
   <div class="controls">
     <div class="service-nav" role="group" aria-label="Elegir servicio destacado">
-      @for (slide of slides; track slide.id; let i=$index) {
-        <button type="button" class="service-tab" [class.selected]="active()===i" [attr.aria-pressed]="active()===i" [attr.aria-label]="'Mostrar '+slide.name" (click)="select(i)">
-          <span class="tab-number" aria-hidden="true">0{{ i + 1 }}</span>{{ slide.name }}
+      @for (slide of slides; track slide.id; let i = $index) {
+        <button
+          type="button"
+          class="service-tab"
+          [class.selected]="active() === i"
+          [attr.aria-pressed]="active() === i"
+          [attr.aria-label]="'Mostrar ' + slide.name"
+          (click)="select(i)"
+        >
+          <span class="tab-number" aria-hidden="true">0{{ i + 1 }}</span
+          >{{ slide.name }}
         </button>
       }
     </div>
-
   </div>
 </section>

@@ -8,7 +8,7 @@ import { AuthService } from './auth.service';
   standalone: true,
   imports: [FormsModule, RouterLink],
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+  styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent {
   private readonly auth = inject(AuthService);

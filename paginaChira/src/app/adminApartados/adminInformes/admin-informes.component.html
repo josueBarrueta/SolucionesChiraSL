@@ -1,5 +1,171 @@
-<section><div class="heading"><div><p class="eyebrow">SOLUCIONES CHIRA SL</p><h1>Informes</h1><p class="subtitle">Actividad, facturación y cobros calculados a partir de tus registros.</p></div><button class="button" type="button" [disabled]="loading" (click)="load()">Actualizar</button></div>
-<div class="filters"><label>Periodo<select [(ngModel)]="period" (ngModelChange)="applyPeriod()"><option value="dia">Día</option><option value="semana">Semana (lunes a domingo)</option><option value="mes">Mes</option><option value="ano">Año</option><option value="personalizado">Fechas personalizadas</option><option value="todo">Todo el periodo</option></select></label>@if(period!=='todo' && period!=='personalizado'){<label>Fecha de referencia<input type="date" [(ngModel)]="anchor" (ngModelChange)="applyPeriod()" /></label>}<label>Desde<input type="date" [(ngModel)]="desde" (ngModelChange)="period='personalizado'" /></label><label>Hasta<input type="date" [(ngModel)]="hasta" (ngModelChange)="period='personalizado'" /></label><button class="button" type="button" [disabled]="loading || !!error || invalid" (click)="print()">Imprimir / guardar PDF</button></div><p class="hint">El informe incluye los trabajos según su fecha prevista, las facturas, los cobros y los gastos del periodo seleccionado.</p>
-@if(invalid){<p class="notice error" role="alert">La fecha final debe ser posterior a la inicial.</p>}@if(error){<p class="notice error" role="alert">{{ error }}</p>}@if(loading){<p class="notice" role="status">Cargando informes…</p>}
-@if(!loading && !error && !invalid){<div class="metrics">@for(metric of metrics;track metric.label){<article class="metric"><p>{{ metric.label }}</p><strong>{{ metric.value }}</strong></article>}</div><p class="hint">Cobros menos gastos refleja los movimientos registrados, con impuestos incluidos. No equivale al beneficio contable. Los trabajos sin fecha no se incluyen en el periodo.</p><div class="breakdowns"><div class="records"><h3>Servicios solicitados</h3>@for(service of services;track service.name){<article class="record"><span>{{ service.name }}</span><strong>{{ service.count }}</strong></article>}@empty{<p>No hay solicitudes en este periodo.</p>}</div><div class="records"><h3>Gastos por categoría</h3>@for(category of categories;track category.name){<article class="record"><span>{{ category.name }}</span><strong>{{ money(category.value) }}</strong></article>}@empty{<p>No hay gastos en este periodo.</p>}</div></div>}
+<section>
+  <div class="heading">
+    <div>
+      <p class="eyebrow">SOLUCIONES CHIRA SL</p>
+      <h1>Informes</h1>
+      <p class="subtitle">Actividad, facturación y cobros calculados a partir de tus registros.</p>
+    </div>
+    <button class="button" type="button" [disabled]="loading" (click)="load()">Actualizar</button>
+  </div>
+  <div class="filters">
+    <label
+      >Periodo<select [(ngModel)]="period" (ngModelChange)="applyPeriod()">
+        <option value="dia">Día</option>
+        <option value="semana">Semana (lunes a domingo)</option>
+        <option value="mes">Mes</option>
+        <option value="ano">Año</option>
+        <option value="personalizado">Fechas personalizadas</option>
+        <option value="todo">Todo el periodo</option>
+      </select></label
+    >
+    @if (period !== 'todo' && period !== 'personalizado') {
+      <label
+        >Fecha de referencia<input type="date" [(ngModel)]="anchor" (ngModelChange)="applyPeriod()"
+      /></label>
+    }
+    <label
+      >Desde<input
+        type="date"
+        [(ngModel)]="desde"
+        (ngModelChange)="period = 'personalizado'" /></label
+    ><label
+      >Hasta<input
+        type="date"
+        [(ngModel)]="hasta"
+        (ngModelChange)="period = 'personalizado'" /></label
+    ><button
+      class="button"
+      type="button"
+      [disabled]="loading || !!error || invalid"
+      (click)="print()"
+    >
+      Imprimir / guardar PDF</button
+    ><button
+      class="button"
+      type="button"
+      [disabled]="loading || !!error || invalid"
+      (click)="exportReport()"
+    >
+      Descargar para gestoría (CSV)</button
+    ><button
+      class="button"
+      type="button"
+      [disabled]="loading || !!error || invalid"
+      (click)="exportExpenses()"
+    >
+      Exportar gastos CSV
+    </button>
+  </div>
+  <p class="hint">
+    El informe incluye los trabajos según su fecha prevista, las facturas, los cobros y los gastos
+    del periodo seleccionado.
+  </p>
+  @if (invalid) {
+    <p class="notice error" role="alert">La fecha final debe ser posterior a la inicial.</p>
+  }
+  @if (error) {
+    <p class="notice error" role="alert">{{ error }}</p>
+  }
+  @if (loading) {
+    <p class="notice" role="status">Cargando informes…</p>
+  }
+  @if (!loading && !error && !invalid) {
+    <div class="metrics">
+      @for (metric of metrics; track metric.label) {
+        <article class="metric">
+          <p>{{ metric.label }}</p>
+          <strong>{{ metric.value }}</strong>
+        </article>
+      }
+    </div>
+    <p class="hint">
+      Cobros menos gastos refleja los movimientos registrados, con impuestos incluidos. No equivale
+      al beneficio contable. Los trabajos sin fecha no se incluyen en el periodo.
+    </p>
+    <div class="breakdowns">
+      <div class="records">
+        <h3>Servicios solicitados</h3>
+        @for (service of services; track service.name) {
+          <article class="record">
+            <span>{{ service.name }}</span
+            ><strong>{{ service.count }}</strong>
+          </article>
+        } @empty {
+          <p>No hay solicitudes en este periodo.</p>
+        }
+      </div>
+      <div class="records">
+        <h3>Gastos por categoría</h3>
+        @for (category of categories; track category.name) {
+          <article class="record">
+            <span>{{ category.name }}</span
+            ><strong>{{ money(category.value) }}</strong>
+          </article>
+          <div class="category-progress" aria-hidden="true">
+            <span [style.width.%]="spent ? (category.value / spent) * 100 : 0"></span>
+          </div>
+        } @empty {
+          <p>No hay gastos en este periodo.</p>
+        }
+      </div>
+    </div>
+  }
+  @if (!loading && !error && !invalid) {
+    <section class="finance-card">
+      <header>
+        <div>
+          <h2>Cobros registrados</h2>
+          <p>Movimientos introducidos manualmente, agrupados por fecha de pago.</p>
+        </div>
+      </header>
+      <div class="finance-summary">
+        @for (method of paymentMethods; track method.name) {
+          <article>
+            <span>{{ method.name }}</span
+            ><strong>{{ money(method.value) }}</strong>
+          </article>
+        } @empty {
+          <p class="hint">No hay cobros registrados en este periodo.</p>
+        }
+      </div>
+    </section>
+    <section class="finance-card">
+      <header>
+        <div>
+          <h2>Desglose de IVA registrado</h2>
+          <p>Las facturas se cuentan una vez. Los borradores y los trabajos no añaden ingresos.</p>
+        </div>
+      </header>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Tipo</th>
+              <th>Base</th>
+              <th>IVA</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (group of taxGroups; track group.rate) {
+              <tr>
+                <td>{{ group.rate }} %</td>
+                <td>{{ money(group.base) }}</td>
+                <td>{{ money(group.tax) }}</td>
+                <td>{{ money(group.total) }}</td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="4">No hay facturas en este periodo.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <p class="hint">
+        IVA de gastos registrado: {{ money(expenseTax) }}. Gastos con IVA pendiente de indicar:
+        {{ money(unknownExpenseTax) }}.
+      </p>
+    </section>
+  }
 </section>

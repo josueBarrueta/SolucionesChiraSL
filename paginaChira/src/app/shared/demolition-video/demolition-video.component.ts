@@ -1,4 +1,14 @@
-import { Component, DestroyRef, ElementRef, afterNextRender, effect, untracked, inject, input, signal } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  ElementRef,
+  afterNextRender,
+  effect,
+  untracked,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
 
 const MEDIA = 'videos/derribos/';
 
@@ -6,13 +16,13 @@ const MEDIA = 'videos/derribos/';
   selector: 'app-demolition-video',
   standalone: true,
   templateUrl: './demolition-video.component.html',
-  styleUrl: './demolition-video.component.scss'
+  styleUrl: './demolition-video.component.scss',
 })
 export class DemolitionVideoComponent {
   readonly zones = [
     { name: 'Cocina', before: 'cocina-antes', after: 'cocina-despues' },
     { name: 'Salón', before: 'salon-antes', after: 'salon-despues' },
-    { name: 'Planta superior', before: 'planta-superior-antes', after: 'planta-superior-despues' }
+    { name: 'Planta superior', before: 'planta-superior-antes', after: 'planta-superior-despues' },
   ];
   readonly selected = signal(0);
   readonly playbackActive = input(true);
@@ -33,12 +43,18 @@ export class DemolitionVideoComponent {
     afterNextRender(() => {
       const preference = window.matchMedia('(prefers-reduced-motion: reduce)');
       this.paused.set(preference.matches);
-      const observer = new IntersectionObserver(entries => {
-        this.visible = entries[0].isIntersecting;
-        this.sync();
-      }, { threshold: .15 });
+      const observer = new IntersectionObserver(
+        (entries) => {
+          this.visible = entries[0].isIntersecting;
+          this.sync();
+        },
+        { threshold: 0.15 },
+      );
       const visibility = () => this.sync();
-      const motion = () => { this.paused.set(preference.matches); this.sync(); };
+      const motion = () => {
+        this.paused.set(preference.matches);
+        this.sync();
+      };
       observer.observe(this.root.nativeElement);
       document.addEventListener('visibilitychange', visibility);
       preference.addEventListener('change', motion);
@@ -66,8 +82,12 @@ export class DemolitionVideoComponent {
     const current = this.videos(index);
     const next = (index + 1) % this.zones.length;
     // Keep the final frames visible until both incoming videos can display a frame.
-    if (current.length !== 2 || !current.every(video => video.ended) ||
-        !this.videos(next).every(video => video.readyState >= 2)) return;
+    if (
+      current.length !== 2 ||
+      !current.every((video) => video.ended) ||
+      !this.videos(next).every((video) => video.readyState >= 2)
+    )
+      return;
     clearTimeout(this.transitionTimer);
     this.leaving.set(index);
     this.selected.set(next);
@@ -80,7 +100,7 @@ export class DemolitionVideoComponent {
   }
 
   toggle(): void {
-    this.paused.update(value => !value);
+    this.paused.update((value) => !value);
     this.sync();
   }
 
@@ -88,11 +108,20 @@ export class DemolitionVideoComponent {
     const active = this.videos(this.selected());
     for (const video of this.root.nativeElement.querySelectorAll('video')) {
       video.muted = true;
-      if (active.includes(video) && this.playbackActive() && this.visible && !document.hidden && !this.paused() && !video.ended) {
+      if (
+        active.includes(video) &&
+        this.playbackActive() &&
+        this.visible &&
+        !document.hidden &&
+        !this.paused() &&
+        !video.ended
+      ) {
         void video.play().catch(() => {
           if (video.isConnected && video.error === null) {
             this.paused.set(true);
-            this.root.nativeElement.querySelectorAll('video').forEach((item: HTMLVideoElement) => item.pause());
+            this.root.nativeElement
+              .querySelectorAll('video')
+              .forEach((item: HTMLVideoElement) => item.pause());
           }
         });
       } else {

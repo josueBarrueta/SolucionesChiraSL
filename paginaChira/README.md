@@ -1,59 +1,87 @@
-# PaginaChira
+# Soluciones Chira
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.39.
+Web pública y panel de gestión de Soluciones Chira SL, con Angular y un servidor Node.js.
+Requiere Node.js 24 o superior.
 
-## Development server
+## Trabajar en local
 
-To start a local development server, run:
+Instala las dependencias con `npm ci`. Configura la conexión y el acceso del servidor
+siguiendo [server/README.md](server/README.md), con las variables de `.env.example`
+en un archivo privado `.env`.
 
-```bash
-ng serve
+En dos terminales, ejecuta:
+
+```sh
+npm run server
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
+```sh
+npm start
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+La web se abre en `http://localhost:4200`. El servidor usa el puerto 3000 por defecto;
+el proxy de desarrollo conecta la web con la API.
 
-```bash
-ng generate --help
+## Organización del código
+
+- `src/app/app.routes.ts`: rutas públicas y del panel.
+- `src/app/home`, `servicios`, `servicio`, `nosotros` y `contacto`: web pública.
+- `src/app/formulario`: encuesta pública y definiciones compartidas con el servidor.
+- `src/app/admin`: estructura y navegación del panel.
+- `src/app/adminApartados`: clientes, solicitudes, trabajos, agenda, facturas, gastos,
+  informes y configuración. `gestion` contiene la interfaz compartida de gestión.
+- `src/app/adminApartados/adminFacturas/invoice-document.ts`: documento imprimible de factura.
+- `src/app/shared`: componentes, utilidades y conexión con la API compartidos.
+- `src/app/login`: autenticación y protección de rutas.
+- `server`: API, reglas de gestión, acceso a datos, seguridad y pruebas.
+- `scripts`: configuración de la API y preparación de rutas para publicación estática.
+- `public`: imágenes, vídeos y configuración pública. Algunos vídeos se referencian
+  mediante nombres construidos en el código; `fuentes.json` documenta la procedencia
+  de las fotografías.
+
+## Formato y comprobaciones
+
+```sh
+npm run format
+npm run format:check
+npm run build
+node --test server/*.test.mjs scripts/*.test.mjs
 ```
 
-## Building
+Prettier aplica el mismo formato al código TypeScript, JavaScript, HTML, estilos y
+configuración. La configuración está en `package.json`; `.prettierignore` excluye
+los recursos, secretos, dependencias y archivos generados.
 
-To build the project run:
+Las pruebas del servidor usan datos de prueba en memoria y no borran la base de datos.
+Los archivos de `dist`, `.angular` y `node_modules` son generados y están excluidos de Git.
 
-```bash
-ng build
-```
+## SEO técnico
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Los títulos, descripciones, datos públicos del negocio y dirección del sitio se mantienen en
+`src/app/seo/seo.config.ts`. El servicio `SeoService` los actualiza al navegar, incluyendo
+canonical, Open Graph, Twitter Cards y datos estructurados de empresa, servicios y navegación.
+No se han añadido una dirección postal, horarios, reseñas ni valoraciones sin confirmar.
 
-## Running unit tests
+`npm run build` genera 11 páginas informativas con contenido HTML completo. El formulario y
+el panel conservan su funcionamiento en el navegador. La publicación añade metadatos propios
+al formulario, `noindex` al login y a todas las rutas de administración, `sitemap.xml` y
+`robots.txt`. El verificador del proceso de compilación comprueba estos resultados.
+La autenticación continúa protegiendo los datos; `noindex` es una indicación para buscadores.
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+La configuración actual apunta a `https://josuebarrueta.github.io/SolucionesChiraSL/`.
+El comando de publicación existente mantiene las páginas prerenderizadas y las rutas privadas.
+Para un dominio propio, actualizar `SITE_URL` y el `--base-href` usado en la compilación.
 
-```bash
-ng test
-```
+En GitHub Pages bajo `/SolucionesChiraSL/`, el archivo `robots.txt` generado queda en una
+subcarpeta. Los buscadores solo leen el de la raíz del host: hay que publicarlo en
+`https://josuebarrueta.github.io/robots.txt` desde el sitio raíz del propietario, o usar un
+dominio propio con la web en `/`. Esto no impide el rastreo por defecto ni afecta a las
+indicaciones `noindex` incluidas en las páginas. Véase la
+[documentación de Google sobre robots.txt](https://developers.google.com/crawling/docs/robots-txt/create-robots-txt).
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Después de publicar, verificar la propiedad en Google Search Console y enviar el sitemap
+`https://josuebarrueta.github.io/SolucionesChiraSL/sitemap.xml`. Comprobar las páginas públicas
+con la inspección de URLs y los datos estructurados con la prueba de resultados enriquecidos.
+La indexación y las posiciones dependen del sitio publicado; estas tareas no se han realizado
+desde una cuenta externa. El SEO local puede completarse con una ficha de Google Business
+Profile y datos del negocio confirmados.

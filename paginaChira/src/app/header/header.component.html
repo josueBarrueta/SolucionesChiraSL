@@ -1,12 +1,18 @@
-<header class="header" (keydown.escape)="cerrarConEscape($event)" (focusout)="cerrarAlSalir($event)">
+<header
+  class="header"
+  (keydown.escape)="cerrarConEscape($event)"
+  (focusout)="cerrarAlSalir($event)"
+>
   <div class="header-container">
-    <a
-      class="brand"
-      routerLink="/"
-      aria-label="Soluciones Chira SL, inicio"
-      (click)="cerrarMenu()"
-    >
-      <img class="brand-logo" src="images/marca/logo-header.jpg" alt="Soluciones Chira SL" width="1000" height="260" fetchpriority="high">
+    <a class="brand" routerLink="/" aria-label="Soluciones Chira SL, inicio" (click)="cerrarMenu()">
+      <img
+        class="brand-logo"
+        src="images/marca/logo-header.jpg"
+        alt="Soluciones Chira SL"
+        width="1000"
+        height="260"
+        fetchpriority="high"
+      />
     </a>
 
     <button
@@ -15,9 +21,7 @@
       type="button"
       aria-controls="navegacion-principal"
       [attr.aria-expanded]="menuAbierto()"
-      [attr.aria-label]="
-        menuAbierto() ? 'Cerrar menú de navegación' : 'Abrir menú de navegación'
-      "
+      [attr.aria-label]="menuAbierto() ? 'Cerrar menú de navegación' : 'Abrir menú de navegación'"
       [class.is-open]="menuAbierto()"
       (click)="alternarMenu()"
     >
@@ -127,24 +131,20 @@
           </a>
         </li>
       </ul>
-          <ul
-            id="services-submenu"
-            class="services-submenu"
-            [hidden]="!serviciosAbiertos()"
-          >
-            @for (service of services; track service.slug) {
-              <li>
-                <a
-                  [routerLink]="['/servicios', service.slug]"
-                  routerLinkActive="active"
-                  ariaCurrentWhenActive="page"
-                  (click)="cerrarMenu()"
-                >
-                  {{ service.name }}
-                </a>
-              </li>
-            }
-          </ul>
+      <ul id="services-submenu" class="services-submenu" [hidden]="!serviciosAbiertos()">
+        @for (service of services; track service.slug) {
+          <li>
+            <a
+              [routerLink]="['/servicios', service.slug]"
+              routerLinkActive="active"
+              ariaCurrentWhenActive="page"
+              (click)="cerrarMenu()"
+            >
+              {{ service.name }}
+            </a>
+          </li>
+        }
+      </ul>
     </nav>
 
     <div class="header-actions" role="group" aria-label="Contactar con Soluciones Chira">

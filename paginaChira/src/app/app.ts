@@ -1,3 +1,4 @@
+import { SeoService } from './seo/seo.service';
 import { Component, inject, signal } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './header/header.component';
@@ -6,9 +7,12 @@ import { FooterComponent } from './footer/footer.component';
   selector: 'app-root',
   imports: [RouterOutlet, HeaderComponent, FooterComponent],
   templateUrl: './app.html',
-  styleUrl: './app.scss'
+  styleUrl: './app.scss',
 })
 export class App {
+  constructor() {
+    inject(SeoService);
+  }
   private readonly router = inject(Router);
 
   protected get isPrivatePage(): boolean {

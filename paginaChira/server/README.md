@@ -166,3 +166,101 @@ Presupuestos y Equipo salen del menú principal; sus datos y rutas existentes se
 Gastos sigue siendo manual e Informes resume solicitudes, trabajos, facturas y gastos.
 Resumen, Encuestas y las listas de gestión se refrescan cada 30 segundos mientras están
 visibles; la actualización no interrumpe una ficha abierta.
+
+## Panel de gestión actualizado
+
+La navegación se organiza en General (Resumen, Clientes, Agenda), Servicios
+(Solicitudes, Trabajos), Gestión (Facturas, Gastos, Informes) y Empresa · Ajustes
+(Configuración). La encuesta sigue creando un cliente y un trabajo vinculados.
+
+Facturas permite preparar borradores desde trabajos finalizados o manualmente.
+La emisión exige razón social, NIF, domicilio y serie de la empresa, así como los
+datos fiscales del cliente. Conserva los datos al emitir y asigna el siguiente
+número libre. MongoDB Atlas confirma conjuntamente el número, la factura y el
+registro de emisión mediante una transacción. Los registros internos antiguos
+mantienen su referencia y sus pagos. No existe conexión con la AEAT.
+
+Gastos incorpora proveedor, estado pagado, IVA del justificante (opcional) y
+un adjunto PDF/JPG/PNG/WebP de hasta 300 KB. Los adjuntos se validan en el servidor.
+Informes exporta CSV para gestoría y gastos, además de PDF desde la impresión;
+distingue fecha de factura y fecha de pago y no suma los trabajos como ventas.
+
+En desarrollo se puede configurar LOCAL_ADMIN_PASSWORD_HASH en el archivo .env
+privado. Sustituye únicamente el acceso local y no cambia las credenciales de
+la base de datos; no se utiliza cuando NODE_ENV=production. Mientras esté activo,
+la contraseña local se cambia desde ese archivo y no desde el panel.
+
+## Encuesta sencilla y seguimiento de clientes
+
+Las encuestas de versión 3 crean la ficha del cliente y una solicitud pendiente,
+con un vínculo estable `clienteId`. Los reenvíos con la misma clave no se duplican.
+Una nueva solicitud del mismo correo se añade al historial de esa ficha, sin
+sobrescribir los datos que el propietario haya editado. Los formularios antiguos
+conservan su compatibilidad.
+
+En Solicitudes, «Confirmar y preparar trabajo» acepta la solicitud y crea su trabajo
+vinculado una sola vez. En Trabajos se completan descripción, tareas, precio acordado
+sin IVA y fecha prevista; esta última puede quedar vacía hasta programarlo.
+Los trabajos con fecha aparecen en Agenda; los no fechados se muestran pendientes
+de programar. Al preparar la factura se propone el precio acordado del trabajo.
+Clientes muestra servicios solicitados e historiales de solicitudes, trabajos y
+facturas; también mantiene las notas internas y los accesos a correo y WhatsApp.
+
+## Facturas: edición completa en una pantalla
+
+Facturas utiliza un editor propio con datos fiscales visibles. Desde un trabajo
+se proponen cliente, concepto y precio sin IVA; también permite crear facturas
+manuales y dar de alta un cliente sin salir del editor. Los datos fiscales del
+borrador se guardan en `clienteFiscal` y pueden reutilizarse en facturas siguientes,
+sin alterar la ficha general ni las facturas emitidas.
+
+«Guardar borrador» vuelve a la lista. En facturas de trabajos, «Guardar y ver
+factura» guarda y abre la vista previa. «Guardar y emitir» guarda primero los datos
+actuales y solicita la confirmación en un diálogo independiente, con la versión
+guardada del documento. La emisión comprueba que el borrador no haya cambiado.
+Tras emitir se puede imprimir, guardar como PDF o registrar un cobro. La lista
+permite acceder directamente a vista previa, emisión, reimpresión y archivo de
+borradores. Los trabajos para facturar se muestran independientemente del periodo
+seleccionado para consultar las facturas.
+
+## Documento de factura A4
+
+La vista previa de las facturas se abre dentro del panel, en un visor de impresión
+con el formato A4 de Jofemar adaptado a Chira: logo y emisor a la izquierda, cliente
+a la derecha, número y fechas, conceptos con precios netos e importes con IVA,
+desglose por tipo impositivo y total. La referencia del trabajo sustituye a la del
+recibo. Las notas internas no se imprimen; sí las condiciones y el IBAN configurado.
+El visor espera a que se cargue el logo antes de abrir la impresión. Las facturas
+emitidas usan sus datos guardados y los borradores se identifican como tales.
+Las comprobaciones del documento se incluyen en `npm run test:server`.
+
+## Flujo de facturación equivalente a Jofemar
+
+La pantalla de facturas tiene su propio controlador y un editor dentro de la página,
+sin depender del formulario genérico de gestión. Mantiene el selector de periodo
+con aplicación explícita, resúmenes de borradores y emitidas, trabajos de origen,
+listado con búsqueda por cliente/NIF/referencia y acciones de emisión, reimpresión,
+edición, archivo y restauración. Los datos de un cliente nuevo se pueden escribir
+directamente y se crea o reutiliza su ficha al guardar.
+
+Las observaciones visibles (`observaciones`) se imprimen; las notas internas no.
+Después de emitir se abre automáticamente el visor A4. Todas las entradas a vista
+previa y reimpresión usan el mismo generador, tanto para las facturas anteriores
+como para las nuevas, y respetan los datos fiscales guardados al emitir.
+El guardado y la emisión admiten `expectedUpdatedAt` para rechazar versiones antiguas
+con una respuesta 409; las confirmaciones repetidas de una factura ya emitida son
+idempotentes y no asignan otro número. Los registros internos anteriores mantienen
+su naturaleza y no se presentan como nuevas facturas emitidas.
+
+## Solicitudes manuales
+
+Solicitudes incorpora «Añadir solicitud» para elegir un cliente activo o crear una
+ficha desde el formulario. Permite seleccionar servicios, canal de contacto
+(Teléfono, WhatsApp, Presencial u Otro), descripción y notas internas. Se guarda
+siempre como Nueva, sin fecha ni trabajo confirmado. Después usa el mismo flujo
+de aceptación, trabajos, agenda y facturación que una encuesta pública.
+
+`POST /api/gestion/solicitudes` exige sesión y una clave `Idempotency-Key`. La clave
+se conserva al reintentar; el servidor evita repetir la solicitud y la ficha del
+cliente. Las fichas existentes se reutilizan por identificador o correo y no se
+sobrescriben. La numeración comparte el contador de solicitudes de la web.

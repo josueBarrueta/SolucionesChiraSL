@@ -1,1 +1,610 @@
-<app-gestion resource="facturas" />
+<section>
+  <div class="heading">
+    <div>
+      <p class="eyebrow">GESTIÓN · SOLUCIONES CHIRA</p>
+      <h1>Facturas</h1>
+      <p class="subtitle">Tus facturas, claras y organizadas.</p>
+    </div>
+    <button
+      class="button primary"
+      type="button"
+      [disabled]="loading || saving"
+      (click)="newInvoice()"
+    >
+      + Nuevo borrador
+    </button>
+  </div>
+  @if (error) {
+    <p class="notice error" role="alert">{{ error }}</p>
+  }
+  @if (message) {
+    <p class="notice" role="status">{{ message }}</p>
+  }
+  @if (loading) {
+    <p class="notice" role="status">Cargando tus registros…</p>
+  }
+  <form
+    class="filters period-toolbar"
+    #periodForm="ngForm"
+    (ngSubmit)="periodForm.valid && applyPeriod()"
+  >
+    <label
+      >Periodo<select name="period" [(ngModel)]="period">
+        <option value="dia">Día</option>
+        <option value="semana">Semana</option>
+        <option value="mes">Mes</option>
+        <option value="ano">Año</option>
+        <option value="personalizado">Fechas concretas</option>
+      </select></label
+    >
+    @if (period === 'dia' || period === 'semana') {
+      <label
+        >{{ period === 'semana' ? 'Día de la semana' : 'Día'
+        }}<input type="date" name="anchor" [(ngModel)]="anchor" required
+      /></label>
+    }
+    @if (period === 'mes') {
+      <label>Mes<input type="month" name="month" [(ngModel)]="month" required /></label>
+    }
+    @if (period === 'ano') {
+      <label
+        >Año<input
+          type="number"
+          name="year"
+          [(ngModel)]="year"
+          min="1900"
+          max="9999"
+          step="1"
+          required
+      /></label>
+    }
+    @if (period === 'personalizado') {
+      <label>Desde<input type="date" name="desde" [(ngModel)]="desde" required /></label
+      ><label
+        >Hasta<input type="date" name="hasta" [(ngModel)]="hasta" [min]="desde" required
+      /></label>
+    }
+    <button class="button" type="submit" [disabled]="saving || loading || periodForm.invalid">
+      Aplicar periodo / Actualizar
+    </button>
+  </form>
+  <p class="hint">
+    Periodo aplicado: {{ displayDate(appliedFrom) }} — {{ displayDate(appliedTo) }}
+  </p>
+  @if (ready) {
+    <div class="finance-summary">
+      <article>
+        <span>Borradores del periodo</span><strong>{{ money(sum(draftInvoices)) }}</strong
+        ><small>Importe estimado · No son facturas emitidas</small>
+      </article>
+      <article>
+        <span>Borradores guardados</span><strong>{{ draftInvoices.length }}</strong
+        ><small>Pendientes de emisión</small>
+      </article>
+      <article>
+        <span>Facturas emitidas</span><strong>{{ money(sum(issuedInvoices)) }}</strong
+        ><small>Versiones definitivas guardadas</small>
+      </article>
+    </div>
+    <section class="finance-card">
+      <header>
+        <div>
+          <h2>Trabajos y servicios</h2>
+          <p>Prepara la factura con el cliente, los servicios y el precio ya acordado.</p>
+        </div>
+      </header>
+      <div class="table-toolbar">
+        <label
+          >Buscar trabajo<input
+            type="search"
+            [(ngModel)]="jobsSearch"
+            placeholder="Servicio, cliente o referencia…" /></label
+        ><label
+          >Mostrar<select [(ngModel)]="jobScope">
+            <option value="period">Finalizados del periodo</option>
+            <option value="unbilled">Todos los finalizados sin factura</option>
+            <option value="all">Todos los trabajos</option>
+          </select></label
+        >
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Referencia / Servicio</th>
+              <th>Cliente</th>
+              <th>Fecha prevista</th>
+              <th>Precio sin IVA</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (job of sourceJobs; track job['id']) {
+              <tr>
+                <td>
+                  <strong>{{ job['titulo'] }}</strong
+                  ><small>{{ jobReference(job) }}</small>
+                </td>
+                <td>{{ clientName(job['clienteId']) }}</td>
+                <td>{{ displayDate(job['fecha']) }}</td>
+                <td>
+                  {{
+                    job['precioAcordadoCentimos'] == null
+                      ? 'Por completar'
+                      : money(job['precioAcordadoCentimos'])
+                  }}
+                </td>
+                <td>
+                  <button
+                    class="button"
+                    type="button"
+                    [disabled]="saving"
+                    (click)="prepareJob(job)"
+                  >
+                    {{
+                      invoiceForJob(job)?.['estado'] === 'Registrada'
+                        ? 'Reimprimir factura'
+                        : invoiceForJob(job)
+                          ? 'Continuar borrador'
+                          : 'Preparar factura'
+                    }}
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5">
+                  No hay trabajos con este filtro. Puedes elegir «Todos los trabajos» o crear un
+                  borrador manual.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+    @if (issuerMissing.length) {
+      <p class="setup-note">
+        Para activar «Emitir factura», completa {{ issuerMissing.join(', ') }}.
+        <a routerLink="/admin/configuracion">Abrir Configuración ↗</a>
+      </p>
+    }
+    <section class="finance-card">
+      <header>
+        <div>
+          <h2>Facturas</h2>
+          <p>Prepara el borrador, emítelo una vez y reimprímelo cuando lo necesites.</p>
+        </div>
+        <button class="button primary" type="button" [disabled]="saving" (click)="newInvoice()">
+          + Nuevo borrador
+        </button>
+      </header>
+      <div class="table-toolbar">
+        <label
+          >Buscar<input
+            type="search"
+            [(ngModel)]="search"
+            placeholder="Buscar cliente, NIF o número…" /></label
+        ><label
+          >Estado<select [(ngModel)]="status">
+            <option value="">Todos</option>
+            <option value="Borrador">Borradores</option>
+            <option value="Registrada">Emitidas / Registros internos</option>
+          </select></label
+        ><label class="check"
+          ><input type="checkbox" [(ngModel)]="showArchived" /> Archivadas</label
+        >
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>Fecha</th>
+              <th>Total</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of filteredInvoices; track row['id']) {
+              <tr>
+                <td>
+                  <strong>{{ clientFor(row)['nombre'] }}</strong
+                  ><small>{{ clientFor(row)['nif'] }}</small>
+                </td>
+                <td>{{ displayDate(row['fecha']) }}</td>
+                <td>
+                  <strong>{{ money(row['totalCentimos']) }}</strong>
+                  @if (row['estado'] === 'Registrada') {
+                    <small
+                      >Pendiente:
+                      {{ money(row['totalCentimos'] - (row['pagadoCentimos'] ?? 0)) }}</small
+                    >
+                  }
+                </td>
+                <td>
+                  <span class="badge" [class.pending]="row['estado'] !== 'Registrada'">{{
+                    invoiceState(row)
+                  }}</span>
+                </td>
+                <td>
+                  <div class="table-actions">
+                    <button class="button" type="button" (click)="preview(row)">
+                      {{
+                        row['estado'] === 'Registrada'
+                          ? 'Reimprimir factura'
+                          : 'Vista previa (borrador)'
+                      }}
+                    </button>
+                    @if (row['estado'] === 'Borrador' && !row['archivada']) {
+                      <button
+                        class="button primary"
+                        type="button"
+                        [disabled]="saving || !!issuerMissing.length"
+                        (click)="requestIssue(row)"
+                      >
+                        Emitir factura</button
+                      ><button
+                        class="button"
+                        type="button"
+                        [disabled]="saving"
+                        (click)="editInvoice(row)"
+                      >
+                        Editar
+                      </button>
+                    }
+                    @if (row['estado'] === 'Borrador') {
+                      <button
+                        class="button"
+                        type="button"
+                        [disabled]="saving"
+                        (click)="archive(row)"
+                      >
+                        {{ row['archivada'] ? 'Restaurar' : 'Archivar' }}
+                      </button>
+                    } @else {
+                      <button
+                        class="button"
+                        type="button"
+                        [disabled]="saving"
+                        (click)="openPayments(row)"
+                      >
+                        Cobros
+                      </button>
+                    }
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5">No hay facturas en este periodo.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  }
+</section>
+@if (editorOpen) {
+  <section #recordEditor class="finance-card record-editor" aria-labelledby="invoice-editor-title">
+    <header>
+      <div>
+        <h2 id="invoice-editor-title">
+          {{
+            draft['trabajoId']
+              ? 'Factura del trabajo'
+              : draft['id']
+                ? 'Editar borrador'
+                : 'Nuevo borrador'
+          }}
+        </h2>
+        <p>Completa el cliente y los conceptos. Los precios unitarios son sin impuestos.</p>
+      </div>
+      <button class="button" type="button" [disabled]="saving" (click)="closeEditor()">
+        Cerrar
+      </button>
+    </header>
+    <form
+      #invoiceForm="ngForm"
+      (ngSubmit)="invoiceForm.valid && saveDraft(draft['trabajoId'] ? 'preview' : 'save')"
+    >
+      @if (editorError) {
+        <p class="notice error" role="alert">{{ editorError }}</p>
+      }
+      <fieldset [disabled]="saving">
+        <label
+          >Reutilizar datos de un cliente (opcional)<select
+            name="clienteId"
+            [(ngModel)]="draft['clienteId']"
+            (ngModelChange)="chooseClient()"
+          >
+            <option value="">Nuevo cliente / Completar los datos</option>
+            @for (client of clients; track client['id']) {
+              @if (!client['archivada'] || client['id'] === draft['clienteId']) {
+                <option [value]="client['id']">
+                  {{ client['nombre'] }}{{ client['nif'] ? ' · ' + client['nif'] : '' }}
+                </option>
+              }
+            }
+          </select></label
+        >
+        <div class="form-grid">
+          <label
+            >Cliente *<input
+              name="nombre"
+              [(ngModel)]="fiscal['nombre']"
+              maxlength="200"
+              required /></label
+          ><label
+            >NIF del cliente<input
+              name="nif"
+              [(ngModel)]="fiscal['nif']"
+              maxlength="40"
+              placeholder="Necesario para emitir" /></label
+          ><label class="wide"
+            >Domicilio fiscal<input
+              name="direccion"
+              [(ngModel)]="fiscal['direccion']"
+              maxlength="500"
+              placeholder="Necesario para emitir" /></label
+          ><label
+            >Fecha de la operación *<input
+              type="date"
+              name="fecha"
+              [(ngModel)]="draft['fecha']"
+              required /></label
+          ><label
+            >Vencimiento (opcional)<input
+              type="date"
+              name="vencimiento"
+              [(ngModel)]="draft['vencimiento']"
+              [min]="draft['fecha']" /></label
+          ><label class="wide"
+            >Trabajo vinculado (opcional)<select
+              name="trabajoId"
+              [(ngModel)]="draft['trabajoId']"
+              (ngModelChange)="useJob()"
+            >
+              <option value="">Sin trabajo · Factura manual</option>
+              @for (job of availableJobs; track job['id']) {
+                <option [value]="job['id']">
+                  {{ job['titulo'] }} · {{ jobReference(job) }} · {{ displayDate(job['fecha']) }}
+                </option>
+              }
+            </select></label
+          >
+        </div>
+        @if (selectedJob; as job) {
+          <p class="linked-job">
+            <strong>{{ job['titulo'] }}</strong> · {{ jobReference(job) }}<br />{{
+              job['direccion']
+            }}
+          </p>
+        }
+        @if (settings['ivaPredeterminado'] == null) {
+          <p class="hint">
+            Indica el IVA que corresponde a cada concepto. Puedes definir un IVA predeterminado en
+            Configuración para las siguientes facturas.
+          </p>
+        }
+        @for (line of draft['lineas']; track $index; let i = $index) {
+          <div class="line">
+            <label class="concept"
+              >Concepto *<input
+                [name]="'concepto' + i"
+                [(ngModel)]="line['concepto']"
+                maxlength="300"
+                required /></label
+            ><label
+              >Cantidad<input
+                type="number"
+                [name]="'cantidad' + i"
+                [(ngModel)]="line['cantidad']"
+                min="0.001"
+                max="100000"
+                step="0.001"
+                required /></label
+            ><label
+              >Precio sin IVA (€)<input
+                type="number"
+                [name]="'precio' + i"
+                [(ngModel)]="line['precio']"
+                min="0"
+                max="1000000"
+                step="0.01"
+                required /></label
+            ><label
+              >Impuesto (%)<input
+                type="number"
+                [name]="'iva' + i"
+                [(ngModel)]="line['iva']"
+                min="0"
+                max="100"
+                step="0.01"
+                required /></label
+            ><button
+              class="button icon"
+              type="button"
+              aria-label="Quitar concepto"
+              [disabled]="draft['lineas'].length === 1"
+              (click)="draft['lineas'].splice(i, 1)"
+            >
+              ×
+            </button>
+          </div>
+        }
+        <button
+          class="button"
+          type="button"
+          [disabled]="draft['lineas'].length >= 50"
+          (click)="addLine()"
+        >
+          + Añadir concepto
+        </button>
+        <div class="invoice-totals">
+          <div>
+            <span>Base imponible</span><strong>{{ money(draftTotals.base) }}</strong>
+          </div>
+          <div>
+            <span>IVA</span><strong>{{ money(draftTotals.tax) }}</strong>
+          </div>
+          <div class="invoice-grand">
+            <span>Total</span><strong>{{ money(draftTotals.total) }}</strong>
+          </div>
+        </div>
+        <label class="notes"
+          >Notas visibles en la factura<textarea
+            name="observaciones"
+            [(ngModel)]="draft['observaciones']"
+            rows="3"
+            maxlength="2000"
+            placeholder="Observaciones que verá el cliente…"
+          ></textarea>
+        </label>
+        <details class="invoice-extras">
+          <summary>Contacto, condiciones y notas internas</summary>
+          <div class="form-grid">
+            <label
+              >Correo electrónico<input
+                name="email"
+                type="email"
+                email
+                [(ngModel)]="fiscal['email']"
+                maxlength="254" /></label
+            ><label
+              >Teléfono<input name="telefono" [(ngModel)]="fiscal['telefono']" maxlength="40"
+            /></label>
+          </div>
+          <label class="notes"
+            >Condiciones de la factura<textarea
+              name="condiciones"
+              [(ngModel)]="draft['condiciones']"
+              rows="3"
+              maxlength="3000"
+            ></textarea></label
+          ><label class="notes"
+            >Notas internas (no se imprimen)<textarea
+              name="notas"
+              [(ngModel)]="draft['notas']"
+              rows="3"
+              maxlength="3000"
+            ></textarea>
+          </label>
+        </details>
+        <div class="actions invoice-footer">
+          <button class="button primary" type="submit" [disabled]="saving || invoiceForm.invalid">
+            {{
+              saving
+                ? 'Guardando…'
+                : draft['trabajoId']
+                  ? 'Guardar y ver factura'
+                  : 'Guardar borrador'
+            }}</button
+          ><button
+            class="button"
+            type="button"
+            [disabled]="saving || invoiceForm.invalid"
+            (click)="saveDraft('issue')"
+          >
+            Guardar y emitir</button
+          ><button class="button" type="button" [disabled]="saving" (click)="previewDraft()">
+            Vista previa
+          </button>
+        </div>
+        <p class="hint">
+          El borrador se puede editar. Al emitir se asigna el número definitivo y se abre la factura
+          para imprimirla o guardarla como PDF.
+        </p>
+      </fieldset>
+    </form>
+  </section>
+}
+@if (paymentInvoice; as invoice) {
+  <section class="finance-card">
+    <header>
+      <div>
+        <h2>Cobros · {{ invoice['referencia'] }}</h2>
+        <p>{{ clientFor(invoice)['nombre'] }} · Total {{ money(invoice['totalCentimos']) }}</p>
+      </div>
+      <div class="table-actions">
+        <button class="button" type="button" (click)="preview(invoice)">Reimprimir factura</button
+        ><button class="button" type="button" (click)="paymentInvoice = null">Cerrar</button>
+      </div>
+    </header>
+    <div class="payment-body">
+      <div class="payment-summary">
+        <span>Pendiente de cobro</span
+        ><strong>{{ money(invoice['totalCentimos'] - (invoice['pagadoCentimos'] ?? 0)) }}</strong>
+      </div>
+      @for (pago of invoice['pagos']; track $index) {
+        <div class="payment-row">
+          <span>{{ displayDate(pago['fecha']) }} · {{ pago['metodo'] }}</span
+          ><strong>{{ money(pago['importeCentimos']) }}</strong>
+        </div>
+      }
+      @if (invoice['totalCentimos'] > (invoice['pagadoCentimos'] ?? 0)) {
+        <form #paymentForm="ngForm" (ngSubmit)="paymentForm.valid && pay()">
+          <div class="form-grid">
+            <label
+              >Importe (€)<input
+                name="importePago"
+                type="number"
+                [(ngModel)]="payment['importe']"
+                min="0.01"
+                [max]="(invoice['totalCentimos'] - (invoice['pagadoCentimos'] ?? 0)) / 100"
+                step="0.01"
+                required /></label
+            ><label
+              >Fecha<input
+                name="fechaPago"
+                type="date"
+                [(ngModel)]="payment['fecha']"
+                required /></label
+            ><label
+              >Método<select name="metodoPago" [(ngModel)]="payment['metodo']">
+                <option>Transferencia</option>
+                <option>Efectivo</option>
+                <option>Tarjeta</option>
+                <option>Otro</option>
+              </select></label
+            >
+          </div>
+          <button class="button primary" type="submit" [disabled]="saving || paymentForm.invalid">
+            Registrar cobro
+          </button>
+        </form>
+      }
+    </div>
+  </section>
+}
+<dialog
+  #issueDialog
+  class="issue-dialog"
+  aria-labelledby="issue-title"
+  (cancel)="$event.preventDefault(); cancelIssue()"
+>
+  @if (issuingInvoice; as invoice) {
+    <h2 id="issue-title">Emitir factura</h2>
+    <p>
+      Se emitirá la factura guardada para <strong>{{ clientFor(invoice)['nombre'] }}</strong> por
+      <strong>{{ money(invoice['totalCentimos']) }}</strong
+      >.
+    </p>
+    <p>
+      Serie: <strong>{{ settings['serieFacturas'] }}</strong
+      >. El número se asigna automáticamente. Los datos quedan bloqueados después de emitir.
+    </p>
+    @if (error) {
+      <p class="notice error" role="alert">{{ error }}</p>
+    }
+    <div class="actions">
+      <button class="button" type="button" [disabled]="saving" (click)="cancelIssue()">
+        Cancelar</button
+      ><button class="button primary" type="button" [disabled]="saving" (click)="confirmIssue()">
+        {{ saving ? 'Emitiendo…' : 'Confirmar emisión' }}
+      </button>
+    </div>
+  }
+</dialog>

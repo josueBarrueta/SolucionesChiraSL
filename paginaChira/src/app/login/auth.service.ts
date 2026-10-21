@@ -7,14 +7,17 @@ export class AuthService {
   readonly authenticated = signal(false);
 
   async login(username: string, password: string): Promise<void> {
-    const result = await this.api.request<{ token: string }>('/login', 'POST', { username: username.trim(), password });
+    const result = await this.api.request<{ token: string }>('/login', 'POST', {
+      username: username.trim(),
+      password,
+    });
     this.api.establecerSesion(result.token);
     this.authenticated.set(true);
   }
 
   async comprobarSesion(): Promise<boolean> {
     try {
-      if (!await this.api.puedeComprobarSesion()) {
+      if (!(await this.api.puedeComprobarSesion())) {
         this.authenticated.set(false);
         return false;
       }
@@ -29,8 +32,11 @@ export class AuthService {
   }
 
   async logout(): Promise<void> {
-    try { await this.api.request('/logout', 'POST', {}); }
-    catch (error) { if (!(error instanceof ApiError && error.status === 401)) throw error; }
+    try {
+      await this.api.request('/logout', 'POST', {});
+    } catch (error) {
+      if (!(error instanceof ApiError && error.status === 401)) throw error;
+    }
     this.api.establecerSesion('');
     this.authenticated.set(false);
   }

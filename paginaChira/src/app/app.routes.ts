@@ -5,131 +5,133 @@ export const routes: Routes = [
   {
     path: 'servicios/portes',
     data: { service: 'portes' },
-    loadComponent: () =>
-      import('./servicio/servicio.component').then(
-        (m) => m.ServicioComponent
-      )
+    loadComponent: () => import('./servicio/servicio.component').then((m) => m.ServicioComponent),
   },
   {
     path: 'servicios/montaje',
     data: { service: 'montaje' },
-    loadComponent: () =>
-      import('./servicio/servicio.component').then(
-        (m) => m.ServicioComponent
-      )
+    loadComponent: () => import('./servicio/servicio.component').then((m) => m.ServicioComponent),
   },
   {
     path: 'servicios/mudanzas',
     data: { service: 'mudanzas' },
-    loadComponent: () =>
-      import('./servicio/servicio.component').then(
-        (m) => m.ServicioComponent
-      )
+    loadComponent: () => import('./servicio/servicio.component').then((m) => m.ServicioComponent),
   },
   {
     path: 'servicios/vaciados',
     data: { service: 'vaciados' },
-    loadComponent: () =>
-      import('./servicio/servicio.component').then(
-        (m) => m.ServicioComponent
-      )
+    loadComponent: () => import('./servicio/servicio.component').then((m) => m.ServicioComponent),
   },
   {
     path: 'servicios/limpieza',
     data: { service: 'limpieza' },
-    loadComponent: () =>
-      import('./servicio/servicio.component').then(
-        (m) => m.ServicioComponent
-      )
+    loadComponent: () => import('./servicio/servicio.component').then((m) => m.ServicioComponent),
   },
   {
     path: 'servicios/pintura',
     data: { service: 'pintura' },
-    loadComponent: () =>
-      import('./servicio/servicio.component').then(
-        (m) => m.ServicioComponent
-      )
+    loadComponent: () => import('./servicio/servicio.component').then((m) => m.ServicioComponent),
   },
 
   {
     path: 'servicios/derribos',
     data: { service: 'derribos' },
-    loadComponent: () => import('./servicio/servicio.component').then(m => m.ServicioComponent)
+    loadComponent: () => import('./servicio/servicio.component').then((m) => m.ServicioComponent),
   },
   {
     path: '',
     pathMatch: 'full',
-    loadComponent: () =>
-      import('./home/home.component').then(
-        (m) => m.HomeComponent
-      )
+    loadComponent: () => import('./home/home.component').then((m) => m.HomeComponent),
   },
   {
     path: 'servicios',
     loadComponent: () =>
-      import('./servicios/servicios.component').then(
-        (m) => m.ServiciosComponent
-      )
+      import('./servicios/servicios.component').then((m) => m.ServiciosComponent),
   },
   {
     path: 'contacto',
-    loadComponent: () =>
-      import('./contacto/contacto.component').then(
-        (m) => m.ContactoComponent
-      )
+    loadComponent: () => import('./contacto/contacto.component').then((m) => m.ContactoComponent),
   },
   {
     path: 'formulario',
     loadComponent: () =>
-      import('./formulario/formulario.component').then(
-        (m) => m.FormularioComponent
-      )
+      import('./formulario/formulario.component').then((m) => m.FormularioComponent),
   },
   {
     path: 'nosotros',
-    loadComponent: () =>
-      import('./nosotros/nosotros.component').then(
-        (m) => m.NosotrosComponent
-      )
+    loadComponent: () => import('./nosotros/nosotros.component').then((m) => m.NosotrosComponent),
   },
   {
     path: 'login',
-    loadComponent: () =>
-      import('./login/login.component').then(
-        (m) => m.LoginComponent
-      )
+    loadComponent: () => import('./login/login.component').then((m) => m.LoginComponent),
   },
   {
     path: 'admin',
     canActivate: [authGuard],
     canActivateChild: [authGuard],
-    loadComponent: () =>
-      import('./admin/admin.component').then(
-        (m) => m.AdminComponent
-      ),
+    loadComponent: () => import('./admin/admin.component').then((m) => m.AdminComponent),
     children: [
-      { path: 'clientes', loadComponent: () => import('./adminApartados/adminClientes/admin-clientes.component').then(m => m.AdminClientesComponent) },
-      { path: 'trabajos', loadComponent: () => import('./adminApartados/adminTrabajos/admin-trabajos.component').then(m => m.AdminTrabajosComponent) },
-      { path: 'facturas', loadComponent: () => import('./adminApartados/adminFacturas/admin-facturas.component').then(m => m.AdminFacturasComponent) },
-      { path: 'gastos', loadComponent: () => import('./adminApartados/adminGastos/admin-gastos.component').then(m => m.AdminGastosComponent) },
-      { path: 'informes', loadComponent: () => import('./adminApartados/adminInformes/admin-informes.component').then(m => m.AdminInformesComponent) },
-      { path: 'configuracion', loadComponent: () => import('./adminApartados/adminConfiguracion/admin-configuracion.component').then(m => m.AdminConfiguracionComponent) },
+      {
+        path: 'clientes',
+        loadComponent: () =>
+          import('./adminApartados/adminClientes/admin-clientes.component').then(
+            (m) => m.AdminClientesComponent,
+          ),
+      },
+      {
+        path: 'trabajos',
+        loadComponent: () =>
+          import('./adminApartados/adminTrabajos/admin-trabajos.component').then(
+            (m) => m.AdminTrabajosComponent,
+          ),
+      },
+      {
+        path: 'facturas',
+        loadComponent: () =>
+          import('./adminApartados/adminFacturas/admin-facturas.component').then(
+            (m) => m.AdminFacturasComponent,
+          ),
+      },
+      {
+        path: 'gastos',
+        loadComponent: () =>
+          import('./adminApartados/adminGastos/admin-gastos.component').then(
+            (m) => m.AdminGastosComponent,
+          ),
+      },
+      {
+        path: 'informes',
+        loadComponent: () =>
+          import('./adminApartados/adminInformes/admin-informes.component').then(
+            (m) => m.AdminInformesComponent,
+          ),
+      },
+      {
+        path: 'configuracion',
+        loadComponent: () =>
+          import('./adminApartados/adminConfiguracion/admin-configuracion.component').then(
+            (m) => m.AdminConfiguracionComponent,
+          ),
+      },
 
       {
         path: 'agenda',
-        loadComponent: () => import('./adminApartados/adminAgenda/admin-agenda.component').then(m => m.AdminAgendaComponent)
+        loadComponent: () =>
+          import('./adminApartados/adminAgenda/admin-agenda.component').then(
+            (m) => m.AdminAgendaComponent,
+          ),
       },
       {
         path: 'encuestas',
         loadComponent: () =>
           import('./adminApartados/adminEncuestas/admin-encuestas.component').then(
-            (m) => m.AdminEncuestasComponent
-          )
-      }
-    ]
+            (m) => m.AdminEncuestasComponent,
+          ),
+      },
+    ],
   },
   {
     path: '**',
-    redirectTo: ''
-  }
+    redirectTo: '',
+  },
 ];

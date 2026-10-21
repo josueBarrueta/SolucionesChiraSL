@@ -3,7 +3,7 @@ import { whatsappLink } from './whatsapp-link';
 
 @Directive({
   selector: 'a[appWhatsapp]',
-  standalone: true
+  standalone: true,
 })
 export class WhatsappDirective {
   private readonly element = inject(ElementRef<HTMLAnchorElement>);

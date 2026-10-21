@@ -1,7 +1,6 @@
 import { animatePage } from '../shared/page-motion';
 import { Component, DestroyRef, ElementRef, NgZone, afterNextRender, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { Meta, Title } from '@angular/platform-browser';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SERVICIOS } from './servicios.data';
 
@@ -10,38 +9,30 @@ import { SERVICIOS } from './servicios.data';
   standalone: true,
   imports: [RouterLink],
   templateUrl: './servicio.component.html',
-  styleUrls: ['./servicio.component.scss']
+  styleUrls: ['./servicio.component.scss'],
 })
 export class ServicioComponent {
   readonly services = SERVICIOS;
   service = SERVICIOS[0];
 
   private readonly route = inject(ActivatedRoute);
-  private readonly title = inject(Title);
-  private readonly meta = inject(Meta);
   private readonly destroyRef = inject(DestroyRef);
 
   private readonly element = inject(ElementRef<HTMLElement>);
   private readonly zone = inject(NgZone);
 
   constructor() {
-    afterNextRender(() => this.zone.runOutsideAngular(() => {
-      const cleanup = animatePage(this.element.nativeElement, '.service-title-block, .service-summary, .scope-list > li');
-      this.destroyRef.onDestroy(cleanup);
-    }));
-    this.route.data
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((data) => {
-        this.service =
-          SERVICIOS.find((item) => item.slug === data['service']) ?? SERVICIOS[0];
-        this.title.setTitle(
-          `${this.service.name} en Valencia | Soluciones Chira SL`
+    afterNextRender(() =>
+      this.zone.runOutsideAngular(() => {
+        const cleanup = animatePage(
+          this.element.nativeElement,
+          '.service-title-block, .service-summary, .scope-list > li',
         );
-        this.meta.updateTag({
-          name: 'description',
-          content:
-            `${this.service.description} Valencia y alrededores. Solicita un presupuesto sin compromiso.`
-          });
-      });
+        this.destroyRef.onDestroy(cleanup);
+      }),
+    );
+    this.route.data.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((data) => {
+      this.service = SERVICIOS.find((item) => item.slug === data['service']) ?? SERVICIOS[0];
+    });
   }
 }

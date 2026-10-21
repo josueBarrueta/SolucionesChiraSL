@@ -1,175 +1,461 @@
 <div class="admin-layout" [class.sidebar-collapsed]="barraMinimizada">
-  <aside class="sidebar" aria-label="Panel de administración" [class.menu-open]="menuAbierto" (keydown.escape)="menuAbierto = false" (pointerenter)="ampliarConCursor($event)" (pointerdown)="ampliarBarra()" (focusin)="ampliarBarra()">
-
+  <aside
+    class="sidebar"
+    aria-label="Panel de administración"
+    [class.menu-open]="menuAbierto"
+    (keydown.escape)="menuAbierto = false"
+    (pointerenter)="ampliarConCursor($event)"
+    (pointerdown)="ampliarBarra()"
+    (focusin)="ampliarBarra()"
+  >
     <div class="sidebar-header">
-    <a class="brand" routerLink="/admin" aria-label="Soluciones Chira, administración">
-      <img class="dashboard-logo" src="images/marca/logo-header.jpg" alt="Soluciones Chira SL" width="1000" height="260">
-      <img class="dashboard-logo-compact" src="images/marca/logo-sc-compact.jpg" alt="Soluciones Chira SL" width="410" height="215">
-    </a>
+      <a class="brand" routerLink="/admin" aria-label="Soluciones Chira, administración">
+        <img
+          class="dashboard-logo"
+          src="images/marca/logo-header.jpg"
+          alt="Soluciones Chira SL"
+          width="1000"
+          height="260"
+        />
+        <img
+          class="dashboard-logo-compact"
+          src="images/marca/logo-sc-compact.jpg"
+          alt="Soluciones Chira SL"
+          width="410"
+          height="215"
+        />
+      </a>
 
-    <button class="menu-toggle" type="button" aria-controls="admin-navigation" [attr.aria-expanded]="menuAbierto" (click)="menuAbierto = !menuAbierto">
-      <i [class]="menuAbierto ? 'pi pi-times' : 'pi pi-bars'" aria-hidden="true"></i> {{ menuAbierto ? 'Cerrar' : 'Menú' }}
-    </button>
+      <button
+        class="menu-toggle"
+        type="button"
+        aria-controls="admin-navigation"
+        [attr.aria-expanded]="menuAbierto"
+        (click)="menuAbierto = !menuAbierto"
+      >
+        <i [class]="menuAbierto ? 'pi pi-times' : 'pi pi-bars'" aria-hidden="true"></i>
+        {{ menuAbierto ? 'Cerrar' : 'Menú' }}
+      </button>
     </div>
     <div class="sidebar-menu" id="admin-navigation">
-    <nav aria-label="Navegación del panel">
-      <div class="nav-group" [class.group-open]="grupoAbierto === 'general'">
-        <p class="sidebar-label desktop-group-label">GENERAL</p>
-        <button class="group-toggle" type="button" [attr.aria-expanded]="grupoAbierto === 'general'" aria-controls="admin-group-general" (click)="alternarGrupo('general')">
-          General<i class="pi pi-chevron-down" aria-hidden="true"></i>
-        </button>
-        <div class="group-links" id="admin-group-general">
-      <a class="nav-link" routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" ariaCurrentWhenActive="page" pTooltip="Resumen" [tooltipDisabled]="!barraMinimizada" tooltipPosition="right" tooltipEvent="both" appendTo="body" tooltipStyleClass="chira-tooltip" aria-label="Resumen"><i class="pi pi-chart-bar" aria-hidden="true"></i> <span class="nav-caption">Resumen</span></a>
-      <a class="nav-link" routerLink="/admin/encuestas" routerLinkActive="active" ariaCurrentWhenActive="page" pTooltip="Encuestas" [tooltipDisabled]="!barraMinimizada" tooltipPosition="right" tooltipEvent="both" appendTo="body" tooltipStyleClass="chira-tooltip" aria-label="Encuestas"><i class="pi pi-inbox" aria-hidden="true"></i> <span class="nav-caption">Encuestas</span></a>
-      <a class="nav-link" routerLink="/admin/agenda" routerLinkActive="active" ariaCurrentWhenActive="page" pTooltip="Agenda" [tooltipDisabled]="!barraMinimizada" tooltipPosition="right" tooltipEvent="both" appendTo="body" tooltipStyleClass="chira-tooltip" aria-label="Agenda"><i class="pi pi-calendar" aria-hidden="true"></i> <span class="nav-caption">Agenda</span></a>
+      <nav aria-label="Navegación del panel">
+        <div class="nav-group" [class.group-open]="grupoAbierto === 'general'">
+          <p class="sidebar-label desktop-group-label">GENERAL</p>
+          <button
+            class="group-toggle"
+            type="button"
+            [attr.aria-expanded]="grupoAbierto === 'general'"
+            aria-controls="admin-group-general"
+            (click)="alternarGrupo('general')"
+          >
+            General<i class="pi pi-chevron-down" aria-hidden="true"></i>
+          </button>
+          <div class="group-links" id="admin-group-general">
+            <a
+              class="nav-link"
+              routerLink="/admin"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: true }"
+              ariaCurrentWhenActive="page"
+              pTooltip="Resumen"
+              [tooltipDisabled]="!barraMinimizada"
+              tooltipPosition="right"
+              appendTo="body"
+              aria-label="Resumen"
+              ><i class="pi pi-th-large" aria-hidden="true"></i
+              ><span class="nav-caption">Resumen</span></a
+            >
+            <a
+              class="nav-link"
+              routerLink="/admin/clientes"
+              routerLinkActive="active"
+              ariaCurrentWhenActive="page"
+              pTooltip="Clientes"
+              [tooltipDisabled]="!barraMinimizada"
+              tooltipPosition="right"
+              appendTo="body"
+              aria-label="Clientes"
+              ><i class="pi pi-users" aria-hidden="true"></i
+              ><span class="nav-caption">Clientes</span></a
+            >
+            <a
+              class="nav-link"
+              routerLink="/admin/agenda"
+              routerLinkActive="active"
+              ariaCurrentWhenActive="page"
+              pTooltip="Agenda"
+              [tooltipDisabled]="!barraMinimizada"
+              tooltipPosition="right"
+              appendTo="body"
+              aria-label="Agenda"
+              ><i class="pi pi-calendar" aria-hidden="true"></i
+              ><span class="nav-caption">Agenda</span></a
+            >
+          </div>
         </div>
-      </div>
-      <div class="nav-group" [class.group-open]="grupoAbierto === 'gestion'">
-        <p class="sidebar-label desktop-group-label">GESTIÓN</p>
-        <button class="group-toggle" type="button" [attr.aria-expanded]="grupoAbierto === 'gestion'" aria-controls="admin-group-gestion" (click)="alternarGrupo('gestion')">
-          Gestión<i class="pi pi-chevron-down" aria-hidden="true"></i>
-        </button>
-        <div class="group-links" id="admin-group-gestion">
-      <a class="nav-link" routerLink="/admin/clientes" routerLinkActive="active" ariaCurrentWhenActive="page" pTooltip="Clientes" [tooltipDisabled]="!barraMinimizada" tooltipPosition="right" tooltipEvent="both" appendTo="body" tooltipStyleClass="chira-tooltip" aria-label="Clientes"><i class="pi pi-users" aria-hidden="true"></i> <span class="nav-caption">Clientes</span></a>
-      <a class="nav-link" routerLink="/admin/trabajos" routerLinkActive="active" ariaCurrentWhenActive="page" pTooltip="Trabajos" [tooltipDisabled]="!barraMinimizada" tooltipPosition="right" tooltipEvent="both" appendTo="body" tooltipStyleClass="chira-tooltip" aria-label="Trabajos"><i class="pi pi-briefcase" aria-hidden="true"></i> <span class="nav-caption">Trabajos</span></a>
-      <a class="nav-link" routerLink="/admin/facturas" routerLinkActive="active" ariaCurrentWhenActive="page" pTooltip="Facturas" [tooltipDisabled]="!barraMinimizada" tooltipPosition="right" tooltipEvent="both" appendTo="body" tooltipStyleClass="chira-tooltip" aria-label="Facturas"><i class="pi pi-receipt" aria-hidden="true"></i> <span class="nav-caption">Facturas</span></a>
+        <div class="nav-group" [class.group-open]="grupoAbierto === 'servicios'">
+          <p class="sidebar-label desktop-group-label">SERVICIOS</p>
+          <button
+            class="group-toggle"
+            type="button"
+            [attr.aria-expanded]="grupoAbierto === 'servicios'"
+            aria-controls="admin-group-servicios"
+            (click)="alternarGrupo('servicios')"
+          >
+            Servicios<i class="pi pi-chevron-down" aria-hidden="true"></i>
+          </button>
+          <div class="group-links" id="admin-group-servicios">
+            <a
+              class="nav-link"
+              routerLink="/admin/encuestas"
+              routerLinkActive="active"
+              ariaCurrentWhenActive="page"
+              pTooltip="Solicitudes"
+              [tooltipDisabled]="!barraMinimizada"
+              tooltipPosition="right"
+              appendTo="body"
+              aria-label="Solicitudes"
+              ><i class="pi pi-inbox" aria-hidden="true"></i
+              ><span class="nav-caption">Solicitudes</span></a
+            >
+            <a
+              class="nav-link"
+              routerLink="/admin/trabajos"
+              routerLinkActive="active"
+              ariaCurrentWhenActive="page"
+              pTooltip="Trabajos"
+              [tooltipDisabled]="!barraMinimizada"
+              tooltipPosition="right"
+              appendTo="body"
+              aria-label="Trabajos"
+              ><i class="pi pi-briefcase" aria-hidden="true"></i
+              ><span class="nav-caption">Trabajos</span></a
+            >
+          </div>
         </div>
-      </div>
-      <div class="nav-group" [class.group-open]="grupoAbierto === 'empresa'">
-        <p class="sidebar-label desktop-group-label">EMPRESA</p>
-        <button class="group-toggle" type="button" [attr.aria-expanded]="grupoAbierto === 'empresa'" aria-controls="admin-group-empresa" (click)="alternarGrupo('empresa')">
-          Empresa<i class="pi pi-chevron-down" aria-hidden="true"></i>
-        </button>
-        <div class="group-links" id="admin-group-empresa">
-      <a class="nav-link" routerLink="/admin/gastos" routerLinkActive="active" ariaCurrentWhenActive="page" pTooltip="Gastos" [tooltipDisabled]="!barraMinimizada" tooltipPosition="right" tooltipEvent="both" appendTo="body" tooltipStyleClass="chira-tooltip" aria-label="Gastos"><i class="pi pi-wallet" aria-hidden="true"></i> <span class="nav-caption">Gastos</span></a>
-      <a class="nav-link" routerLink="/admin/informes" routerLinkActive="active" ariaCurrentWhenActive="page" pTooltip="Informes" [tooltipDisabled]="!barraMinimizada" tooltipPosition="right" tooltipEvent="both" appendTo="body" tooltipStyleClass="chira-tooltip" aria-label="Informes"><i class="pi pi-chart-line" aria-hidden="true"></i> <span class="nav-caption">Informes</span></a>
-      <a class="nav-link" routerLink="/admin/configuracion" routerLinkActive="active" ariaCurrentWhenActive="page" pTooltip="Configuración" [tooltipDisabled]="!barraMinimizada" tooltipPosition="right" tooltipEvent="both" appendTo="body" tooltipStyleClass="chira-tooltip" aria-label="Configuración"><i class="pi pi-cog" aria-hidden="true"></i> <span class="nav-caption">Configuración</span></a>
+        <div class="nav-group" [class.group-open]="grupoAbierto === 'gestion'">
+          <p class="sidebar-label desktop-group-label">GESTIÓN</p>
+          <button
+            class="group-toggle"
+            type="button"
+            [attr.aria-expanded]="grupoAbierto === 'gestion'"
+            aria-controls="admin-group-gestion"
+            (click)="alternarGrupo('gestion')"
+          >
+            Gestión<i class="pi pi-chevron-down" aria-hidden="true"></i>
+          </button>
+          <div class="group-links" id="admin-group-gestion">
+            <a
+              class="nav-link"
+              routerLink="/admin/facturas"
+              routerLinkActive="active"
+              ariaCurrentWhenActive="page"
+              pTooltip="Facturas"
+              [tooltipDisabled]="!barraMinimizada"
+              tooltipPosition="right"
+              appendTo="body"
+              aria-label="Facturas"
+              ><i class="pi pi-file" aria-hidden="true"></i
+              ><span class="nav-caption">Facturas</span></a
+            >
+            <a
+              class="nav-link"
+              routerLink="/admin/gastos"
+              routerLinkActive="active"
+              ariaCurrentWhenActive="page"
+              pTooltip="Gastos"
+              [tooltipDisabled]="!barraMinimizada"
+              tooltipPosition="right"
+              appendTo="body"
+              aria-label="Gastos"
+              ><i class="pi pi-wallet" aria-hidden="true"></i
+              ><span class="nav-caption">Gastos</span></a
+            >
+            <a
+              class="nav-link"
+              routerLink="/admin/informes"
+              routerLinkActive="active"
+              ariaCurrentWhenActive="page"
+              pTooltip="Informes"
+              [tooltipDisabled]="!barraMinimizada"
+              tooltipPosition="right"
+              appendTo="body"
+              aria-label="Informes"
+              ><i class="pi pi-chart-bar" aria-hidden="true"></i
+              ><span class="nav-caption">Informes</span></a
+            >
+          </div>
         </div>
-      </div>
-    </nav>
+        <div class="nav-group" [class.group-open]="grupoAbierto === 'empresa'">
+          <p class="sidebar-label desktop-group-label">EMPRESA · AJUSTES</p>
+          <button
+            class="group-toggle"
+            type="button"
+            [attr.aria-expanded]="grupoAbierto === 'empresa'"
+            aria-controls="admin-group-empresa"
+            (click)="alternarGrupo('empresa')"
+          >
+            Empresa · Ajustes<i class="pi pi-chevron-down" aria-hidden="true"></i>
+          </button>
+          <div class="group-links" id="admin-group-empresa">
+            <a
+              class="nav-link"
+              routerLink="/admin/configuracion"
+              routerLinkActive="active"
+              ariaCurrentWhenActive="page"
+              pTooltip="Configuración"
+              [tooltipDisabled]="!barraMinimizada"
+              tooltipPosition="right"
+              appendTo="body"
+              aria-label="Configuración"
+              ><i class="pi pi-cog" aria-hidden="true"></i
+              ><span class="nav-caption">Configuración</span></a
+            >
+          </div>
+        </div>
+      </nav>
 
-    <div class="sidebar-bottom">
-      <a class="nav-link" routerLink="/" pTooltip="Ver página web" [tooltipDisabled]="!barraMinimizada" tooltipPosition="right" tooltipEvent="both" appendTo="body" tooltipStyleClass="chira-tooltip" aria-label="Ver página web">
-        <i class="pi pi-external-link" aria-hidden="true">
-</i> <span class="nav-caption">Ver página web</span></a>
-      <button class="nav-link logout" type="button" [disabled]="saliendo" (click)="cerrarSesion()" pTooltip="Cerrar sesión" [tooltipDisabled]="!barraMinimizada" tooltipPosition="right" tooltipEvent="both" appendTo="body" tooltipStyleClass="chira-tooltip" aria-label="Cerrar sesión">
-        <i class="pi pi-sign-out" aria-hidden="true">
-</i> <span class="nav-caption">Cerrar sesión</span></button>
-    </div>
+      <div class="sidebar-bottom">
+        <a
+          class="nav-link"
+          routerLink="/"
+          pTooltip="Ver página web"
+          [tooltipDisabled]="!barraMinimizada"
+          tooltipPosition="right"
+          tooltipEvent="both"
+          appendTo="body"
+          tooltipStyleClass="chira-tooltip"
+          aria-label="Ver página web"
+        >
+          <i class="pi pi-external-link" aria-hidden="true"> </i>
+          <span class="nav-caption">Ver página web</span></a
+        >
+        <button
+          class="nav-link logout"
+          type="button"
+          [disabled]="saliendo"
+          (click)="cerrarSesion()"
+          pTooltip="Cerrar sesión"
+          [tooltipDisabled]="!barraMinimizada"
+          tooltipPosition="right"
+          tooltipEvent="both"
+          appendTo="body"
+          tooltipStyleClass="chira-tooltip"
+          aria-label="Cerrar sesión"
+        >
+          <i class="pi pi-sign-out" aria-hidden="true"> </i>
+          <span class="nav-caption">Cerrar sesión</span>
+        </button>
+      </div>
     </div>
   </aside>
 
   <section class="dashboard" aria-label="Contenido del panel">
-    @if (error) { <p role="alert">{{ error }}</p> }
+    @if (error) {
+      <p role="alert">{{ error }}</p>
+    }
     @if (isResumen) {
-    <div class="page-heading">
-      <div>
-        <p class="eyebrow">SOLUCIONES CHIRA SL</p>
-        <h1 id="admin-title">Panel de administración</h1>
-        <p class="subtitle">Un espacio para gestionar las encuestas de tu empresa.</p>
+      <div class="page-heading">
+        <div>
+          <p class="eyebrow">SOLUCIONES CHIRA SL</p>
+          <h1 id="admin-title">Panel de administración</h1>
+          <p class="subtitle">Solicitudes, clientes, trabajos y gestión económica de tu empresa.</p>
+        </div>
+        <span class="owner-badge"> <i class="pi pi-user" aria-hidden="true"> </i> Propietario</span>
       </div>
-      <span class="owner-badge">
-<i class="pi pi-user" aria-hidden="true">
-</i> Propietario</span>
-    </div>
 
-    <div class="summary-toolbar">
-<p aria-live="polite">{{ cargando ? 'Actualizando…' : ultimaActualizacion ? 'Actualización automática · ' + ultimaActualizacion : 'Sin actualizar' }}</p>
-<button type="button" class="refresh" [disabled]="cargando" (click)="actualizar()">
-<i class="pi pi-refresh" aria-hidden="true">
-</i> Actualizar</button>
-</div>
-    <div class="welcome">
-<div>
-<p class="welcome-label">TU EMPRESA, EN UN SOLO LUGAR</p>
-<h2>¿Qué necesita atención hoy?</h2>
-<p>{{ cargando || error ? 'Consulta y organiza las solicitudes de tu empresa.' : pendientes ? 'Tienes ' + pendientes + ' solicitudes pendientes de revisar.' : 'No hay solicitudes pendientes de revisar.' }}</p>
-</div>
-<a class="welcome-link" routerLink="/admin/encuestas" [queryParams]="{ pendientes: 'true' }">Revisar pendientes
-</a>
-</div>
-    <div class="stats" aria-label="Resumen de solicitudes">
-      <a class="stat-card" routerLink="/admin/encuestas" [queryParams]="{ todas: 'true' }">
-        <span class="stat-icon"><i class="pi pi-inbox" aria-hidden="true"></i></span>
-        <p>Recibidas</p><strong>{{ cargando || error ? '—' : encuestas.length }}</strong><small>Incluye las archivadas</small>
-      </a>
-      <a class="stat-card" routerLink="/admin/encuestas" [queryParams]="{ estado: 'Nueva' }">
-        <span class="stat-icon"><i class="pi pi-bell" aria-hidden="true"></i></span>
-        <p>Nuevas</p><strong>{{ cargando || error ? '—' : nuevas }}</strong><small>Sin revisar · activas</small>
-      </a>
-      <a class="stat-card" routerLink="/admin/encuestas" [queryParams]="{ pendientes: 'true' }">
-        <span class="stat-icon"><i class="pi pi-clock" aria-hidden="true"></i></span>
-        <p>Pendientes de revisar</p><strong>{{ cargando || error ? '—' : pendientes }}</strong><small>Sin revisar · activas</small>
-      </a>
-      <a class="stat-card" routerLink="/admin/trabajos" [queryParams]="{ estado: 'Finalizado' }">
-        <span class="stat-icon"><i class="pi pi-check-circle" aria-hidden="true"></i></span>
-        <p>Completadas</p><strong>{{ cargando || error ? '—' : completadas }}</strong><small>Finalizadas · activas</small>
-      </a>
-    </div>
+      <div class="summary-toolbar">
+        <p aria-live="polite">
+          {{
+            cargando
+              ? 'Actualizando…'
+              : ultimaActualizacion
+                ? 'Actualización automática · ' + ultimaActualizacion
+                : 'Sin actualizar'
+          }}
+        </p>
+        <button type="button" class="refresh" [disabled]="cargando" (click)="actualizar()">
+          <i class="pi pi-refresh" aria-hidden="true"> </i> Actualizar
+        </button>
+      </div>
+      <div class="welcome">
+        <div>
+          <p class="welcome-label">TU EMPRESA, EN UN SOLO LUGAR</p>
+          <h2>¿Qué necesita atención hoy?</h2>
+          <p>
+            {{
+              cargando || error
+                ? 'Consulta y organiza las solicitudes de tu empresa.'
+                : pendientes
+                  ? 'Tienes ' + pendientes + ' solicitudes pendientes de revisar.'
+                  : 'No hay solicitudes pendientes de revisar.'
+            }}
+          </p>
+        </div>
+        <a class="welcome-link" routerLink="/admin/encuestas" [queryParams]="{ pendientes: 'true' }"
+          >Revisar pendientes
+        </a>
+      </div>
+      <div class="stats" aria-label="Resumen de solicitudes">
+        <a class="stat-card" routerLink="/admin/encuestas" [queryParams]="{ todas: 'true' }">
+          <span class="stat-icon"><i class="pi pi-inbox" aria-hidden="true"></i></span>
+          <p>Recibidas</p>
+          <strong>{{ cargando || error ? '—' : encuestas.length }}</strong
+          ><small>Incluye las archivadas</small>
+        </a>
+        <a class="stat-card" routerLink="/admin/encuestas" [queryParams]="{ estado: 'Nueva' }">
+          <span class="stat-icon"><i class="pi pi-bell" aria-hidden="true"></i></span>
+          <p>Nuevas</p>
+          <strong>{{ cargando || error ? '—' : nuevas }}</strong
+          ><small>Sin revisar · activas</small>
+        </a>
+        <a class="stat-card" routerLink="/admin/trabajos">
+          <span class="stat-icon"><i class="pi pi-clock" aria-hidden="true"></i></span>
+          <p>Trabajos activos</p>
+          <strong>{{ cargando || error ? '—' : trabajosActivos }}</strong
+          ><small>Pendientes y en curso</small>
+        </a>
+        <a class="stat-card" routerLink="/admin/trabajos" [queryParams]="{ estado: 'Finalizado' }">
+          <span class="stat-icon"><i class="pi pi-check-circle" aria-hidden="true"></i></span>
+          <p>Completadas</p>
+          <strong>{{ cargando || error ? '—' : completadas }}</strong
+          ><small>Finalizadas · activas</small>
+        </a>
+      </div>
 
-@if (!cargando && !error) {<section class="responses" aria-label="Últimas solicitudes">
-<div class="responses-heading">
-<div>
-<h2>Últimas solicitudes</h2>
-<p>Las cinco más recientes, incluidas las archivadas.</p>
-</div>
-<a class="status" routerLink="/admin/encuestas">Ver encuestas</a>
-</div>@for (encuesta of encuestas.slice(0, 5); track encuesta.id) {<a class="request-row" routerLink="/admin/encuestas" [queryParams]="{ respuesta: encuesta.id }">
-<span class="request-person">
-<small>{{ encuesta.referencia }} · {{ fechaVisible(encuesta.fecha) }}</small>
-<strong>{{ encuesta.nombre }}</strong>
-<span>{{ encuesta.servicios.join(', ') }}</span>
-</span>
-<span class="request-state">{{ encuesta.archivada ? 'Archivada' : encuesta.estado }}</span>
-<i class="pi pi-angle-right" aria-hidden="true">
-</i>
-</a>}
-@empty {<div class="empty-state">
-<p>Todavía no hay solicitudes. Las encuestas de la web aparecerán aquí.</p>
-</div>}</section>
-<section class="responses" aria-label="Necesitan atención">
-<div class="responses-heading">
-<div>
-<h2>Necesitan atención</h2>
-<p>Solicitudes nuevas pendientes de revisar.</p>
-</div>
-<a class="status" routerLink="/admin/encuestas">Ver encuestas</a>
-</div>@for (encuesta of necesitanAtencion; track encuesta.id) {<a class="request-row" routerLink="/admin/encuestas" [queryParams]="{ respuesta: encuesta.id }">
-<span class="request-person">
-<small>{{ encuesta.referencia }} · {{ fechaVisible(encuesta.fecha) }}</small>
-<strong>{{ encuesta.nombre }}</strong>
-<span>{{ encuesta.servicios.join(', ') }}</span>
-</span>
-<span class="request-state">{{ encuesta.archivada ? 'Archivada' : encuesta.estado }}</span>
-<i class="pi pi-angle-right" aria-hidden="true">
-</i>
-</a>}
-@empty {<div class="empty-state">
-<p>Todo al día. No hay solicitudes pendientes de revisar.</p>
-</div>}</section>
-<section class="responses" aria-label="Próximos trabajos">
-<div class="responses-heading">
-<div>
-<h2>Próximos trabajos</h2>
-<p>Trabajos manuales y solicitudes con fecha asignada.</p>
-</div>
-<a class="status" routerLink="/admin/trabajos">Ver trabajos</a>
-</div>@for (encuesta of proximosTrabajos; track encuesta.id) {<a class="request-row" [routerLink]="encuesta.gestionId ? '/admin/trabajos' : '/admin/encuestas'" [queryParams]="encuesta.gestionId ? { registro: encuesta.gestionId } : { respuesta: encuesta.id }">
-<span class="request-person">
-<small>{{ encuesta.referencia }} · {{ fechaVisible(encuesta.fechaTrabajo) }}</small>
-<strong>{{ encuesta.nombre }}</strong>
-<span>{{ encuesta.servicios.join(', ') }}</span>
-</span>
-<span class="request-state">{{ encuesta.archivada ? 'Archivada' : encuesta.estado }}</span>
-<i class="pi pi-angle-right" aria-hidden="true">
-</i>
-</a>}
-@empty {<div class="empty-state">
-<p>No hay próximos trabajos con fecha asignada. Puedes añadirla al ver una respuesta.</p>
-</div>}</section>} @else { <div class="empty-state" aria-live="polite">
-<p>{{ cargando ? 'Cargando el resumen…' : 'No se pudo obtener el resumen. Pulsa Actualizar para intentarlo de nuevo.' }}</p>
-</div> }
+      <nav class="quick-actions" aria-label="Accesos de gestión">
+        <a routerLink="/admin/encuestas"
+          ><i class="pi pi-inbox" aria-hidden="true"></i> Revisar solicitudes</a
+        ><a routerLink="/admin/trabajos"
+          ><i class="pi pi-briefcase" aria-hidden="true"></i> Gestionar trabajos</a
+        ><a class="primary-shortcut" routerLink="/admin/facturas"
+          ><i class="pi pi-file" aria-hidden="true"></i> Preparar factura</a
+        >
+      </nav>
+      @if (!cargando && !error) {
+        <section class="business-summary" aria-label="Resumen económico">
+          <a routerLink="/admin/facturas"
+            ><span>Pendiente de cobro</span><strong>{{ money(porCobrar) }}</strong
+            ><small>Saldo actual de facturas registradas</small></a
+          ><a routerLink="/admin/facturas"
+            ><span>Facturado este mes</span><strong>{{ money(facturadoMes) }}</strong
+            ><small>Importes con IVA</small></a
+          ><a routerLink="/admin/gastos"
+            ><span>Gastos del mes</span><strong>{{ money(gastosMes) }}</strong
+            ><small>Pagados y pendientes registrados</small></a
+          >
+        </section>
+      }
+      @if (!cargando && !error) {
+        <section class="responses" aria-label="Últimas solicitudes">
+          <div class="responses-heading">
+            <div>
+              <h2>Últimas solicitudes</h2>
+              <p>Las cinco más recientes, incluidas las archivadas.</p>
+            </div>
+            <a class="status" routerLink="/admin/encuestas">Ver encuestas</a>
+          </div>
+          @for (encuesta of encuestas.slice(0, 5); track encuesta.id) {
+            <a
+              class="request-row"
+              routerLink="/admin/encuestas"
+              [queryParams]="{ respuesta: encuesta.id }"
+            >
+              <span class="request-person">
+                <small>{{ encuesta.referencia }} · {{ fechaVisible(encuesta.fecha) }}</small>
+                <strong>{{ encuesta.nombre }}</strong>
+                <span>{{ encuesta.servicios.join(', ') }}</span>
+              </span>
+              <span class="request-state">{{
+                encuesta.archivada ? 'Archivada' : encuesta.estado
+              }}</span>
+              <i class="pi pi-angle-right" aria-hidden="true"> </i>
+            </a>
+          } @empty {
+            <div class="empty-state">
+              <p>Todavía no hay solicitudes. Las encuestas de la web aparecerán aquí.</p>
+            </div>
+          }
+        </section>
+        <section class="responses" aria-label="Necesitan atención">
+          <div class="responses-heading">
+            <div>
+              <h2>Necesitan atención</h2>
+              <p>Solicitudes nuevas pendientes de revisar.</p>
+            </div>
+            <a class="status" routerLink="/admin/encuestas">Ver encuestas</a>
+          </div>
+          @for (encuesta of necesitanAtencion; track encuesta.id) {
+            <a
+              class="request-row"
+              routerLink="/admin/encuestas"
+              [queryParams]="{ respuesta: encuesta.id }"
+            >
+              <span class="request-person">
+                <small>{{ encuesta.referencia }} · {{ fechaVisible(encuesta.fecha) }}</small>
+                <strong>{{ encuesta.nombre }}</strong>
+                <span>{{ encuesta.servicios.join(', ') }}</span>
+              </span>
+              <span class="request-state">{{
+                encuesta.archivada ? 'Archivada' : encuesta.estado
+              }}</span>
+              <i class="pi pi-angle-right" aria-hidden="true"> </i>
+            </a>
+          } @empty {
+            <div class="empty-state">
+              <p>Todo al día. No hay solicitudes pendientes de revisar.</p>
+            </div>
+          }
+        </section>
+        <section class="responses" aria-label="Próximos trabajos">
+          <div class="responses-heading">
+            <div>
+              <h2>Próximos trabajos</h2>
+              <p>Trabajos confirmados con fecha asignada.</p>
+            </div>
+            <a class="status" routerLink="/admin/trabajos">Ver trabajos</a>
+          </div>
+          @for (encuesta of proximosTrabajos; track encuesta.id) {
+            <a
+              class="request-row"
+              [routerLink]="encuesta.gestionId ? '/admin/trabajos' : '/admin/encuestas'"
+              [queryParams]="
+                encuesta.gestionId ? { registro: encuesta.gestionId } : { respuesta: encuesta.id }
+              "
+            >
+              <span class="request-person">
+                <small>{{ encuesta.referencia }} · {{ fechaVisible(encuesta.fechaTrabajo) }}</small>
+                <strong>{{ encuesta.nombre }}</strong>
+                <span>{{ encuesta.servicios.join(', ') }}</span>
+              </span>
+              <span class="request-state">{{
+                encuesta.archivada ? 'Archivada' : encuesta.estado
+              }}</span>
+              <i class="pi pi-angle-right" aria-hidden="true"> </i>
+            </a>
+          } @empty {
+            <div class="empty-state">
+              <p>
+                No hay próximos trabajos con fecha asignada. Puedes asignarla desde la ficha del
+                trabajo.
+              </p>
+            </div>
+          }
+        </section>
+      } @else {
+        <div class="empty-state" aria-live="polite">
+          <p>
+            {{
+              cargando
+                ? 'Cargando el resumen…'
+                : 'No se pudo obtener el resumen. Pulsa Actualizar para intentarlo de nuevo.'
+            }}
+          </p>
+        </div>
+      }
     }
     <router-outlet />
   </section>
 </div>
+
+<app-invoice-preview />

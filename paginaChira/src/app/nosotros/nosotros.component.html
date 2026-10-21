@@ -10,14 +10,12 @@
         </h1>
 
         <p class="introduccion">
-          Somos una empresa con sede en Valencia. Nuestro propósito es
-          facilitar las tareas que necesitas resolver en tu hogar o negocio,
-          reuniendo distintos servicios en un mismo equipo.
+          Somos una empresa con sede en Valencia. Nuestro propósito es facilitar las tareas que
+          necesitas resolver en tu hogar o negocio, reuniendo distintos servicios en un mismo
+          equipo.
         </p>
 
-        <a class="boton" routerLink="/contacto">
-          Cuéntanos qué necesitas
-        </a>
+        <a class="boton" routerLink="/contacto"> Cuéntanos qué necesitas </a>
       </div>
 
       <img
@@ -48,23 +46,30 @@
     </div>
 
     <section class="historia" aria-labelledby="historia-title">
-      <div class="team-gallery" (mouseenter)="galeriaEnPausa.set(true)" (mouseleave)="galeriaEnPausa.set(false)" (focusin)="galeriaEnPausa.set(true)" (focusout)="galeriaEnPausa.set(false)">
-      <div class="nosotros-imagen imagen-secundaria fotos-equipo" aria-label="Nuestro equipo en distintos trabajos">
-        @for (foto of fotosEquipo; track foto.imagen; let indice = $index) {
-          <img
-            [src]="foto.imagen"
-            [alt]="foto.descripcion"
-            [class.activa]="fotoActiva() === indice"
-            [attr.aria-hidden]="fotoActiva() !== indice"
-            width="1440"
-            height="1440"
-            loading="lazy"
-            decoding="async"
-          />
-        }
-      </div>
-
-
+      <div
+        class="team-gallery"
+        (mouseenter)="galeriaEnPausa.set(true)"
+        (mouseleave)="galeriaEnPausa.set(false)"
+        (focusin)="galeriaEnPausa.set(true)"
+        (focusout)="galeriaEnPausa.set(false)"
+      >
+        <div
+          class="nosotros-imagen imagen-secundaria fotos-equipo"
+          aria-label="Nuestro equipo en distintos trabajos"
+        >
+          @for (foto of fotosEquipo; track foto.imagen; let indice = $index) {
+            <img
+              [src]="foto.imagen"
+              [alt]="foto.descripcion"
+              [class.activa]="fotoActiva() === indice"
+              [attr.aria-hidden]="fotoActiva() !== indice"
+              width="1440"
+              height="1440"
+              loading="lazy"
+              decoding="async"
+            />
+          }
+        </div>
       </div>
 
       <div class="historia-texto">
@@ -76,26 +81,21 @@
         </h2>
 
         <p>
-          Soluciones Chira SL inició sus operaciones hace más de 20 años.
-          La sociedad tiene su sede en Valencia y su actividad principal
-          registrada son los servicios logísticos.
+          Soluciones Chira SL inició sus operaciones hace más de 20 años. La sociedad tiene su sede
+          en Valencia y su actividad principal registrada son los servicios logísticos.
         </p>
 
         <p>
-          Su objeto social también contempla el transporte de mercancías
-          por carretera, actividades auxiliares del transporte terrestre,
-          construcción de edificios y limpieza.
+          Su objeto social también contempla el transporte de mercancías por carretera, actividades
+          auxiliares del transporte terrestre, construcción de edificios y limpieza.
         </p>
 
         <p>
-          Nuestra propuesta reúne servicios como portes, mudanzas,
-          montaje de muebles, vaciados, limpieza, pintura y derribos. Cuéntanos
-          qué necesitas para valorar cómo podemos ayudarte.
+          Nuestra propuesta reúne servicios como portes, mudanzas, montaje de muebles, vaciados,
+          limpieza, pintura y derribos. Cuéntanos qué necesitas para valorar cómo podemos ayudarte.
         </p>
 
-        <a class="enlace" routerLink="/servicios">
-          Descubre nuestros servicios
-        </a>
+        <a class="enlace" routerLink="/servicios"> Descubre nuestros servicios </a>
       </div>
     </section>
 
@@ -105,10 +105,7 @@
 
         <h2 id="valores-title">Las cosas claras, desde el principio.</h2>
 
-        <p>
-          Queremos que entiendas qué podemos hacer por ti y cómo
-          planteamos cada trabajo.
-        </p>
+        <p>Queremos que entiendas qué podemos hacer por ti y cómo planteamos cada trabajo.</p>
       </div>
 
       <div class="valores-grid">
@@ -116,8 +113,8 @@
           <span class="valor-numero" aria-hidden="true">01</span>
           <h3>Escuchar primero</h3>
           <p>
-            Conocer tu situación, el espacio y lo que necesitas es el
-            primer paso para plantear una solución.
+            Conocer tu situación, el espacio y lo que necesitas es el primer paso para plantear una
+            solución.
           </p>
         </article>
 
@@ -125,8 +122,8 @@
           <span class="valor-numero" aria-hidden="true">02</span>
           <h3>Definir el trabajo</h3>
           <p>
-            Acordar el alcance, los detalles y las condiciones antes
-            de empezar ayuda a organizar el proyecto.
+            Acordar el alcance, los detalles y las condiciones antes de empezar ayuda a organizar el
+            proyecto.
           </p>
         </article>
 
@@ -134,8 +131,8 @@
           <span class="valor-numero" aria-hidden="true">03</span>
           <h3>Cuidar los detalles</h3>
           <p>
-            Nuestro objetivo es trabajar con atención a tus pertenencias
-            y a los espacios donde intervenimos.
+            Nuestro objetivo es trabajar con atención a tus pertenencias y a los espacios donde
+            intervenimos.
           </p>
         </article>
       </div>
@@ -145,14 +142,10 @@
       <div>
         <p class="etiqueta">TODO EMPIEZA CON UNA CONVERSACIÓN</p>
         <h2 id="cta-title">¿Qué necesitas resolver?</h2>
-        <p>
-          Cuéntanos tu idea y hablemos de los siguientes pasos.
-        </p>
+        <p>Cuéntanos tu idea y hablemos de los siguientes pasos.</p>
       </div>
 
-      <a class="boton boton-claro" routerLink="/contacto">
-        Contacta con nosotros
-      </a>
+      <a class="boton boton-claro" routerLink="/contacto"> Contacta con nosotros </a>
     </section>
   </div>
 </section>
