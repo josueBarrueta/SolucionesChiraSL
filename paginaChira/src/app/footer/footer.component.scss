@@ -9,7 +9,7 @@
   position: relative;
   overflow: hidden;
   color: #f3f5f6;
-  background: linear-gradient(125deg, #101c28, #070f18);
+  background: #0b2c48;
   border-top: 4px solid #087cbd;
   font-family: inherit;
 }
@@ -361,7 +361,6 @@
   line-height: 1;
 }
 
-.footer { background: #000; }
 .footer-logo { display: inline-block; max-width: 100%; }
 .footer-logo img { display: block; width: 270px; max-width: 100%; height: auto; }
 
@@ -369,4 +368,4 @@
 .footer-logo img { mix-blend-mode: screen; }
 
 .footer-logo { background: #0b2c48; isolation: isolate; }
-.footer::before { background: radial-gradient(circle, #237dba20, transparent 70%); }
+.footer::before { content: none; }
