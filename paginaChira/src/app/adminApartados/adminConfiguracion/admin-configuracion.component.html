@@ -87,18 +87,34 @@
       </div>
     </fieldset>
   </form>
-  <section class="finance-card">
+  <section class="finance-card verifactu-settings" aria-labelledby="verifactu-title">
     <header>
       <div>
-        <h2>VERI*FACTU</h2>
-        <p>Conexión con la Agencia Tributaria</p>
+        <span class="settings-eyebrow">Facturación</span>
+        <h2 id="verifactu-title">VERI*FACTU</h2>
+        <p>Conexión con la Agencia Tributaria.</p>
       </div>
-      <span class="badge">Desactivado</span>
+      <span class="integration-status"><span aria-hidden="true"></span>Desactivado</span>
     </header>
     <div class="integration-body">
-      <p>
-        No se envían facturas ni registros a la AEAT. La integración está pendiente, igual que en
-        Jofemar.
+      <p>No se envían facturas ni registros a la AEAT. La integración está pendiente.</p>
+      <dl>
+        <div>
+          <dt>Conexión con la AEAT</dt>
+          <dd>No conectada</dd>
+        </div>
+        <div>
+          <dt>Entorno de pruebas</dt>
+          <dd>Sin configurar</dd>
+        </div>
+        <div>
+          <dt>Envíos reales</dt>
+          <dd>Desactivados</dd>
+        </div>
+      </dl>
+      <p class="integration-note">
+        Cuando se prepare la integración, se probará primero en un entorno separado. La activación
+        de envíos reales será un paso independiente.
       </p>
     </div>
   </section>

@@ -1,1 +1,107 @@
 @use '../admin-section';
+
+.finance-card {
+  min-width: 0;
+  border: 1px solid #e9e2da;
+  border-radius: 16px;
+  background: #fff;
+  overflow: hidden;
+}
+.finance-card header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px;
+  border-bottom: 1px solid #eee9e4;
+}
+.finance-card h2 {
+  color: #25252b;
+  font-size: 17px;
+  font-weight: 600;
+}
+.finance-card header p {
+  margin-top: 8px;
+  font-size: 11px;
+  color: #8a7d73;
+  line-height: 1.6;
+}
+.verifactu-settings {
+  margin-bottom: 24px;
+}
+@media (max-width: 600px) {
+  .finance-card header {
+    padding: 20px 16px;
+    flex-wrap: wrap;
+  }
+}
+
+.verifactu-settings {
+  margin-top: 24px;
+}
+.settings-eyebrow {
+  display: block;
+  margin-bottom: 8px;
+  color: #8a7d73;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.integration-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #e0dad3;
+  border-radius: 20px;
+  padding: 9px 13px;
+  background: #f4f1ed;
+  color: #625b55;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.integration-status > span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #8b857f;
+}
+.integration-body {
+  padding: 24px;
+  font-size: 13px;
+  line-height: 1.7;
+  color: #74665c;
+}
+.integration-body dl {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+.integration-body dl > div {
+  padding: 16px;
+  border: 1px solid #e9e2da;
+  border-radius: 10px;
+  background: #faf9f6;
+}
+.integration-body dt {
+  font-size: 12px;
+  color: #8a7d73;
+}
+.integration-body dd {
+  margin: 6px 0 0;
+  color: #433d38;
+  font-weight: 600;
+}
+.integration-note {
+  font-size: 12px;
+  color: #8a7d73;
+}
+@media (max-width: 700px) {
+  .integration-body {
+    padding: 18px;
+  }
+  .integration-body dl {
+    grid-template-columns: 1fr;
+  }
+}
