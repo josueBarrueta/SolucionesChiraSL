@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
   standalone: true,
   imports: [FormsModule],
   templateUrl: './admin-configuracion.component.html',
-  styleUrls: ['../gestion/gestion.component.scss'],
+  styleUrls: ['../gestion/gestion.component.scss', './admin-configuracion.component.scss'],
 })
 export class AdminConfiguracionComponent {
   private readonly api = inject(ChiraApiService);
