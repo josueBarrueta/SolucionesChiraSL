@@ -45,7 +45,7 @@ jobs:
         run: >
           npm run build --
           --configuration production
-          --base-href /SolucionesChiraSL/
+          --base-href /
           --output-path dist/site
 
       - name: Preparar las rutas de Angular
