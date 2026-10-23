@@ -21,6 +21,7 @@ const ESTADOS_ANTERIORES = {
 };
 const SERVICIOS = [...SERVICE_QUESTIONS.map((b) => b.service), 'Otra consulta'];
 const COOKIE = 'chira_session';
+export const SESSION_DURATION_MS = 8 * 60 * 60 * 1000;
 class ApiError extends Error {
   constructor(status, message) {
     super(message);
@@ -225,6 +226,7 @@ export function createApp({
   secureCookies = false,
   webDirectory = null,
   localPasswordHash = null,
+  now = Date.now,
 }) {
   const management = createManagement(db);
   const surveys = db.collection('encuestas');
@@ -244,6 +246,10 @@ export function createApp({
   }
   const cookie = (token, age) =>
     `${COOKIE}=${token}; HttpOnly; SameSite=Strict; Path=/api; Max-Age=${age}${secureCookies ? '; Secure' : ''}`;
+  async function activePasswordHash() {
+    const saved = await db.collection('credenciales').findOne({ _id: 'admin' });
+    return localPasswordHash ?? saved?.passwordHash ?? passwordHash;
+  }
   async function session(req) {
     const bearer = req.headers.authorization?.match(/^Bearer ([a-f0-9]{64})$/)?.[1];
     const token =
@@ -257,7 +263,8 @@ export function createApp({
       throw new ApiError(401, 'Inicia sesión para continuar.');
     const current = await sessions.findOne({
       _id: tokenHash(token),
-      expiresAt: { $gt: new Date() },
+      expiresAt: { $gt: new Date(now()) },
+      credentialVersion: tokenHash(await activePasswordHash()),
     });
     if (!current) throw new ApiError(401, 'Tu sesión ha caducado. Vuelve a iniciar sesión.');
     return current;
@@ -417,19 +424,17 @@ export function createApp({
         const body = await readJson(req);
         const username = text(body?.username, 'el usuario', 254, 1);
         const password = text(body?.password, 'la contraseña', 256, 1);
-        const savedCredentials = await db.collection('credenciales').findOne({ _id: 'admin' });
-        const verified = await verifyPassword(
-          password,
-          localPasswordHash ?? savedCredentials?.passwordHash ?? passwordHash,
-        );
+        const currentPasswordHash = await activePasswordHash();
+        const verified = await verifyPassword(password, currentPasswordHash);
         if (username !== adminEmail || !verified)
           throw new ApiError(401, 'Usuario o contraseña incorrectos.');
         const token = randomBytes(32).toString('hex');
         await sessions.insertOne({
           _id: tokenHash(token),
-          expiresAt: new Date(Date.now() + 12 * 3600000),
+          expiresAt: new Date(now() + SESSION_DURATION_MS),
+          credentialVersion: tokenHash(currentPasswordHash),
         });
-        res.setHeader('Set-Cookie', cookie(token, 12 * 3600));
+        res.setHeader('Set-Cookie', cookie(token, SESSION_DURATION_MS / 1000));
         return send(200, { authenticated: true, token });
       }
       if (path === '/api/session' && method === 'GET') {

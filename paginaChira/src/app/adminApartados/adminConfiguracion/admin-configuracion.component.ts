@@ -88,7 +88,7 @@ export class AdminConfiguracionComponent {
       this.current = '';
       this.next = '';
       this.repeat = '';
-      this.message = 'Contraseña actualizada. La próxima vez usa la nueva contraseña.';
+      this.message = 'Contraseña actualizada. Las sesiones anteriores se han invalidado. Vuelve a iniciar sesión con la nueva contraseña.';
     } catch (e) {
       this.error = e instanceof Error ? e.message : 'No se pudo cambiar.';
     } finally {

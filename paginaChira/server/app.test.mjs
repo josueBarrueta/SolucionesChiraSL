@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { ObjectId } from 'mongodb';
-import { createApp, validateSubmission, validDate } from './app.mjs';
+import { createApp, validateSubmission, validDate, SESSION_DURATION_MS } from './app.mjs';
 import { createManagement } from './management.mjs';
 import { hashPassword, verifyPassword } from './security.mjs';
 
@@ -500,6 +500,7 @@ test('gestión: importación sin duplicados, relaciones, importes, emisión inmu
     ).status,
     200,
   );
+  assert.equal((await call('/api/session')).status, 401);
   assert.equal(
     (
       await call('/api/login', 'POST', {
@@ -1374,4 +1375,33 @@ test('solicitudes manuales: autorización, cliente existente o nuevo, reintentos
   );
   assert.equal(web.status, 201);
   assert.equal(web.data.referencia, 'CHI-000004');
+});
+
+test('sesiones: ocho horas exactas, reinicio y rotación de credenciales', async (t) => {
+  const db = memoryDb();
+  let time = Date.now();
+  let passwordHash = await hashPassword('test-password-expiration');
+  const options = () => ({ db, origins: ['http://localhost:4200'], adminEmail: 'test@example.com', passwordHash, now: () => time });
+  const apps = [];
+  async function start() {
+    const app = createApp(options()); apps.push(app);
+    await new Promise(resolve => app.listen(0, '127.0.0.1', resolve));
+    return `http://127.0.0.1:${app.address().port}`;
+  }
+  t.after(async () => { for (const app of apps) await new Promise(resolve => { app.close(resolve); app.closeAllConnections(); }); });
+  const base = await start();
+  async function login() {
+    const response = await fetch(base + '/api/login', { method: 'POST', headers: { Origin: 'http://localhost:4200', 'Content-Type': 'application/json' }, body: JSON.stringify({username:'test@example.com',password:'test-password-expiration'}) });
+    assert.match(response.headers.get('set-cookie'), /Max-Age=28800/);
+    return (await response.json()).token;
+  }
+  const token = await login();
+  const status = async (url, bearer) => (await fetch(url + '/api/session', {headers:{Authorization:`Bearer ${bearer}`}})).status;
+  time += SESSION_DURATION_MS - 1;
+  assert.equal(await status(await start(), token), 200);
+  time++;
+  assert.equal(await status(base, token), 401);
+  const fresh = await login();
+  passwordHash = await hashPassword('rotated-environment-password');
+  assert.equal(await status(await start(), fresh), 401);
 });

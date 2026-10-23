@@ -34,7 +34,7 @@ Abre `/formulario`, envía una solicitud y entra en `/login` para consultar `/ad
 Las solicitudes se guardan en Atlas, no en el navegador. El servidor tiene que estar ejecutándose.
 Las encuestas empiezan vacías: los antiguos ejemplos no se migran a datos reales.
 Los cambios del modal se guardan solo al pulsar Guardar o Archivar; cerrar la ficha descarta ediciones.
-El login mantiene una sesión durante 12 horas mediante una cookie HttpOnly y sesiones en Atlas.
+El login mantiene una sesión durante 8 horas mediante una cookie HttpOnly y sesiones en Atlas.
 
 ## Publicar
 
@@ -129,7 +129,8 @@ Los informes distinguen facturado, cobrado y pendiente; cobros menos gastos no e
 Los justificantes de gastos se referencian por su nombre o ubicación, sin almacenar archivos adjuntos.
 
 El cambio de contraseña comprueba la contraseña actual y guarda un hash con sal en `credenciales`;
-el hash inicial del entorno se usa solo hasta el primer cambio. No se muestra en las rutas de configuración.
+el hash inicial del entorno se usa solo hasta el primer cambio. Todas las sesiones anteriores quedan
+invalidadas al cambiar la contraseña y hay que volver a iniciar sesión. No se muestra el hash en las rutas de configuración.
 
 ### Publicar esta actualización
 
