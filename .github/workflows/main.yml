@@ -23,7 +23,7 @@ jobs:
       - name: Preparar Node
         uses: actions/setup-node@v7
         with:
-          node-version: "24"
+          node-version: "24.22.1"
           cache: npm
           cache-dependency-path: paginaChira/package-lock.json
 

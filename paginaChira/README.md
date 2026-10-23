@@ -1,7 +1,7 @@
 # Soluciones Chira
 
 Web pública y panel de gestión de Soluciones Chira SL, con Angular y un servidor Node.js.
-Requiere Node.js 24 o superior.
+Requiere Node.js 24.22.1 o una actualización posterior de la rama 24 LTS.
 
 ## Trabajar en local
 

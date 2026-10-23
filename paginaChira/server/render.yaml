@@ -12,7 +12,7 @@ services:
     autoDeployTrigger: off
     envVars:
       - key: NODE_VERSION
-        value: 24.21.0
+        value: 24.22.1
       - key: NODE_ENV
         value: production
       - key: HOST
